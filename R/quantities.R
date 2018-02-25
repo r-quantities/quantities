@@ -37,7 +37,7 @@ NULL
 #' x = 1:3
 #' class(x)
 #' x
-#' quantities(x) <- with(ud_units, list(m/s, 0.1))
+#' quantities(x) <- list("m/s", 0.1)
 #' class(x)
 #' x
 #'

@@ -45,7 +45,7 @@ pipe-friendly version of \code{`quantities<-`} and returns an object of class
 x = 1:3
 class(x)
 x
-quantities(x) <- with(ud_units, list(m/s, 0.1))
+quantities(x) <- list("m/s", 0.1)
 class(x)
 x
 

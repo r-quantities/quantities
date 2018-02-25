@@ -132,11 +132,11 @@ as.matrix.quantities <- function(x, ...) {
 #'
 #' @examples
 #' a <- matrix(1:30, 5, 6)
-#' quantities(a) <- list(m/s, 1:30)
+#' quantities(a) <- list("m/s", 1:30)
 #' t(a)
 #'
 #' @export
-t.quantities <- function(x) stop("TODO")
+t.quantities <- function(x) reclass(NextMethod())
 
 #' Combine R Objects by Rows or Columns
 #'

@@ -14,7 +14,7 @@ S3 method for \code{quantities} objects (see \code{\link{t}}).
 }
 \examples{
 a <- matrix(1:30, 5, 6)
-quantities(a) <- list(m/s, 1:30)
+quantities(a) <- list("m/s", 1:30)
 t(a)
 
 }
