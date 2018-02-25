@@ -150,13 +150,29 @@ t.quantities <- function(x) reclass(NextMethod())
 #' @examples
 #' x <- set_quantities(1, m/s, 0.1)
 #' y <- set_quantities(1:3, m/s, 0.2)
+#' z <- set_quantities(8:10, m/s, 0.1)
 #' (m <- cbind(x, y)) # the '1' (= shorter vector) is recycled
-#' (m <- cbind(m, 8:10)[, c(1, 3, 2)]) # insert a column
-#' cbind(y, diag(3)) # vector is subset -> warning
-#' cbind(0, rbind(x, y))
+#' (m <- cbind(m, z)[, c(1, 3, 2)]) # insert a column
+#' (m <- rbind(m, z)) # insert a row
 #'
 #' @export
-cbind.quantities <- function(..., deparse.level = 1) stop("TODO")
+cbind.quantities <- function(..., deparse.level = 1) {
+  dots <- list(...)
+  u <- units(dots[[1]])
+  .convert_to_first_arg(dots)
+
+  nm <- names(as.list(match.call()))
+  nm <- nm[nm != "" & nm != "deparse.level"]
+  if (is.null(nm))
+    names(dots) <- sapply(substitute(list(...))[-1], deparse)
+  else names(dots) <- nm
+
+  call <- as.character(match.call()[[1]])
+  assign(call, getS3method(call, "errors"))
+  value <- do.call(call, c(dots, deparse.level=deparse.level))
+  attr(value, "units") <- u
+  reclass(value)
+}
 
 #' @rdname cbind.quantities
 #' @export
