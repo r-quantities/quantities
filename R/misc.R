@@ -84,8 +84,19 @@ diff.quantities <- function(x, lag = 1L, differences = 1L, ...) reclass(NextMeth
 #' as.data.frame(z)
 #'
 #' @export
-as.data.frame.quantities <- function(x, row.names = NULL, optional = FALSE, ...)
-  stop("TODO")
+as.data.frame.quantities <- function(x, row.names = NULL, optional = FALSE, ...) {
+  e <- errors(x)
+  dim(e) <- dim(x)
+  e <- as.data.frame(e)
+  value <- NextMethod()
+  if (!optional && ncol(value) == 1)
+    colnames(value) <- deparse(substitute(x))
+  for (i in seq_len(ncol(value))) {
+    value[[i]] <- reclass(value[[i]])
+    errors(value[[i]]) <- e[[i]]
+  }
+  value
+}
 
 #' \code{type_sum} for Tidy \code{tibble} Printing
 #'
