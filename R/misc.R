@@ -118,7 +118,11 @@ type_sum.quantities <- function(x, ...) "quantities"
 #' as.matrix(set_quantities(1:3, m/s, 0.1))
 #'
 #' @export
-as.matrix.quantities <- function(x, ...) stop("TODO")
+as.matrix.quantities <- function(x, ...) {
+  value <- reclass(NextMethod())
+  attr(value, "units") <- units(x)
+  value
+}
 
 #' Matrix Transpose
 #'
