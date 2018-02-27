@@ -19,8 +19,12 @@
 #'
 #' @export
 Math.quantities <- function(x, ...) {
-  warning("Math.quantities not checked yet! Some methods may not work.")
-  reclass(NextMethod())
+  if (.Generic == "log1p")
+    class(x) <- setdiff(class(x), "quantities")
+  value <- NextMethod()
+  if (!is.null(attr(value, "units")))
+    value <- reclass(value)
+  value
 }
 
 #' @export
