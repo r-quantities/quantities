@@ -6,12 +6,7 @@
 #' sum(y)
 #'
 #' @export
-Summary.quantities <- function(..., na.rm = FALSE) {
-  x <- reclass(NextMethod())
-  if (!("errors" %in% names(attributes(x))))
-    class(x) <- "units"
-  x
-}
+Summary.quantities <- function(..., na.rm = FALSE) reclass(NextMethod())
 
 #' @export
 mean.quantities <- function(x, ...) reclass(NextMethod())

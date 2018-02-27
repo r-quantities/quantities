@@ -21,10 +21,7 @@
 Math.quantities <- function(x, ...) {
   if (.Generic == "log1p")
     class(x) <- setdiff(class(x), "quantities")
-  value <- NextMethod()
-  if (!is.null(attr(value, "units")))
-    value <- reclass(value)
-  value
+  reclass(NextMethod())
 }
 
 #' @export
