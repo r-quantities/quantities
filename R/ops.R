@@ -13,7 +13,4 @@
 #' a %% a
 #' a %% set_quantities(2)
 #' @export
-Ops.quantities <- function(e1, e2) {
-  warning("Ops.quantities not checked yet! Some methods may not work.")
-  reclass(NextMethod())
-}
+Ops.quantities <- function(e1, e2) reclass(NextMethod())
