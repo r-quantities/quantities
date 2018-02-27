@@ -18,6 +18,8 @@ addons:
 
 r_github_packages:
   - r-lib/covr
+  - r-quantities/units
+  - r-quantities/errors
 
 after_success:
   - Rscript -e 'covr::codecov()'
