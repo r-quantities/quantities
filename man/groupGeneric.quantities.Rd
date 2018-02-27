@@ -53,6 +53,6 @@ a \%\% a
 a \%\% set_quantities(2)
 c(min(x), max(x))
 range(x)
-sum(y)
+sum(x)
 
 }

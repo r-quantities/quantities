@@ -11,6 +11,7 @@
 #' @docType package
 #' @import units
 #' @import errors
+#' @import stats
 #' @name quantities-package
 NULL
 

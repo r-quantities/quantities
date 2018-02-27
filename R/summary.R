@@ -3,7 +3,7 @@
 #' @examples
 #' c(min(x), max(x))
 #' range(x)
-#' sum(y)
+#' sum(x)
 #'
 #' @export
 Summary.quantities <- function(..., na.rm = FALSE) reclass(NextMethod())

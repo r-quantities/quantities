@@ -168,7 +168,7 @@ cbind.quantities <- function(..., deparse.level = 1) {
   else names(dots) <- nm
 
   call <- as.character(match.call()[[1]])
-  assign(call, getS3method(call, "errors"))
+  assign(call, utils::getS3method(call, "errors"))
   value <- do.call(call, c(dots, deparse.level=deparse.level))
   attr(value, "units") <- u
   reclass(value)

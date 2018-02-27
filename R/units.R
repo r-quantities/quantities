@@ -41,4 +41,4 @@ set_units.quantities <- function(x, value, ...) {
 #' @name units
 #' @export
 set_units.errors <- function(x, value, ...)
-  getS3method("set_units", "units")(x, value, ...)
+  utils::getS3method("set_units", "units")(x, value, ...)
