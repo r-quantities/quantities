@@ -128,7 +128,9 @@ errors_min.quantities <- errors_max.quantities
 
 #' @export
 set_units.quantities <- function(x, value, ...) {
-  value <- substitute(value)
+  if (missing(value))
+    value <- unitless
+  else value <- substitute(value)
   units(x) <- value
   x
 }
