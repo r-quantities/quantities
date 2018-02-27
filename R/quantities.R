@@ -21,7 +21,8 @@ NULL
 #' @param x a numeric object, or object of class \code{quantities}, \code{units}
 #' or \code{errors}.
 #'
-#' @details \code{quantities} returns a vector of quantities.
+#' @details \code{quantities} returns a named list with the \code{units} and
+#' \code{errors} attributes.
 #'
 #' \code{`quantities<-`} sets the units and error values (and converts \code{x}
 #' into an object of class \code{quantities}). \code{set_quantities} is a
@@ -29,7 +30,7 @@ NULL
 #' \code{quantities}.
 #'
 #' @seealso
-#' \code{\link{groupGeneric.quantities}}.
+#' \code{\link{errors}}, \code{\link{units}}, \code{\link{groupGeneric.quantities}}.
 #' \code{\link{Extract.quantities}}, \code{\link{c}}, \code{\link{rep}}, \code{\link{cbind.quantities}}.
 #' \code{\link{as.data.frame.quantities}}, \code{\link{as.matrix.quantities}}, \code{\link{t}}.
 #'
@@ -59,30 +60,38 @@ quantities.quantities <- function(x) {
 `quantities<-` <- function(x, value) UseMethod("quantities<-")
 
 #' @export
-`quantities<-.numeric` <- function(x, value) {
+`quantities<-.quantities` <- function(x, value) {
+  if (is.null(value)) return(drop_quantities(x))
   stopifnot(length(value) == 2)
 
   units(x) <- value[[1]]
-  x <- unclass(x)
   errors(x) <- value[[2]]
-  reclass(x)
+  x
 }
 
 #' @export
-`quantities<-.quantities` <- `quantities<-.numeric`
+`quantities<-.numeric` <- function(x, value) {
+  if (is.null(value)) return(x)
+  `quantities<-.quantities`(x, value)
+}
 
 #' @export
-`quantities<-.units` <- `quantities<-.numeric`
+`quantities<-.units` <- function(x, value) {
+  if (is.null(value)) return(drop_units(x))
+  `quantities<-.quantities`(x, value)
+}
 
 #' @export
-`quantities<-.errors` <- `quantities<-.numeric`
+`quantities<-.errors` <- function(x, value) {
+  if (is.null(value)) return(drop_errors(x))
+  `quantities<-.quantities`(x, value)
+}
 
 #' @name quantities
 #' @param unit a \code{units} object, or something coercible to one with
 #' \code{as_units} (see \code{\link[units]{set_units}}).
 #' @param errors a numeric vector of length 1 or the same length as \code{x}
 #' (see \code{\link[errors:errors]{set_errors}}).
-#' @param ... further arguments for \code{\link[units]{set_units}}.
 #' @export
 set_quantities <- function(x, unit, errors=0) UseMethod("set_quantities")
 
@@ -104,20 +113,62 @@ set_quantities.units <- set_quantities.numeric
 #' @export
 set_quantities.errors <- set_quantities.numeric
 
+#' Set Measurement Errors on a Numeric Vector
+#'
+#' Set/retrieve measurement errors to/from numeric vectors (extensions to the
+#' \code{errors} package for \code{quantities} and \code{units} objects).
+#'
+#' @inheritParams errors::errors
+#' @inheritParams quantities
+#'
+#' @seealso \code{\link[errors]{errors}}.
+#'
+#' @name errors
 #' @export
 `errors<-.quantities` <- function(x, value) reclass(NextMethod())
 
+#' @name errors
+#' @export
+`errors<-.units` <- function(x, value) {
+  if (length(class(x)) > 1) return(NextMethod())
+
+  x <- unclass(x)
+  errors(x) <- value
+  class(x) <- "units"
+  reclass(x)
+}
+
+#' @name errors
 #' @export
 set_errors.quantities <- function(x, value=0) reclass(NextMethod())
 
+#' @name errors
+#' @export
+set_errors.units <- getS3method("set_errors", "errors")
+
+#' @name errors
 #' @export
 errors_max.quantities <- function(x) {
   set_units(NextMethod(), units(x), mode="standard")
 }
 
+#' @name errors
 #' @export
 errors_min.quantities <- errors_max.quantities
 
+#' Set Measurement Units on a Numeric Vector
+#'
+#' Set/retrieve measurement units to/from numeric vectors and convert units
+#' (extensions to the \code{units} package for \code{quantities} and
+#' \code{errors} objects).
+#'
+#' @inheritParams units::units
+#' @inheritParams units::set_units
+#' @inheritParams quantities
+#'
+#' @seealso \code{\link[units]{units}}, \code{\link[units]{set_units}}.
+#'
+#' @name units
 #' @export
 `units<-.quantities` <- function(x, value) {
   prev <- unclass(x[[1]])
@@ -126,6 +177,16 @@ errors_min.quantities <- errors_max.quantities
   x
 }
 
+#' @name units
+#' @export
+`units<-.errors` <- function(x, value) {
+  x <- unclass(x)
+  units(x) <- value
+  class(x) <- "errors"
+  reclass(x)
+}
+
+#' @name units
 #' @export
 set_units.quantities <- function(x, value, ...) {
   if (missing(value))
@@ -134,3 +195,37 @@ set_units.quantities <- function(x, value, ...) {
   units(x) <- value
   x
 }
+
+#' @name units
+#' @export
+set_units.errors <- function(x, value, ...)
+  getS3method("set_units", "units")(x, value, ...)
+
+#' Drop Units and Errors
+#'
+#' @param x a \code{quantities} object.
+#'
+#' @return the numeric without any \code{units} or \code{errors} attributes,
+#' while preserving other attributes like dimensions or other classes.
+#'
+#' @details \code{drop_quantities} is equivalent to \code{quantities(x) <- NULL}
+#' or \code{set_quantities(x, NULL, NULL)}. \code{drop_units} is equivalent to
+#' \code{units(x) <- NULL} or \code{set_units(x, NULL)}. \code{drop_errors} is
+#' equivalent to \code{errors(x) <- NULL} or \code{set_errors(x, NULL)}.
+#'
+#' @export
+drop_quantities <- function(x) UseMethod("drop_quantities")
+
+#' @export
+drop_quantities.quantities <- function(x) drop_errors(drop_units(x))
+
+#' @name drop_quantities
+#' @export
+drop_units.quantities <- function(x) {
+  class(x) <- setdiff(class(x), "quantities")
+  NextMethod()
+}
+
+#' @name drop_quantities
+#' @export
+drop_errors.quantities <- drop_units.quantities

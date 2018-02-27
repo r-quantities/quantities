@@ -27,14 +27,13 @@ of length 1 or the same length as \code{x} (see \code{\link[errors]{errors}}).}
 
 \item{errors}{a numeric vector of length 1 or the same length as \code{x}
 (see \code{\link[errors:errors]{set_errors}}).}
-
-\item{...}{further arguments for \code{\link[units]{set_units}}.}
 }
 \description{
 Set/retrieve measurement units and errors to/from numeric vectors.
 }
 \details{
-\code{quantities} returns a vector of quantities.
+\code{quantities} returns a named list with the \code{units} and
+\code{errors} attributes.
 
 \code{`quantities<-`} sets the units and error values (and converts \code{x}
 into an object of class \code{quantities}). \code{set_quantities} is a
@@ -53,7 +52,7 @@ x
 
 }
 \seealso{
-\code{\link{groupGeneric.quantities}}.
+\code{\link{errors}}, \code{\link{units}}, \code{\link{groupGeneric.quantities}}.
 \code{\link{Extract.quantities}}, \code{\link{c}}, \code{\link{rep}}, \code{\link{cbind.quantities}}.
 \code{\link{as.data.frame.quantities}}, \code{\link{as.matrix.quantities}}, \code{\link{t}}.
 }

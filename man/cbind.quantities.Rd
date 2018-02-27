@@ -29,10 +29,10 @@ S3 methods for \code{quantities} objects (see \code{\link[base]{cbind}}).
 \examples{
 x <- set_quantities(1, m/s, 0.1)
 y <- set_quantities(1:3, m/s, 0.2)
+z <- set_quantities(8:10, m/s, 0.1)
 (m <- cbind(x, y)) # the '1' (= shorter vector) is recycled
-(m <- cbind(m, 8:10)[, c(1, 3, 2)]) # insert a column
-cbind(y, diag(3)) # vector is subset -> warning
-cbind(0, rbind(x, y))
+(m <- cbind(m, z)[, c(1, 3, 2)]) # insert a column
+(m <- rbind(m, z)) # insert a row
 
 }
 \seealso{
