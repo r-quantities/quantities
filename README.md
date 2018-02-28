@@ -10,7 +10,7 @@ The installation from GitHub requires the [remotes](https://cran.r-project.org/p
 
 ```r
 # install.packages("remotes")
-remotes::install_github("r-quantities/quantities")
+remotes::install_github(paste("r-quantities", c("units", "errors", "quantities"), sep="/"))
 ```
 
 ## Acknowledgment
