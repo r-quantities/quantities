@@ -98,15 +98,30 @@ as.data.frame.quantities <- function(x, row.names = NULL, optional = FALSE, ...)
   value
 }
 
-#' \code{type_sum} for Tidy \code{tibble} Printing
+#' Methods for Tidy \code{tibble} Printing
 #'
-#' S3 method for \code{quantities} objects.
+#' S3 methods for \code{quantities} objects.
 #'
-#' @param x object of class quantities
-#' @param ... ignored
+#' @param x object of class quantities.
+#' @param ... see \link[pillar]{pillar_shaft}.
 #'
+#' @name tibble
 #' @export type_sum.quantities
-type_sum.quantities <- function(x, ...) "quantities"
+type_sum.quantities <- function(x) {
+  out <- gsub("\\[|\\]", "", paste(type_sum.errors(x), type_sum.units(x)))
+  paste0("[", out, "]")
+}
+
+#' @name tibble
+#' @export pillar_shaft.quantities
+pillar_shaft.quantities <- function(x, ...) {
+  out <- pillar_shaft.errors(drop_units(x), ...)
+  if (!requireNamespace("pillar", quietly = TRUE))
+    return(out)
+
+  out <- paste(out, pillar::style_subtle(as.character(units(x))))
+  pillar::new_pillar_shaft_simple(out, align = "right", min_width = 8)
+}
 
 #' Coerce to a Matrix
 #'
