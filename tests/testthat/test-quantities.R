@@ -154,16 +154,3 @@ test_that("defaults work as expected", {
   expect_equal(as.numeric(x), xval)
   expect_equal(errors(x), xval)
 })
-
-test_that("type_sum is available for quantities objects", {
-  skip_if_not_installed("tibble")
-  library(tibble)
-  expect_equal(type_sum(set_quantities(1, "m", 0.1)), "[(err) m]")
-})
-
-test_that("pillar_shaft is available for quantities objects", {
-  skip_if_not_installed("pillar")
-  library(pillar)
-  expect_equal(as.character(pillar_shaft(set_quantities(1, "m", 0.1))),
-               paste0("1.0", style_subtle("(1)"), " ", style_subtle("m")))
-})
