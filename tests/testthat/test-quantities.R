@@ -85,6 +85,12 @@ test_that("units and errors can be converted", {
   expect_quantities(x, 3.6 * xval, xunt_conv, 3.6 * xerr)
   x <- set_errors(x, 2 * xerr)
   expect_quantities(x, 3.6 * xval, xunt_conv, 2 * xerr)
+
+  x <- set_quantities(xval, xunt, xerr, mode="standard")
+  xmax <- errors_max(x)
+  xmin <- errors_min(x)
+  expect_units(xmax, xval + xerr, xunt)
+  expect_units(xmin, xval - xerr, xunt)
 })
 
 test_that("units and errors can be dropped", {
