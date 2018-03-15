@@ -93,14 +93,17 @@ quantities.quantities <- function(x) {
 #' \code{as_units} (see \code{\link[units]{set_units}}).
 #' @param errors a numeric vector of length 1 or the same length as \code{x}
 #' (see \code{\link[errors:errors]{set_errors}}).
+#' @inheritParams units::set_units
 #' @export
-set_quantities <- function(x, unit, errors=0) UseMethod("set_quantities")
+set_quantities <- function(x, unit, errors=0, ..., mode=units_options("set_units_mode"))
+  UseMethod("set_quantities")
 
 #' @export
-set_quantities.numeric <- function(x, unit, errors=0) {
+set_quantities.numeric <- function(x, unit, errors=0, ..., mode=units_options("set_units_mode")) {
   if (missing(unit))
     unit <- unitless
-  else unit <- substitute(unit)
+  else if (mode == "symbols")
+    unit <- substitute(unit)
   quantities(x) <- list(as_units(unit), errors)
   x
 }

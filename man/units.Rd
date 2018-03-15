@@ -15,9 +15,11 @@
 
 \method{units}{errors}(x) <- value
 
-\method{set_units}{quantities}(x, value, ...)
+\method{set_units}{quantities}(x, value, ...,
+  mode = units_options("set_units_mode"))
 
-\method{set_units}{errors}(x, value, ...)
+\method{set_units}{errors}(x, value, ...,
+  mode = units_options("set_units_mode"))
 }
 \arguments{
 \item{x}{numeric vector, or object of class \code{units}}
@@ -25,6 +27,11 @@
 \item{value}{object of class \code{units} or \code{symbolic_units}, or in the case of \code{set_units} expression with symbols that can be resolved in \link{ud_units} (see examples).}
 
 \item{...}{passed on to \code{as_units}}
+
+\item{mode}{if \code{"symbols"} (the default), then unit is constructed from
+the expression supplied. Otherwise, if\code{mode = "standard"},
+standard evaluation is used for the supplied value This argument can be set
+via a global option \code{units_options(set_units_mode = "standard")}}
 }
 \description{
 Set/retrieve measurement units to/from numeric vectors and convert units

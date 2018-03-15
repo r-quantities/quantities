@@ -25,7 +25,7 @@
 
 #' @name errors
 #' @export
-set_errors.quantities <- function(x, value=0) reclass(NextMethod())
+set_errors.quantities <- utils::getS3method("set_errors", "errors")
 
 #' @name errors
 #' @export

@@ -12,7 +12,8 @@ quantities(x)
 
 quantities(x) <- value
 
-set_quantities(x, unit, errors = 0)
+set_quantities(x, unit, errors = 0, ...,
+  mode = units_options("set_units_mode"))
 }
 \arguments{
 \item{x}{a numeric object, or object of class \code{quantities}, \code{units}
@@ -27,6 +28,13 @@ of length 1 or the same length as \code{x} (see \code{\link[errors]{errors}}).}
 
 \item{errors}{a numeric vector of length 1 or the same length as \code{x}
 (see \code{\link[errors:errors]{set_errors}}).}
+
+\item{...}{passed on to \code{as_units}}
+
+\item{mode}{if \code{"symbols"} (the default), then unit is constructed from
+the expression supplied. Otherwise, if\code{mode = "standard"},
+standard evaluation is used for the supplied value This argument can be set
+via a global option \code{units_options(set_units_mode = "standard")}}
 }
 \description{
 Set/retrieve measurement units and errors to/from numeric vectors.

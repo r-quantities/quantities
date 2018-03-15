@@ -30,15 +30,8 @@
 
 #' @name units
 #' @export
-set_units.quantities <- function(x, value, ...) {
-  if (missing(value))
-    value <- unitless
-  else value <- substitute(value)
-  units(x) <- value
-  x
-}
+set_units.quantities <- utils::getS3method("set_units", "units")
 
 #' @name units
 #' @export
-set_units.errors <- function(x, value, ...)
-  utils::getS3method("set_units", "units")(x, value, ...)
+set_units.errors <- utils::getS3method("set_units", "units")
