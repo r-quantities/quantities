@@ -134,9 +134,9 @@ pillar_shaft.quantities <- function(x, ...) {
 #'
 #' @export
 as.matrix.quantities <- function(x, ...) {
-  value <- reclass(NextMethod())
+  value <- NextMethod()
   attr(value, "units") <- units(x)
-  value
+  reclass(value)
 }
 
 #' Matrix Transpose
