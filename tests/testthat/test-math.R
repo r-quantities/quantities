@@ -82,8 +82,3 @@ test_that("cumulative methods work properly", {
   expect_quantities(cummax(x), cummax(xval), units(cummax(xu)), errors(cummax(x)))
   expect_quantities(cummin(x), cummin(xval), units(cummin(xu)), errors(cummin(x)))
 })
-
-test_that("a zero-valued quantity does not scale errors", {
-  x <- set_quantities(1, 1, 0) + set_quantities(0, 1, 0)
-  expect_quantities(x, 1, 1, 0)
-})

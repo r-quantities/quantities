@@ -154,3 +154,15 @@ test_that("defaults work as expected", {
   expect_equal(as.numeric(x), xval)
   expect_equal(errors(x), xval)
 })
+
+test_that("a zero-valued non-offset quantity DOES scale errors", {
+  x <- set_units(set_quantities(0, "m", 1), "km")
+  expect_quantities(x, 0, "km", 0.001)
+})
+
+test_that("an offset quantity DOES NOT scale errors", {
+  xval <- as.numeric(set_units(set_units(0, "celsius"), "K"))
+  xerr <- 1
+  x <- set_units(set_quantities(0, "celsius", xerr), "K")
+  expect_quantities(x, xval, "K", xerr)
+})
