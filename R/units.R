@@ -15,7 +15,8 @@
 `units<-.quantities` <- function(x, value) {
   prev <- unclass(x[[1]])
   x <- reclass(NextMethod())
-  errors(x) <- errors(x) * unclass(x[[1]]) / prev
+  if (prev) # not zero
+    errors(x) <- errors(x) * unclass(x[[1]]) / prev
   x
 }
 
