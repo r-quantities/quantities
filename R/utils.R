@@ -4,6 +4,13 @@ reclass <- function(x) {
   x
 }
 
+is_offset <- function(prev, new) {
+  offset <- 0
+  units(offset) <- prev
+  units(offset) <- new
+  unclass(offset) != 0
+}
+
 .convert_to_first_arg <- function(dots, env.=parent.frame()) {
   dots <- deparse(substitute(dots))
   modified <- FALSE

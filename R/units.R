@@ -13,16 +13,12 @@
 #' @name units
 #' @export
 `units<-.quantities` <- function(x, value) {
-  prev <- units(x)
-  x <- reclass(NextMethod())
-  offset <- set_units(0, prev, mode="standard")
-  units(offset) <- value
-  if (!unclass(offset)) { # not offset, then scale
-    units(errors(x)) <- prev
+  if (!is_offset(units(x), value)) { # not offset, then scale
+    units(errors(x)) <- units(x)
     units(errors(x)) <- value
     units(errors(x)) <- NULL
   }
-  x
+  reclass(NextMethod())
 }
 
 #' @name units
