@@ -9,10 +9,15 @@
 Summary.quantities <- function(..., na.rm = FALSE) reclass(NextMethod())
 
 #' @export
-mean.quantities <- function(x, ...) reclass(NextMethod())
+mean.quantities <-function(x, ...) reclass(NextMethod())
 
 #' @export
-weighted.mean.quantities <- mean.quantities
+weighted.mean.quantities <- function(x, ...) {
+  u <- units(x)
+  x <- weighted.mean(drop_units(x), ...)
+  units(x) <- u
+  x
+}
 
 #' @export
 median.quantities <- mean.quantities
