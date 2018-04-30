@@ -38,4 +38,7 @@ parse_quantities("1.6021766208(98) e-19 C")
 parse_units("1.6021766208 e-19 C")
 parse_errors("1.6021766208(98) e-19")
 
+# quantities are converted to the first unit
+parse_quantities(c("12.34(2) m/s", "36.5(1) km/h"))
+
 }
