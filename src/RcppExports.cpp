@@ -5,20 +5,22 @@
 
 using namespace Rcpp;
 
-// parse_quantities_
-NumericVector parse_quantities_(CharacterVector x);
-RcppExport SEXP _quantities_parse_quantities_(SEXP xSEXP) {
+// parse_vector_
+NumericVector parse_vector_(CharacterVector x, char decimalMark, char groupingMark);
+RcppExport SEXP _quantities_parse_vector_(SEXP xSEXP, SEXP decimalMarkSEXP, SEXP groupingMarkSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< CharacterVector >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(parse_quantities_(x));
+    Rcpp::traits::input_parameter< char >::type decimalMark(decimalMarkSEXP);
+    Rcpp::traits::input_parameter< char >::type groupingMark(groupingMarkSEXP);
+    rcpp_result_gen = Rcpp::wrap(parse_vector_(x, decimalMark, groupingMark));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_quantities_parse_quantities_", (DL_FUNC) &_quantities_parse_quantities_, 1},
+    {"_quantities_parse_vector_", (DL_FUNC) &_quantities_parse_vector_, 3},
     {NULL, NULL, 0}
 };
 

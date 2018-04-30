@@ -31,15 +31,15 @@ inline void skip_space(Iterator& pos) {
 }
 
 template <typename Iterator>
-bool parseErrors(Iterator& first, Iterator& last, double& val, double& err) {
+bool parseErrors(Iterator& first, Iterator& last, double& val, double& err,
+                 char decimalMark = '.', char groupingMark = ',')
+{
   NumberState state = STATE_VAL_PRE;
   Iterator cur = first;
   double val_denom = 1, err_denom = 1, exponent = 0;
   bool seenNumber = false, exp_init = true, pm = false;
   double sign = 1.0, exp_sign = 1.0;
   int decimals = 0;
-
-  char decimalMark = '.', groupingMark = ',';
 
   for (; cur != last; ++cur) {
     switch (state) {

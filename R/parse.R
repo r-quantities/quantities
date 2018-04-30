@@ -3,6 +3,7 @@
 #' Functions to parse character vectors into quantities.
 #'
 #' @param x a character vector to parse.
+#' @param decimal_mark the dot (\code{.}) if not provided.
 #' @return A \code{quantities}, \code{units} or \code{errors} object respectively.
 #'
 #' @details Each \code{parse_*()} function returns an object of the corresponding
@@ -22,8 +23,8 @@
 #' @importFrom Rcpp evalCpp
 #' @useDynLib quantities, .registration=TRUE
 #' @export
-parse_quantities <- function(x) {
-  x <- parse_quantities_(x)
+parse_quantities <- function(x, decimal_mark) {
+  x <- parse_vector(x, decimal_mark)
 
   if (all(attr(x, "units") == attr(x, "units")[1])) {
     units(x) <- attr(x, "units")[1]
@@ -37,8 +38,8 @@ parse_quantities <- function(x) {
 
 #' @rdname parse_quantities
 #' @export
-parse_units <- function(x) {
-  x <- parse_quantities_(x)
+parse_units <- function(x, decimal_mark) {
+  x <- parse_vector(x, decimal_mark)
 
   if (any(attr(x, "errors") != 0))
     warning("errors present but ignored")
@@ -54,8 +55,8 @@ parse_units <- function(x) {
 
 #' @rdname parse_quantities
 #' @export
-parse_errors <- function(x) {
-  x <- parse_quantities_(x)
+parse_errors <- function(x, decimal_mark) {
+  x <- parse_vector(x, decimal_mark)
 
   if (any(attr(x, "units") != "1"))
     warning("units present but ignored")
@@ -63,4 +64,12 @@ parse_errors <- function(x) {
 
   class(x) <- "errors"
   x
+}
+
+parse_vector <- function(x, decimal_mark) {
+  if (missing(decimal_mark)) decimal_mark = "."
+  stopifnot(decimal_mark %in% c(".", ","))
+  grouping_mark <- if(decimal_mark == ".") "," else "."
+
+  parse_vector_(x, decimal_mark, grouping_mark)
 }

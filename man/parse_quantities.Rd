@@ -6,14 +6,16 @@
 \alias{parse_errors}
 \title{Parse Units and Errors}
 \usage{
-parse_quantities(x)
+parse_quantities(x, decimal_mark)
 
-parse_units(x)
+parse_units(x, decimal_mark)
 
-parse_errors(x)
+parse_errors(x, decimal_mark)
 }
 \arguments{
 \item{x}{a character vector to parse.}
+
+\item{decimal_mark}{the dot (\code{.}) if not provided.}
 }
 \value{
 A \code{quantities}, \code{units} or \code{errors} object respectively.
