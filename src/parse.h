@@ -1,3 +1,6 @@
+#ifndef QUANTITIES_PARSE
+#define QUANTITIES_PARSE
+
 #include <cmath>
 
 enum NumberState {
@@ -204,3 +207,5 @@ end:
 
   return seenNumber;
 }
+
+#endif
