@@ -4,8 +4,8 @@ using namespace Rcpp;
 
 // [[Rcpp::export]]
 NumericVector parse_quantities_(CharacterVector x) {
-  NumericVector val(x.size());
-  NumericVector err(x.size());
+  NumericVector val(x.size(), 0);
+  NumericVector err(x.size(), 0);
   CharacterVector unt(x.size(), "1");
   CharacterVector::Proxy::iterator first, last;
 
