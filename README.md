@@ -13,7 +13,7 @@ The installation from GitHub requires the [remotes](https://cran.r-project.org/p
 remotes::install_github(paste("r-quantities", c("units", "errors", "quantities"), sep="/"))
 ```
 
-## Acknowledgment
+## Acknowledgement
 
 This project gratefully acknowledges financial [support](https://www.r-consortium.org/projects) from the
 
