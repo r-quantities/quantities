@@ -18,7 +18,10 @@
     units(errors(x)) <- value
     units(errors(x)) <- NULL
   }
-  reclass(NextMethod())
+  e <- errors(x)
+  x <- NextMethod()
+  errors(x) <- e
+  x
 }
 
 #' @name units
