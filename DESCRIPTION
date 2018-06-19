@@ -22,8 +22,11 @@ Imports:
 Suggests:
     tibble,
     pillar,
-    testthat
+    testthat,
+    knitr,
+    rmarkdown
 LinkingTo:
     Rcpp (>= 0.12.9)
 ByteCompile: yes
 RoxygenNote: 6.0.1
+VignetteBuilder: knitr

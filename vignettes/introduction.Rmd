@@ -1,0 +1,206 @@
+---
+title: "A Guide to Working with Quantities"
+author: "Iñaki Ucar"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    toc: yes
+vignette: >
+  %\VignetteIndexEntry{A Guide to Working with Quantities}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, cache = FALSE, include=FALSE}
+knitr::opts_chunk$set(collapse = T, comment = "#>", 
+                      fig.width = 6, fig.height = 4, fig.align = "center")
+```
+
+## Introduction
+
+This document intends to be a guide on how to work with quantities data (magnitudes with units and/or errors) on the three most used workflows in R: *base* R, the so-called *tidyverse* and `data.table`. Units and errors (and, by extension, quantities) objects essentially are numeric vectors, arrays and matrices with associated metadata. This metadata is not always compatible with some functions, and thus we here explore the most common operations in data wrangling (filtering, ordering, transformations, aggregations...) to identify potential issues and propose possible workarounds.
+
+Let us consider the traditional `iris` data set for this exercise. According to its documentation,
+
+> `iris` is a data frame with 150 cases (rows) and 5 variables (columns) named `Sepal.Length`, `Sepal.Width`, `Petal.Length`, `Petal.Width`, and `Species`.
+
+And values are provided in centimeters. If we consider, for instance, a 5% error, the first step is to define proper quantities. Then we will work on the resulting data frame for the rest of this article.
+
+```{r}
+library(quantities)
+
+iris.q <- iris
+for (i in 1:4)
+  iris.q[,i] <- set_quantities(iris.q[,i], cm, iris.q[,i] * 0.05)
+head(iris.q)
+```
+
+Note that, throughout this document, and unless otherwise stated, we will talk about *quantities objects* as a shortcut for *quantities, units and errors objects*.
+
+## Base R
+
+### Row Filtering
+
+Quantities objects have all the subsetting methods defined (`[`, `[[`, `[<-`, `[[<-`). Therefore they can be used in the same way as with plain numeric vectors, and in conjunction with `which` and other functions to perform filtering. The `subset` function is very handy too and achieves the same result:
+
+```{r}
+iris.q[which(iris.q$Sepal.Length > set_quantities(7.5, cm)), ]
+subset(iris.q, Sepal.Length > set_quantities(7.5, cm))
+```
+
+Note that another quantities object is defined for the comparison. This is needed because different units are incomparable. Also note that the first line throws a warning telling us that the errors were dropped for this operation. This kind of warnings are thrown once, and this is why the `subset` succeeds silently.
+
+### Row Ordering
+
+The `sort` function, as its name suggests, *sorts* vectors, and it is compatible with quantities:
+
+```{r}
+iris.q$Sepal.Length[1:5]
+sort(iris.q$Sepal.Length[1:5])
+```
+
+More generally, the `order` function can be used for data frame ordering:
+
+```{r}
+head(iris.q[order(iris.q$Sepal.Length), ])
+```
+
+### Column Transformation
+
+The `transform` function is able to modify variables in a data frame or to create new ones. The `within` function provides a similar but more flexible approach though. Both are fully compatible with quantities:
+
+```{r}
+head(within(iris.q, {
+  Sepal.Area <- Sepal.Length * Sepal.Width
+  Petal.Area <- Petal.Length * Petal.Width
+  rm(Sepal.Length, Sepal.Width, Petal.Length, Petal.Width)
+}))
+```
+
+### Row Aggregation
+
+Row aggregation is the process of summarising data based on some grouping variable(s). There are several ways of working with data split by factors in base R, and, although they tend to preserve classes, they are generally not very kind to other metadata (i.e., attributes) by default.
+
+In the following example, the average `Sepal.Length` is computed per `Species`, but the metadata gets dropped:
+
+```{r}
+tapply(iris.q$Sepal.Length, iris.q$Species, mean)
+```
+
+Many of these functions include a `simplify` parameter which, if set to `FALSE`, preserves quantities metadata:
+
+```{r}
+(sepal.length.agg <- 
+   tapply(iris.q$Sepal.Length, iris.q$Species, mean, simplify=FALSE))
+```
+
+The only drawback is that the result is a list, and such a list must be unlisted with care, otherwise, metadata gets dropped again:
+
+```{r}
+# drops quantities
+unlist(sepal.length.agg)
+
+# preserves quantities
+do.call(c, sepal.length.agg)
+```
+
+The `by` function is an object-oriented wrapper for `tapply` applied to data frames which also provides a `simplify` parameter. A more convenient way of working with summary statistics is the `aggregate` generic, from the `stats` namespace. Although there is a `aggregate.data.frame` method, there is a more intuitive interface to it through the `aggregate.formula` method. Again, it is necessary to set `simplify=FALSE` to keep quantities:
+
+```{r}
+(iris.q.agg <- aggregate(. ~ Species, data = iris.q, mean, simplify=FALSE))
+```
+
+Apparently, the output has no metadata associated, but what really happens is that the resulting columns are lists:
+
+```{r}
+class(iris.q.agg$Sepal.Length)
+```
+
+Therefore, as in the `tapply`/`by` case, they must be unlisted with care to still preserve the metadata:
+
+```{r}
+unlist_quantities <- function(x) {
+  stopifnot(is.list(x) || is.data.frame(x))
+  
+  unlist <- function(x) {
+    if (any(class(x[[1]]) %in% c("quantities", "units", "errors")))
+      do.call(c, x)
+    else x
+  }
+  
+  if (is.data.frame(x))
+    as.data.frame(lapply(x, unlist), col.names=colnames(x))
+  else unlist(x)
+}
+
+unlist_quantities(iris.q.agg)
+```
+
+And this method works for the `tapply`/`by` case too:
+
+```{r}
+unlist_quantities(sepal.length.agg)
+```
+
+### Column Joining
+
+Joining data frames by common columns can done with the `merge` generic. Such operations are based on appending columns, which may be subset or replicated to fit the length of the merged observations. Therefore, quantities should be preserved in all cases. In the following example, we generate a data frame with the height per species and then merge it with the main data set:
+
+```{r}
+height <- data.frame(
+  Height = set_quantities(c(55, 60, 45), cm, c(45, 30, 35)),
+  Species = c("setosa", "virginica", "versicolor")
+)
+
+head(merge(iris.q, height))
+```
+
+### (Un)Pivoting
+
+The `reshape` function, from the `stats` namespace, provides an interface for both pivoting and unpivoting (i.e., *tidyfying* data). In the case of the `iris` data set, we would say that it is in the *wide format*, because each row has more than one observation.
+
+This function has a quite peculiar nomenclature. First of all, the unpivoting operation is accessed by providing the argument `direction="long"`. We need to define the `varying` columns (columns to unpivot), as character or indices, and they are unpivoted based on their names. By default, the separator `sep="."` is used, which means that `Sepal.Width` will be broken down into `Sepal` and `Width`, and the former will be unpivoted with the latter as grouping variable. We can specify the name of the grouping variable with the `timevar` argument.
+
+Putting everything together, this is how to unpivot the data set by the dimension (which we will call it `dim`) of the petal/sepal:
+
+```{r}
+long.1 <- reshape(iris.q, varying=1:4, timevar="dim", idvar="dim.id", direction="long")
+head(long.1)
+```
+
+It can be noted that the unpivoting also generates an index to indentify multiple records from the same group. We have changed the name of that identifier to `dim.id` (just `id` by default).
+
+We can further unpivot sepal and petal as the `part` of the flower. First, we need to prepend a common identifier to columns 3 and 4, which are to be unpivoted:
+
+```{r}
+names(long.1)[3:4] <- paste0("value.", names(long.1)[3:4])
+long.2 <- reshape(long.1, varying=3:4, timevar="part", idvar="part.id", direction="long")
+head(long.2)
+```
+
+And the final result has one tidy observation per row.
+
+The pivoting operation can be accessed by providing the argument `direction="wide"`. The process is almost symmetrical, but we need to specify `v.names`, as character, instead of `varying` columns. First, we can pivot by flower part:
+
+```{r}
+wide.1 <- reshape(long.2, v.names="value", timevar="part", idvar="part.id", direction="wide")
+head(wide.1)
+```
+
+Then, we remove `"value."` from the column names and pivot by dimension (note that indices are removed to match the initial data frame):
+
+```{r}
+names(wide.1)[5:6] <- sub("value\\.", "", names(wide.1)[5:6])
+wide.2 <- reshape(wide.1, v.names=c("Sepal", "Petal"), timevar="dim", idvar="dim.id", direction="wide")
+wide.2$dim.id <- NULL
+wide.2$part.id <- NULL
+head(wide.2)
+```
+
+We have seen that quantities have been correctly preserved through the whole process. Finally, we can check whether both data frames are identical. Given that the order of columns have changed, we can simply check this column name by column name and then put everything together:
+
+```{r}
+all(sapply(colnames(iris.q), function(col) all(iris.q[[col]] == wide.2[[col]])))
+```
+
+## Summary
