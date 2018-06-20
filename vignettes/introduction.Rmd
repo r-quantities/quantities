@@ -15,7 +15,7 @@ vignette: >
 knitr::opts_chunk$set(collapse = T, comment = "#>", 
                       fig.width = 6, fig.height = 4, fig.align = "center")
 
-required <- c("dplyr", "tidyr", "data.table")
+required <- c("dplyr", "tidyr")
 
 if (!all(sapply(required, requireNamespace, quietly = TRUE)))
   knitr::opts_chunk$set(eval = FALSE)
@@ -23,7 +23,7 @@ if (!all(sapply(required, requireNamespace, quietly = TRUE)))
 
 ## Introduction
 
-This document intends to be a guide on how to work with quantities data (magnitudes with units and/or errors) on the three most used workflows in R: R *base*, the so-called *tidyverse* and `data.table`. Units and errors (and, by extension, quantities) objects essentially are numeric vectors, arrays and matrices with associated metadata. This metadata is not always compatible with some functions, and thus we here explore the most common operations in data wrangling (subsetting, ordering, transformations, aggregations...) to identify potential issues and propose possible workarounds.
+This document intends to be a guide on how to work with quantities data (magnitudes with units and/or errors) in two distinct workflows: R *base* and the so-called *tidyverse*. Units and errors (and, by extension, quantities) objects essentially are numeric vectors, arrays and matrices with associated metadata. This metadata is not always compatible with some functions, and thus we here explore the most common operations in data wrangling (subsetting, ordering, transformations, aggregations...) to identify potential issues and propose possible workarounds.
 
 Let us consider the traditional `iris` data set for this exercise. According to its documentation,
 
@@ -36,7 +36,7 @@ library(quantities)
 
 iris.q <- iris
 for (i in 1:4)
-  iris.q[,i] <- set_quantities(iris.q[,i], cm, iris.q[,i] * 0.05)
+  quantities(iris.q[,i]) <- list("cm", iris.q[,i] * 0.05)
 head(iris.q)
 ```
 
@@ -340,20 +340,6 @@ length(errors(wide$Sepal.Length))
 ```
 
 As shown above, the errors were not properly subset and pivoted.
-
-## `data.table`
-
-### Row Subsetting
-
-### Row Ordering
-
-### Column Transformation
-
-### Row Aggregation
-
-### Column Joining
-
-### (Un)Pivoting
 
 ## Summary
 
