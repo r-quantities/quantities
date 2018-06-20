@@ -23,7 +23,7 @@ if (!all(sapply(required, requireNamespace, quietly = TRUE)))
 
 ## Introduction
 
-This document intends to be a guide on how to work with quantities data (magnitudes with units and/or errors) on the three most used workflows in R: R *base*, the so-called *tidyverse* and `data.table`. Units and errors (and, by extension, quantities) objects essentially are numeric vectors, arrays and matrices with associated metadata. This metadata is not always compatible with some functions, and thus we here explore the most common operations in data wrangling (filtering, ordering, transformations, aggregations...) to identify potential issues and propose possible workarounds.
+This document intends to be a guide on how to work with quantities data (magnitudes with units and/or errors) on the three most used workflows in R: R *base*, the so-called *tidyverse* and `data.table`. Units and errors (and, by extension, quantities) objects essentially are numeric vectors, arrays and matrices with associated metadata. This metadata is not always compatible with some functions, and thus we here explore the most common operations in data wrangling (subsetting, ordering, transformations, aggregations...) to identify potential issues and propose possible workarounds.
 
 Let us consider the traditional `iris` data set for this exercise. According to its documentation,
 
@@ -50,9 +50,9 @@ In this section, we consider all the methods and functions included in the defau
 rownames(installed.packages(priority="base"))
 ```
 
-### Row Filtering
+### Row Subsetting
 
-Quantities objects have all the subsetting methods defined (`[`, `[[`, `[<-`, `[[<-`). Therefore they can be used in the same way as with plain numeric vectors, and in conjunction with `which` and other functions to perform filtering. The `subset` function is very handy too and achieves the same result:
+Quantities objects have all the subsetting methods defined (`[`, `[[`, `[<-`, `[[<-`). Therefore they can be used in the same way as with plain numeric vectors, and in conjunction with `which` and other functions to perform subsetting. The `subset` function is very handy too and achieves the same result:
 
 ```{r}
 iris.q[which(iris.q$Sepal.Length > set_quantities(7.5, cm)), ]
@@ -223,7 +223,7 @@ library(dplyr)
 library(tidyr)
 ```
 
-### Row Filtering
+### Row Subsetting
 
 The `filter` generic finds observations where conditions hold. The main difference with base subsetting is that, if a condition evaluates to `NA` for a certain row, it is dropped. As in the base case, another quantities object must be defined for the comparison:
 
@@ -233,7 +233,7 @@ iris.q %>%
   head()
 ```
 
-There are also three scoped variants available (`filter_all`, `filter_if`, `filter_at`) and a filtering function by row number called `slice`. All of them preserve quantities.
+There are also three scoped variants available (`filter_all`, `filter_if`, `filter_at`) and a subsetting function by row number called `slice`. All of them preserve quantities.
 
 ### Row Ordering
 
@@ -263,7 +263,7 @@ iris.q %>%
 
 ### Row Aggregation
 
-`dplyr` breaks down aggregation operations in two distinct parts: grouping (with `group_by`) and summarising (using `summarise` and others). The shortcoming of this approach is that it is possible to apply other operations (such as filtering) to grouped data, which may lead to performance degradation.
+`dplyr` breaks down aggregation operations in two distinct parts: grouping (with `group_by`) and summarising (using `summarise` and others). The shortcoming of this approach is that it is possible to apply other operations (such as subsetting) to grouped data, which may lead to performance degradation.
 
 Another shortcoming is that `dplyr`'s grouped operations are not yet fully compatible with quantities (see [tidyverse/dplyr#2773](https://github.com/tidyverse/dplyr/issues/2773)):
 
@@ -343,7 +343,7 @@ As shown above, the errors were not properly subset and pivoted.
 
 ## `data.table`
 
-### Row Filtering
+### Row Subsetting
 
 ### Row Ordering
 
@@ -357,5 +357,6 @@ As shown above, the errors were not properly subset and pivoted.
 
 ## Summary
 
-- R base works smoothly with quantities in most cases. The only shortcoming is that some care must be applied to aggregations. In particular, simplification must be explicitly disabled (`simplify=FALSE`), and such a simplification (i.e., converting lists to vectors of quantities) must be applied manually while avoiding `unlist`.
-- The tidyverse handles quantities correctly for filtering, ordering and transformations. It fails to do so for aggregations (grouped operations in general), column joining and (un)pivoting. Most of these incompatibilities are due to the same internal grouping mechanism, which is in C and prevents the R subsetting operator from being called (which in turn calls the subsetting operator on the errors attribute). Interestingly, those operations still work for units alone, except for column gathering, which drops all classes and attributes.
+R base works smoothly with quantities in most cases. The only shortcoming is that some care must be applied to aggregations. In particular, simplification must be explicitly disabled (`simplify=FALSE`), and such a simplification (i.e., converting lists to vectors of quantities) must be applied manually while avoiding `unlist`.
+
+The tidyverse handles quantities correctly for subsetting, ordering and transformations. It fails to do so for aggregations (grouped operations in general), column joining and (un)pivoting. Most of these incompatibilities are due to the same internal grouping mechanism, which is in C and prevents the R subsetting operator from being called (which in turn calls the subsetting operator on the errors attribute). Interestingly, those operations still work for units alone, except for column gathering, which drops all classes and attributes.
