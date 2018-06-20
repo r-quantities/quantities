@@ -18,7 +18,7 @@ knitr::opts_chunk$set(collapse = T, comment = "#>",
 
 ## Introduction
 
-This document intends to be a guide on how to work with quantities data (magnitudes with units and/or errors) on the three most used workflows in R: *base* R, the so-called *tidyverse* and `data.table`. Units and errors (and, by extension, quantities) objects essentially are numeric vectors, arrays and matrices with associated metadata. This metadata is not always compatible with some functions, and thus we here explore the most common operations in data wrangling (filtering, ordering, transformations, aggregations...) to identify potential issues and propose possible workarounds.
+This document intends to be a guide on how to work with quantities data (magnitudes with units and/or errors) on the three most used workflows in R: R *base*, the so-called *tidyverse* and `data.table`. Units and errors (and, by extension, quantities) objects essentially are numeric vectors, arrays and matrices with associated metadata. This metadata is not always compatible with some functions, and thus we here explore the most common operations in data wrangling (filtering, ordering, transformations, aggregations...) to identify potential issues and propose possible workarounds.
 
 Let us consider the traditional `iris` data set for this exercise. According to its documentation,
 
@@ -37,7 +37,13 @@ head(iris.q)
 
 Note that, throughout this document, and unless otherwise stated, we will talk about *quantities objects* as a shortcut for *quantities, units and errors objects*.
 
-## Base R
+## R Base
+
+In this section, we consider all the methods and functions included in the default packages, i.e., those that are automatically installed along with any R distribution:
+
+```{r}
+rownames(installed.packages(priority="base"))
+```
 
 ### Row Filtering
 
@@ -79,7 +85,7 @@ head(within(iris.q, {
 
 ### Row Aggregation
 
-Row aggregation is the process of summarising data based on some grouping variable(s). There are several ways of working with data split by factors in base R, and, although they tend to preserve classes, they are generally not very kind to other metadata (i.e., attributes) by default.
+Row aggregation is the process of summarising data based on some grouping variable(s). There are several ways of working with data split by factors in R base, and, although they tend to preserve classes, they are generally not very kind to other metadata (i.e., attributes) by default.
 
 In the following example, the average `Sepal.Length` is computed per `Species`, but the metadata gets dropped:
 
@@ -202,5 +208,146 @@ We have seen that quantities have been correctly preserved through the whole pro
 ```{r}
 all(sapply(colnames(iris.q), function(col) all(iris.q[[col]] == wide.2[[col]])))
 ```
+
+## Tidyverse
+
+The [*core tidyverse*](https://www.tidyverse.org/packages/) includes the following packages: `ggplot2`, `dplyr`, `tidyr`, `readr`, `purrr`, `tibble`, `stringr` and `forcats`. This section covers use cases for `dplyr` (everything except for pivoting and unpivoting) and `tidyr` (for pivoting and unpivoting).
+
+```{r}
+library(dplyr)
+library(tidyr)
+```
+
+### Row Filtering
+
+The `filter` generic finds observations where conditions hold. The main difference with base subsetting is that, if a condition evaluates to `NA` for a certain row, it is dropped. As in the base case, another quantities object must be defined for the comparison:
+
+```{r}
+iris.q %>%
+  filter(Sepal.Length > set_quantities(7.5, cm)) %>%
+  head()
+```
+
+There are also three scoped variants available (`filter_all`, `filter_if`, `filter_at`) and a filtering function by row number called `slice`. All of them preserve quantities.
+
+### Row Ordering
+
+The `arrange` generic sorts variables in a straightforward way, and it is compatible with quantities:
+
+```{r}
+iris.q %>%
+  arrange(Sepal.Length) %>%
+  head()
+```
+
+The `desc` function can be applied to individual variables to arrange in descending order.
+
+### Column Transformation
+
+There are two generics for column transformations: `mutate` modifies or adds new variables preserving the existing ones, while `transmute` drops the existing variables. The syntax is very similar to base functions `transform` and `within`, and equally compatible with quantities:
+
+```{r}
+iris.q %>%
+  transmute(
+    Species = Species,
+    Petal.Area = Petal.Length * Petal.Width,
+    Sepal.Area = Sepal.Length * Sepal.Width
+  ) %>%
+  head()
+```
+
+### Row Aggregation
+
+`dplyr` breaks down aggregation operations in two distinct parts: grouping (with `group_by`) and summarising (using `summarise` and others). The shortcoming of this approach is that it is possible to apply other operations (such as filtering) to grouped data, which may lead to performance degradation.
+
+Another shortcoming is that `dplyr`'s grouped operations are not yet fully compatible with quantities (see [tidyverse/dplyr#2773](https://github.com/tidyverse/dplyr/issues/2773)):
+
+```{r}
+iris.q %>%
+  group_by(Species) %>%
+  summarise_all(mean)
+```
+
+As we can see above, although units are correctly preserved, errors are not correctly handled.
+
+```{r}
+iris.q %>%
+  mutate_at(vars(-Species), drop_errors) %>%
+  group_by(Species) %>%
+  summarise_all(mean)
+```
+
+Units alone work without issue, but errors or full-featured quantities are not compatible with `dplyr`'s grouped operations.
+
+### Column Joining
+
+Several verbs are provided for different types of joins, such as `inner_join`, `left_join`, `right_join` or `full_join`. It seems that, internally, they use the same grouping mechanism than summaries, and therefore they will generally fail for errors and full-featured quantities (note the missing errors, as in the previous case):
+
+```{r}
+iris.q %>%
+  left_join(data.frame(
+    Height = set_quantities(c(55, 60, 45), cm, c(45, 30, 35)),
+    Species = c("setosa", "virginica", "versicolor")
+  )) %>%
+  head()
+```
+
+### (Un)Pivoting
+
+Finally, pivoting and unpivoting is handled by a separate package, `tidyr`, using the verbs `spread` (pivot) and `gather` (unpivot).
+
+The unpivoting operation is substantially more straightforward. In the next example, we directly merge the four columns of interest into the `value` column, and the correspoding column names are gathered into the `key` column. Such a column is then separated into flower `part` (sepal, petal) and `dim` (length, height):
+
+```{r}
+iris.q %>%
+  gather("key", "value", 1:4) %>%
+  separate(key, c("part", "dim")) %>%
+  head()
+```
+
+Unfortunately, it is evident that the operation completely drops all classes and attributes, and then quantities are not preserved.
+
+The pivoting operation does preserve classes and attributes, but the latter ones are not correctly handled. In the following example, we first gather the original data set, then we assign quantities and try to spread it to obtain `iris.q`:
+
+```{r}
+wide <- iris %>%
+  # first gather, with row numbers as row_id
+  mutate(row_id = 1:n()) %>%
+  gather("key", "value", 1:4) %>%
+  separate(key, c("part", "dim")) %>%
+  # assign quantities
+  mutate(value = set_quantities(value, cm, value * 0.05)) %>%
+  # now spread
+  unite(key, part, dim, sep=".") %>%
+  spread(key, value) %>%
+  select(-row_id)
+
+head(wide)
+```
+
+Apparently, everything worked, but in fact it didn't:
+
+```{r, error=TRUE}
+all(sapply(colnames(iris.q), function(col) all(iris.q[[col]] == wide[[col]])))
+
+length(errors(iris.q$Sepal.Length))
+length(errors(wide$Sepal.Length))
+```
+
+As shown above, the errors were not properly subset and pivoted.
+
+## `data.table`
+
+### Row Filtering
+
+### Row Ordering
+
+### Column Transformation
+
+### Row Aggregation
+
+### Column Joining
+
+### (Un)Pivoting
 
 ## Summary
