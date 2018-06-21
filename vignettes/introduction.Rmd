@@ -59,7 +59,7 @@ iris.q[which(iris.q$Sepal.Length > set_quantities(7.5, cm)), ]
 subset(iris.q, Sepal.Length > set_quantities(7.5, cm))
 ```
 
-Note that another quantities object is defined for the comparison. This is needed because different units are incomparable. Also note that the first line throws a warning telling us that the errors were dropped for this operation. These kind of warnings are thrown once, and this is why `subset` succeeds silently.
+Note that another quantities object is defined for the comparison. This is needed because different units are incomparable. Also note that the first line throws a warning telling us that the errors were dropped for this operation. This kind of warning is thrown once, and this is why `subset` succeeds silently.
 
 ### Row Ordering
 
