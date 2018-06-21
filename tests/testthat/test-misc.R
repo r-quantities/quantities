@@ -86,6 +86,13 @@ test_that("data frame coercion works properly", {
   expect_quantities(df[[4]], c(xval, 4, 1), xunt, c(xerr, 0, 1))
 })
 
+test_that("list coercion works properly", {
+  x <- set_quantities(1:10, m, 10:1)
+  y <- as.list(x)
+  expect_is(y, "list")
+  expect_true(all(sapply(seq_along(y), function(i) all.equal(y[[i]], x[i]))))
+})
+
 test_that("bind methods work properly", {
   xval <- 1:10
   xerr <- xval

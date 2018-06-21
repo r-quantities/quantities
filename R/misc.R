@@ -98,6 +98,20 @@ as.data.frame.quantities <- function(x, row.names = NULL, optional = FALSE, ...)
   value
 }
 
+#' Coerce to a List
+#'
+#' S3 method for \code{quantities} objects (see \code{\link{as.list}}).
+#'
+#' @inheritParams base::as.list
+#'
+#' @examples
+#' x <- set_quantities(1:3, m/s, 0.1)
+#' as.list(x)
+#'
+#' @export
+as.list.quantities <- function(x, ...)
+  mapply(set_quantities, unclass(x), x, errors(x), mode="standard", SIMPLIFY=FALSE)
+
 #' Methods for Tidy \code{tibble} Printing
 #'
 #' S3 methods for \code{quantities} objects.
