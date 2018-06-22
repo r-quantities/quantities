@@ -18,7 +18,7 @@ knitr::opts_chunk$set(collapse = T, comment = "#>",
 
 ## Introduction
 
-This document intends to be a guide on how to work with quantities data (magnitudes with units and/or errors) in two distinct workflows: R *base* and the so-called *tidyverse*. Units and errors (and, by extension, quantities) objects essentially are numeric vectors, arrays and matrices with associated metadata. This metadata is not always compatible with some functions, and thus we here explore the most common operations in data wrangling (subsetting, ordering, transformations, aggregations...) to identify potential issues and propose possible workarounds.
+This document intends to be a guide on how to work with quantities data (magnitudes with units and/or errors) in two distinct workflows: R *base* and the so-called [*tidyverse*](https://www.tidyverse.org/). Units and errors (and, by extension, quantities) objects essentially are numeric vectors, arrays and matrices with associated metadata. This metadata is not always compatible with some functions, and thus we here explore the most common operations in data wrangling (subsetting, ordering, transformations, aggregations...) to identify potential issues and propose possible workarounds.
 
 Let us consider the traditional `iris` data set for this exercise. According to its documentation,
 
@@ -218,7 +218,7 @@ if (!all(sapply(required, requireNamespace, quietly = TRUE)))
   knitr::opts_chunk$set(eval = FALSE)
 ```
 
-The [*core tidyverse*](https://www.tidyverse.org/packages/) includes the following packages: `ggplot2`, `dplyr`, `tidyr`, `readr`, `purrr`, `tibble`, `stringr` and `forcats`. This section covers use cases for `dplyr` (everything except for pivoting and unpivoting) and `tidyr` (for pivoting and unpivoting).
+The [*core tidyverse*](https://www.tidyverse.org/packages/) includes the following packages: `ggplot2`, `dplyr`, `tidyr`, `readr`, `purrr`, `tibble`, `stringr` and `forcats`. This section covers use cases for [`dplyr`](https://dplyr.tidyverse.org/) (everything except for pivoting and unpivoting) and [`tidyr`](https://tidyr.tidyverse.org/) (for pivoting and unpivoting).
 
 ```{r}
 library(dplyr)
