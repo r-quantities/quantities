@@ -29,6 +29,8 @@ travis_fold_start R-check 'Checking package'
 R CMD check $(pkg_tarball) --as-cran --no-manual
 travis_fold_end
 
+[[ $TRAVIS_COMMIT_MESSAGE = *"no-quantities"* ]] && exit 0
+
 travis_fold_start revdep-check 'Checking quantities'
 cd quantities
 Rscript -e 'devtools::install_deps(dependencies=TRUE)'
