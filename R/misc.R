@@ -188,7 +188,7 @@ t.quantities <- function(x) reclass(NextMethod())
 cbind.quantities <- function(..., deparse.level = 1) {
   dots <- list(...)
   u <- units(dots[[1]])
-  .convert_to_first_arg(dots)
+  dots <- utils::getS3method("set_units", "mixed_units")(dots, as.character(u))
 
   nm <- names(as.list(match.call()))
   nm <- nm[nm != "" & nm != "deparse.level"]
