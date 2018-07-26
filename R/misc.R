@@ -133,7 +133,7 @@ pillar_shaft.quantities <- function(x, ...) {
   if (!requireNamespace("pillar", quietly = TRUE))
     return(out)
 
-  out <- paste(out, pillar::style_subtle(as.character(units(x))))
+  out <- sapply(out, paste, pillar::style_subtle(as.character(units(x))))
   pillar::new_pillar_shaft_simple(out, align = "right", min_width = 8)
 }
 
