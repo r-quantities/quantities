@@ -206,3 +206,11 @@ cbind.quantities <- function(..., deparse.level = 1) {
 #' @rdname cbind.quantities
 #' @export
 rbind.quantities <- cbind.quantities
+
+#' @export
+all.equal.quantities <- function(target, current, ...) {
+  units(current) <- units(target)
+  class(target) <- "errors"
+  class(current) <- "errors"
+  all.equal(target, current, ...)
+}
