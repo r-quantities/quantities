@@ -17,7 +17,7 @@ pkg_tarball() {
     $version = $1 if (/^Version:\s(\S+)/);
     $package = $1 if (/^Package:\s*(\S+)/);
     END { print "${package}_$version.tar.gz" }'
-  perl -ne "${tarball_script}" DESCRIPTION
+  perl -ne "${tarball_script}" ./${1}/DESCRIPTION
 }
 
 travis_fold_start R-build 'Building package'
@@ -34,5 +34,5 @@ travis_fold_end
 travis_fold_start revdep-check 'Checking quantities'
 Rscript -e 'devtools::install_deps(dependencies=TRUE)'
 R CMD build quantities
-R CMD check $(pkg_tarball) --as-cran --no-manual
+R CMD check $(pkg_tarball quantities) --as-cran --no-manual
 travis_fold_end
