@@ -29,7 +29,7 @@ set_errors.quantities <- utils::getS3method("set_errors", "errors")
 
 #' @name errors
 #' @export
-set_errors.units <- utils::getS3method("set_errors", "errors")
+set_errors.units <- utils::getS3method("set_errors", "numeric")
 
 #' @name errors
 #' @export
