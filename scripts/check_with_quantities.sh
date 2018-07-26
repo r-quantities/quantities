@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -e
 TMP=/tmp/.travis_fold_name
 
 travis_fold_start() {
