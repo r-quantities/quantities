@@ -35,5 +35,6 @@ travis_fold_end
 travis_fold_start revdep-check 'Checking quantities'
 Rscript -e 'devtools::install_deps(dependencies=TRUE)'
 R CMD build quantities --no-build-vignettes
-R CMD check $(pkg_tarball quantities) --as-cran --no-manual --no-build-vignettes
+export _R_CHECK_FORCE_SUGGESTS_=0
+R CMD check $(pkg_tarball quantities) --as-cran --no-manual --ignore-vignettes
 travis_fold_end
