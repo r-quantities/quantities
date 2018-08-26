@@ -18,13 +18,13 @@ knitr::opts_chunk$set(collapse = T, comment = "#>",
 
 ## Introduction
 
-This document intends to be a guide on how to work with quantities data (magnitudes with units and/or errors) in two distinct workflows: R *base* and the so-called [*tidyverse*](https://www.tidyverse.org/). Units and errors (and, by extension, quantities) objects essentially are numeric vectors, arrays and matrices with associated metadata. This metadata is not always compatible with some functions, and thus we here explore the most common operations in data wrangling (subsetting, ordering, transformations, aggregations...) to identify potential issues and propose possible workarounds.
+This document intends to be a guide on how to work with quantities data (magnitudes with units and/or uncertainty) in two distinct workflows: R *base* and the so-called [*tidyverse*](https://www.tidyverse.org/). Units and errors (and, by extension, quantities) objects essentially are numeric vectors, arrays and matrices with associated metadata. This metadata is not always compatible with some functions, and thus we here explore the most common operations in data wrangling (subsetting, ordering, transformations, aggregations...) to identify potential issues and propose possible workarounds.
 
 Let us consider the traditional `iris` data set for this exercise. According to its documentation,
 
 > `iris` is a data frame with 150 cases (rows) and 5 variables (columns) named `Sepal.Length`, `Sepal.Width`, `Petal.Length`, `Petal.Width`, and `Species`.
 
-And values are provided in centimeters. If we consider, for instance, a 5% error, the first step is to define proper quantities. Then we will work on the resulting data frame for the rest of this article.
+And values are provided in centimeters. If we consider, for instance, a 5% of uncertainty, the first step is to define proper quantities. Then we will work on the resulting data frame for the rest of this article.
 
 ```{r}
 library(quantities)
@@ -54,7 +54,7 @@ iris.q[which(iris.q$Sepal.Length > set_quantities(7.5, cm)), ]
 subset(iris.q, Sepal.Length > set_quantities(7.5, cm))
 ```
 
-Note that another quantities object is defined for the comparison. This is needed because different units are incomparable. Also note that the first line throws a warning telling us that the errors were dropped for this operation. This kind of warning is thrown once, and this is why `subset` succeeds silently.
+Note that another quantities object is defined for the comparison. This is needed because different units are incomparable. Also note that the first line throws a warning telling us that the uncertainty was dropped for this operation. This kind of warning is thrown once, and this is why `subset` succeeds silently.
 
 ### Row Ordering
 
@@ -275,7 +275,7 @@ iris.q %>%
   summarise_all(mean)
 ```
 
-As we can see above, although units are correctly preserved, errors are not correctly handled.
+As we can see above, although units are correctly preserved, uncertainty is not correctly handled.
 
 ```{r}
 iris.q %>%
@@ -288,7 +288,7 @@ Units alone work without issue, but errors or full-featured quantities are not c
 
 ### Column Joining
 
-Several verbs are provided for different types of joins, such as `inner_join`, `left_join`, `right_join` or `full_join`. It seems that, internally, they use the same grouping mechanism than summaries, and therefore they will generally fail for errors and full-featured quantities (note the missing errors, as in the previous case):
+Several verbs are provided for different types of joins, such as `inner_join`, `left_join`, `right_join` or `full_join`. It seems that, internally, they use the same grouping mechanism than summaries, and therefore they will generally fail for errors and full-featured quantities (note the missing uncertainty, as in the previous case):
 
 ```{r}
 iris.q %>%
@@ -341,7 +341,7 @@ length(errors(iris.q$Sepal.Length))
 length(errors(wide$Sepal.Length))
 ```
 
-As shown above, the errors were not properly subset and pivoted.
+As shown above, the uncertainty was not properly subset and pivoted.
 
 ## Summary
 
@@ -355,4 +355,4 @@ The [`data.table`](https://github.com/Rdatatable/data.table/wiki) package is ano
 
 Long story short, we have not included a section on `data.table` because *currently* (v1.11.4) it does not work well with vectorised attributes. The underlying problem is similar to `dplyr`'s issue, but unfortunately it affects more operations, including row subsetting and ordering. Only column transformation seems to work, and other operations generate corrupted objects.
 
-We have found that defining quantities columns as lists (where each element consists of one value, one unit and one error) may be a workaround, but this probably would be a serious performance penalty for a package that is typically chosen for speed reasons.
+We have found that defining quantities columns as lists (where each element consists of a single value, with unit and uncertainty) may be a workaround, but this probably would be a serious performance penalty for a package that is typically chosen for speed reasons.
