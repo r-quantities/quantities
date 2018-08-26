@@ -52,7 +52,7 @@ test_that("spaces are skipped", {
     paste0("  -1.234  ", intToUtf8(177), "  .013  )  e+0  m s-1")), -1.234, "m/s", 0.013)
 })
 
-test_that("values are converted to the first unit seen", {
+test_that("values are converted to the first unit seen, if possible", {
   expect_quantities(
     parse_quantities(c("1.234(13) m/s", "4.4424(468) km/h")),
     rep(1.234, 2), "m/s", rep(0.013, 2)
@@ -61,5 +61,9 @@ test_that("values are converted to the first unit seen", {
     parse_units(c("1.234 m/s", "4.4424 km/h")),
     rep(1.234, 2), "m/s"
   )
-  expect_error(parse_quantities(c("1.234(13) m/s", "4.4424(468) km")))
+
+  x <- parse_quantities(c("1.234(13) m/s", "4.4424(468) km"))
+  expect_s3_class(x, "mixed_units")
+  expect_quantities(x[[1]], 1.234, "m/s", 0.013)
+  expect_quantities(x[[2]], 4.4424, "km", 0.0468)
 })
