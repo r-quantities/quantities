@@ -3,7 +3,6 @@
 \name{tibble}
 \alias{tibble}
 \alias{type_sum.quantities}
-\alias{tibble}
 \alias{pillar_shaft.quantities}
 \title{Methods for Tidy \code{tibble} Printing}
 \usage{

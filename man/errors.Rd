@@ -3,15 +3,10 @@
 \name{errors}
 \alias{errors}
 \alias{errors<-.quantities}
-\alias{errors}
 \alias{errors<-.units}
-\alias{errors}
 \alias{set_errors.quantities}
-\alias{errors}
 \alias{set_errors.units}
-\alias{errors}
 \alias{errors_max.quantities}
-\alias{errors}
 \alias{errors_min.quantities}
 \title{Set Measurement Errors on a Numeric Vector}
 \usage{

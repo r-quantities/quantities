@@ -2,9 +2,7 @@
 % Please edit documentation in R/drop.R
 \name{drop_quantities}
 \alias{drop_quantities}
-\alias{drop_quantities}
 \alias{drop_units.quantities}
-\alias{drop_quantities}
 \alias{drop_errors.quantities}
 \title{Drop Units and Errors}
 \usage{

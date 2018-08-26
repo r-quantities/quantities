@@ -3,11 +3,8 @@
 \name{units}
 \alias{units}
 \alias{units<-.quantities}
-\alias{units}
 \alias{units<-.errors}
-\alias{units}
 \alias{set_units.quantities}
-\alias{units}
 \alias{set_units.errors}
 \title{Set Measurement Units on a Numeric Vector}
 \usage{

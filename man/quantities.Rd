@@ -2,9 +2,7 @@
 % Please edit documentation in R/quantities.R
 \name{quantities}
 \alias{quantities}
-\alias{quantities}
 \alias{quantities<-}
-\alias{quantities}
 \alias{set_quantities}
 \title{Set Measurement Units and Errors on a Numeric Vector}
 \usage{

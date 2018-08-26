@@ -4,8 +4,8 @@
 \alias{as.data.frame.quantities}
 \title{Coerce to a Data Frame}
 \usage{
-\method{as.data.frame}{quantities}(x, row.names = NULL, optional = FALSE,
-  ...)
+\method{as.data.frame}{quantities}(x, row.names = NULL,
+  optional = FALSE, ...)
 }
 \arguments{
 \item{x}{any \R object.}
