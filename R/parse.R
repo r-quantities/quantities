@@ -34,9 +34,9 @@ parse_quantities <- function(x, decimal_mark) {
     return(reclass(x))
   }
 
-  do.call(c, lapply(seq_along(x), function(i) {
+  do.call(c, c(lapply(seq_along(x), function(i) {
     set_quantities(x[i], attr(x, "units")[i], attr(x, "errors")[i], mode="standard")
-  }))
+  }), allow_mixed=TRUE))
 }
 
 #' @rdname parse_quantities
@@ -51,9 +51,9 @@ parse_units <- function(x, decimal_mark) {
   if (all(attr(x, "units") == attr(x, "units")[1]))
     return(set_units(x, attr(x, "units")[1], mode="standard"))
 
-  do.call(c, lapply(seq_along(x), function(i) {
+  do.call(c, c(lapply(seq_along(x), function(i) {
     set_units(x[i], attr(x, "units")[i], mode="standard")
-  }))
+  }), allow_mixed = TRUE))
 }
 
 #' @rdname parse_quantities
