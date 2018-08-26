@@ -187,6 +187,7 @@ t.quantities <- function(x) reclass(NextMethod())
 #' @export
 cbind.quantities <- function(..., deparse.level = 1) {
   dots <- list(...)
+  stopifnot(all(sapply(dots, inherits, "units")))
   u <- units(dots[[1]])
   dots <- utils::getS3method("set_units", "mixed_units")(dots, as.character(u))
 

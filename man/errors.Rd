@@ -2,21 +2,36 @@
 % Please edit documentation in R/errors.R
 \name{errors}
 \alias{errors}
+\alias{errors.quantities}
+\alias{errors.units}
+\alias{errors.mixed_units}
 \alias{errors<-.quantities}
 \alias{errors<-.units}
+\alias{errors<-.mixed_units}
 \alias{set_errors.quantities}
 \alias{set_errors.units}
+\alias{set_errors.mixed_units}
 \alias{errors_max.quantities}
 \alias{errors_min.quantities}
 \title{Set Measurement Errors on a Numeric Vector}
 \usage{
+\method{errors}{quantities}(x)
+
+\method{errors}{units}(x)
+
+\method{errors}{mixed_units}(x)
+
 \method{errors}{quantities}(x) <- value
 
 \method{errors}{units}(x) <- value
 
+\method{errors}{mixed_units}(x) <- value
+
 \method{set_errors}{quantities}(x, value = 0)
 
 \method{set_errors}{units}(x, value = 0)
+
+\method{set_errors}{mixed_units}(x, value = 0)
 
 \method{errors_max}{quantities}(x)
 

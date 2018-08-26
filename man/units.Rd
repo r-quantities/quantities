@@ -6,6 +6,8 @@
 \alias{units<-.errors}
 \alias{set_units.quantities}
 \alias{set_units.errors}
+\alias{mixed_units.quantities}
+\alias{mixed_units.errors}
 \title{Set Measurement Units on a Numeric Vector}
 \usage{
 \method{units}{quantities}(x) <- value
@@ -17,6 +19,10 @@
 
 \method{set_units}{errors}(x, value, ...,
   mode = units_options("set_units_mode"))
+
+\method{mixed_units}{quantities}(x, values, ...)
+
+\method{mixed_units}{errors}(x, values, ...)
 }
 \arguments{
 \item{x}{numeric vector, or object of class \code{units}}
@@ -29,6 +35,8 @@
 the expression supplied. Otherwise, if\code{mode = "standard"},
 standard evaluation is used for the supplied value This argument can be set
 via a global option \code{units_options(set_units_mode = "standard")}}
+
+\item{values}{character vector with units encodings, or list with symbolic units of class \code{mixed_symbolic_units}}
 }
 \description{
 Set/retrieve measurement units to/from numeric vectors and convert units
