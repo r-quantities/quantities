@@ -59,6 +59,8 @@ x
 }
 \seealso{
 \code{\link{errors}}, \code{\link{units}}, \code{\link{groupGeneric.quantities}}.
-\code{\link{Extract.quantities}}, \code{\link{c}}, \code{\link{rep}}, \code{\link{cbind.quantities}}.
-\code{\link{as.data.frame.quantities}}, \code{\link{as.matrix.quantities}}, \code{\link{t}}.
+\code{\link{Extract.quantities}}, \code{\link{c.quantities}},
+\code{\link{rep.quantities}}, \code{\link{cbind.quantities}}.
+\code{\link{as.data.frame.quantities}}, \code{\link{as.matrix.quantities}},
+\code{\link{t.quantities}}.
 }
