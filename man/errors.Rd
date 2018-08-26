@@ -13,7 +13,7 @@
 \alias{set_errors.mixed_units}
 \alias{errors_max.quantities}
 \alias{errors_min.quantities}
-\title{Set Measurement Errors on a Numeric Vector}
+\title{Handle Measurement Uncertainty on a Numeric Vector}
 \usage{
 \method{errors}{quantities}(x)
 
@@ -43,8 +43,8 @@
 \item{value}{a numeric vector of length 1 or the same length as \code{x}.}
 }
 \description{
-Set/retrieve measurement errors to/from numeric vectors (extensions to the
-\code{errors} package for \code{quantities} and \code{units} objects).
+Set or retrieve measurement uncertainty to/from numeric vectors (extensions
+to the \pkg{errors} package for \code{quantities} and \code{units} objects).
 }
 \seealso{
 \code{\link[errors]{errors}}.

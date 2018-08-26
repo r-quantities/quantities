@@ -8,7 +8,7 @@
 \alias{set_units.errors}
 \alias{mixed_units.quantities}
 \alias{mixed_units.errors}
-\title{Set Measurement Units on a Numeric Vector}
+\title{Handle Measurement Units on a Numeric Vector}
 \usage{
 \method{units}{quantities}(x) <- value
 
@@ -39,8 +39,8 @@ via a global option \code{units_options(set_units_mode = "standard")}}
 \item{values}{character vector with units encodings, or list with symbolic units of class \code{mixed_symbolic_units}}
 }
 \description{
-Set/retrieve measurement units to/from numeric vectors and convert units
-(extensions to the \code{units} package for \code{quantities} and
+Set or retrieve measurement units to/from numeric vectors and convert units
+(extensions to the \pkg{units} package for \code{quantities} and
 \code{errors} objects).
 }
 \seealso{

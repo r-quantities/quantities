@@ -6,8 +6,8 @@
 \title{\pkg{quantities}: Quantity Calculus for R Vectors}
 \description{
 Support for painless automatic units and uncertainty propagation in numerical
-operations. Both units and errors are integrated into a complete quantity
-calculus system within the R language. R vectores, matrices and arrays
+operations. Both \pkg{units} and \pkg{errors} are integrated into a complete
+quantity calculus system within the R language. R vectores, matrices and arrays
 automatically propagate those attributes when you operate with \code{quantities}
 objects.
 }

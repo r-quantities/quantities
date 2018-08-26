@@ -4,7 +4,7 @@
 \alias{quantities}
 \alias{quantities<-}
 \alias{set_quantities}
-\title{Set Measurement Units and Errors on a Numeric Vector}
+\title{Handle Measurement Units and Uncertainty on a Numeric Vector}
 \usage{
 quantities(x)
 
@@ -35,7 +35,7 @@ standard evaluation is used for the supplied value This argument can be set
 via a global option \code{units_options(set_units_mode = "standard")}}
 }
 \description{
-Set/retrieve measurement units and errors to/from numeric vectors.
+Set or retrieve measurement units and uncertainty to/from numeric vectors.
 }
 \details{
 \code{quantities} returns a named list with the \code{units} and

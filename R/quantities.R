@@ -1,8 +1,8 @@
 #' \pkg{quantities}: Quantity Calculus for R Vectors
 #'
 #' Support for painless automatic units and uncertainty propagation in numerical
-#' operations. Both units and errors are integrated into a complete quantity
-#' calculus system within the R language. R vectores, matrices and arrays
+#' operations. Both \pkg{units} and \pkg{errors} are integrated into a complete
+#' quantity calculus system within the R language. R vectores, matrices and arrays
 #' automatically propagate those attributes when you operate with \code{quantities}
 #' objects.
 #'
@@ -15,9 +15,9 @@
 #' @name quantities-package
 NULL
 
-#' Set Measurement Units and Errors on a Numeric Vector
+#' Handle Measurement Units and Uncertainty on a Numeric Vector
 #'
-#' Set/retrieve measurement units and errors to/from numeric vectors.
+#' Set or retrieve measurement units and uncertainty to/from numeric vectors.
 #'
 #' @param x a numeric object, or object of class \code{quantities}, \code{units}
 #' or \code{errors}.

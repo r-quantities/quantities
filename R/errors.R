@@ -1,7 +1,7 @@
-#' Set Measurement Errors on a Numeric Vector
+#' Handle Measurement Uncertainty on a Numeric Vector
 #'
-#' Set/retrieve measurement errors to/from numeric vectors (extensions to the
-#' \code{errors} package for \code{quantities} and \code{units} objects).
+#' Set or retrieve measurement uncertainty to/from numeric vectors (extensions
+#' to the \pkg{errors} package for \code{quantities} and \code{units} objects).
 #'
 #' @inheritParams errors::errors
 #' @inheritParams quantities

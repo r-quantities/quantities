@@ -1,7 +1,7 @@
-#' Set Measurement Units on a Numeric Vector
+#' Handle Measurement Units on a Numeric Vector
 #'
-#' Set/retrieve measurement units to/from numeric vectors and convert units
-#' (extensions to the \code{units} package for \code{quantities} and
+#' Set or retrieve measurement units to/from numeric vectors and convert units
+#' (extensions to the \pkg{units} package for \code{quantities} and
 #' \code{errors} objects).
 #'
 #' @inheritParams units::units
