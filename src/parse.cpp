@@ -4,12 +4,12 @@ using namespace Rcpp;
 
 // [[Rcpp::export]]
 NumericVector parse_vector_(CharacterVector x, char decimalMark, char groupingMark) {
-  NumericVector val(x.size(), 0);
-  NumericVector err(x.size(), 0);
+  NumericVector val(x.size(), 0.0);
+  NumericVector err(x.size(), 0.0);
   CharacterVector unt(x.size(), "1");
   CharacterVector::Proxy::iterator first, last;
 
-  for (unsigned int i = 0; i < x.size(); i++) {
+  for (int i = 0; i < x.size(); i++) {
     first = x[i].begin();
     last = x[i].end();
     if (!parseErrors(first, last, val[i], err[i], decimalMark, groupingMark)) {
