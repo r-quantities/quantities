@@ -1,3 +1,3 @@
-# quantities 0.1.0
+# quantities 0.1.1
 
 * Initial CRAN release.
