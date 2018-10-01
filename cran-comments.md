@@ -1,5 +1,7 @@
 ## Initial submission
 
+* Avoid using `installed_packages` as per CRAN request.
+
 This package is aimed at providing integration of the 'units' and 'errors'
 packages for a complete quantity calculus system for R vectors, matrices and
 arrays, with automatic propagation, conversion, derivation and simplification of

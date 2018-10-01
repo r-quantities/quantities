@@ -25,6 +25,12 @@ Papers:
 
 ## Installation
 
+Install the release version from CRAN:
+
+```r
+install.packages("quantities")
+```
+
 The installation from GitHub requires the [remotes](https://cran.r-project.org/package=remotes) package.
 
 ```r
