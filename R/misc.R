@@ -128,12 +128,18 @@ as.list.quantities <- function(x, ...)
 #'   export(pillar_shaft.quantities)
 #' }
 type_sum.quantities <- function(x) {
+  if (getRversion() >= "3.6.0") {
+    type_sum.errors <- utils::getS3method("type_sum", "errors")
+    type_sum.units <- utils::getS3method("type_sum", "units")
+  }
   out <- gsub("\\[|\\]", "", paste(type_sum.errors(x), type_sum.units(x)))
   paste0("[", out, "]")
 }
 
 #' @name tibble
 pillar_shaft.quantities <- function(x, ...) {
+  if (getRversion() >= "3.6.0")
+    pillar_shaft.errors <- utils::getS3method("pillar_shaft", "errors")
   out <- pillar_shaft.errors(drop_units(x), ...)
   if (!requireNamespace("pillar", quietly = TRUE))
     return(out)
