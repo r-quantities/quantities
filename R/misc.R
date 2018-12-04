@@ -138,12 +138,9 @@ type_sum.quantities <- function(x) {
 
 #' @name tibble
 pillar_shaft.quantities <- function(x, ...) {
-  if (getRversion() >= "3.6.0")
-    pillar_shaft.errors <- utils::getS3method("pillar_shaft", "errors")
-  out <- pillar_shaft.errors(drop_units(x), ...)
   if (!requireNamespace("pillar", quietly = TRUE))
-    return(out)
-
+    return(format(x))
+  out <- pillar::pillar_shaft(drop_units(x), ...)
   out <- sapply(out, paste, pillar::style_subtle(as.character(units(x))))
   pillar::new_pillar_shaft_simple(out, align = "right", min_width = 8)
 }
