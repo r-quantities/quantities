@@ -120,14 +120,19 @@ as.list.quantities <- function(x, ...)
 #' @param ... see \link[pillar]{pillar_shaft}.
 #'
 #' @name tibble
-#' @export type_sum.quantities
+#' @rawNamespace if(getRversion() >= "3.6.0") {
+#'   S3method(pillar::type_sum, quantities)
+#'   S3method(pillar::pillar_shaft, quantities)
+#' } else {
+#'   export(type_sum.quantities)
+#'   export(pillar_shaft.quantities)
+#' }
 type_sum.quantities <- function(x) {
   out <- gsub("\\[|\\]", "", paste(type_sum.errors(x), type_sum.units(x)))
   paste0("[", out, "]")
 }
 
 #' @name tibble
-#' @export pillar_shaft.quantities
 pillar_shaft.quantities <- function(x, ...) {
   out <- pillar_shaft.errors(drop_units(x), ...)
   if (!requireNamespace("pillar", quietly = TRUE))

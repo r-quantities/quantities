@@ -56,10 +56,15 @@ export(drop_quantities)
 export(parse_errors)
 export(parse_quantities)
 export(parse_units)
-export(pillar_shaft.quantities)
 export(quantities)
 export(set_quantities)
-export(type_sum.quantities)
+if(getRversion() >= "3.6.0") {
+  S3method(pillar::type_sum, quantities)
+  S3method(pillar::pillar_shaft, quantities)
+} else {
+  export(type_sum.quantities)
+  export(pillar_shaft.quantities)
+}
 import(errors)
 import(stats)
 import(units)
