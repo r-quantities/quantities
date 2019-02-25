@@ -8,13 +8,13 @@
 #'
 #' @author Iñaki Ucar
 #'
-#' @references Edzer Pebesma, Thomas Mailund and James Hiebert, 2016.
-#' Measurement Units in \R. \emph{The R Journal}, 8 (2), 486--494.
-#' URL: \url{https://journal.r-project.org/archive/2016/RJ-2016-061/index.html}
+#' @references Edzer Pebesma, Thomas Mailund and James Hiebert (2016).
+#' Measurement Units in \R. \emph{The R Journal}, 8(2), 486--494.
+#' \doi{10.32614/RJ-2016-061}
 #'
 #' Iñaki Ucar, Edzer Pebesma and Arturo Azcorra (2018).
-#' Measurement Errors in \R. \emph{The R Journal}.
-#' URL: \url{https://journal.r-project.org/archive/2018/RJ-2018-075/index.html}
+#' Measurement Errors in \R. \emph{The R Journal}, 10(2), 549--557.
+#' \doi{10.32614/RJ-2018-075}
 #'
 #' @docType package
 #' @import units
