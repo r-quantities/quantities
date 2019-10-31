@@ -1,7 +1,7 @@
 # quantities 0.1.3
 
 - Add CITATION to `units` and `errors` in the *R Journal*.
-- Fix unit simplification with arithmetical operations (#3).
+- Fix unit simplification in arithmetical operations (#3).
 
 # quantities 0.1.2
 
