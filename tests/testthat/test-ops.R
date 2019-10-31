@@ -45,3 +45,28 @@ test_that("logical operators work as expected", {
   expect_equal(x >= y, xval >= yval)
   expect_equal(x > y, xval > yval)
 })
+
+test_that("simplification works as expected", {
+  simplify.old <- units_options("simplify")
+  on.exit(units_options(simplify=simplify.old))
+  units_options(simplify=TRUE)
+
+  xval <- 1100
+  yval <- 1.1
+  xerr <- 100
+  yerr <- 0.1
+
+  x <- set_quantities(xval, "mm", xerr) * set_quantities(yval, "m^-1", yerr)
+  xu <- set_units(xval, "mm") * set_units(yval, "m^-1")
+  xe <- set_errors(xval, xerr) * set_errors(yval, yerr) *
+    set_errors(as.numeric(xu) / (xval*yval), 0)
+
+  expect_quantities(x, as.numeric(xu), units(xu), errors(xe))
+
+  x <- set_quantities(xval, "mm", xerr) / set_quantities(yval, "m", yerr)
+  xu <- set_units(xval, "mm") / set_units(yval, "m")
+  xe <- set_errors(xval, xerr) / set_errors(yval, yerr) *
+    set_errors(as.numeric(xu) / (xval/yval), 0)
+
+  expect_quantities(x, as.numeric(xu), units(xu), errors(xe))
+})

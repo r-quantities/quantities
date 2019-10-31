@@ -13,4 +13,15 @@
 #' a %% a
 #' a %% set_quantities(2)
 #' @export
-Ops.quantities <- function(e1, e2) reclass(NextMethod())
+Ops.quantities <- function(e1, e2) {
+  simplify.old <- units_options("simplify")
+
+  if (!.Generic %in% c("*", "/", "%/%") || isFALSE(simplify.old))
+    return(reclass(NextMethod()))
+
+  simplify.units <- units(NextMethod())
+  on.exit(units_options(simplify=simplify.old))
+  units_options(simplify=FALSE)
+
+  set_units(reclass(NextMethod()), simplify.units, mode="standard")
+}
