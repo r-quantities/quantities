@@ -41,7 +41,7 @@ errors.mixed_units <- function(x) sapply(x, errors)
 #' @name errors
 #' @export
 `errors<-.mixed_units` <- function(x, value)
-  structure(mapply(set_errors, x, value, SIMPLIFY=FALSE), class="mixed_units")
+  structure(mapply(set_errors, x, value, SIMPLIFY=FALSE), class=class(x))
 
 #' @name errors
 #' @export

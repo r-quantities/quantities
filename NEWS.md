@@ -1,3 +1,7 @@
+# quantities 0.1.4
+
+- Add compatibility with upcoming tibble v3.0.0 (r-quantities/units#225).
+
 # quantities 0.1.3
 
 - Add CITATION to `units` and `errors` in the *R Journal*.
