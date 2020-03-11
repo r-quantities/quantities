@@ -1,6 +1,7 @@
 # quantities 0.1.4
 
 - Add compatibility with upcoming tibble v3.0.0 (r-quantities/units#225).
+- Implement prettier `str` print (#5).
 
 # quantities 0.1.3
 
