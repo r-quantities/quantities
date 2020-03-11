@@ -14,11 +14,9 @@
 
 \method{units}{errors}(x) <- value
 
-\method{set_units}{quantities}(x, value, ...,
-  mode = units_options("set_units_mode"))
+\method{set_units}{quantities}(x, value, ..., mode = units_options("set_units_mode"))
 
-\method{set_units}{errors}(x, value, ...,
-  mode = units_options("set_units_mode"))
+\method{set_units}{errors}(x, value, ..., mode = units_options("set_units_mode"))
 
 \method{mixed_units}{quantities}(x, values, ...)
 
@@ -27,7 +25,7 @@
 \arguments{
 \item{x}{numeric vector, or object of class \code{units}}
 
-\item{value}{object of class \code{units} or \code{symbolic_units}, or in the case of \code{set_units} expression with symbols that can be resolved in \link{ud_units} (see examples).}
+\item{value}{object of class \code{units} or \code{symbolic_units}, or in the case of \code{set_units} expression with symbols that can be resolved in \link[units]{ud_units} (see examples).}
 
 \item{...}{passed on to \code{as_units}}
 
