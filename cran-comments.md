@@ -1,10 +1,10 @@
 ## Patch release
 
-Citations and bug fix.
+Minor fixes, including WARN in vignette.
 
 ## Test environments
 
-* Fedora 30 + GCC + clang (local), R 3.6.1
+* Fedora 32 + GCC + clang (local), R 3.6.3
 * Ubuntu 16.04 + GCC (on travis-ci), R oldrel, release, devel
 * win-builder, R devel
 
