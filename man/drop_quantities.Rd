@@ -4,6 +4,7 @@
 \alias{drop_quantities}
 \alias{drop_units.quantities}
 \alias{drop_errors.quantities}
+\alias{drop_quantities.data.frame}
 \title{Drop Units and Errors}
 \usage{
 drop_quantities(x)
@@ -11,6 +12,8 @@ drop_quantities(x)
 \method{drop_units}{quantities}(x)
 
 \method{drop_errors}{quantities}(x)
+
+\method{drop_quantities}{data.frame}(x)
 }
 \arguments{
 \item{x}{a \code{quantities} object.}

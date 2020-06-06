@@ -21,6 +21,6 @@ Imports: Rcpp, utils
 Suggests: tibble, pillar, dplyr, tidyr, testthat, knitr, rmarkdown
 LinkingTo: Rcpp (>= 0.12.10)
 ByteCompile: yes
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 Roxygen: list(old_usage = TRUE)
 VignetteBuilder: knitr

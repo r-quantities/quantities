@@ -2,6 +2,7 @@
 
 - Add compatibility with upcoming tibble v3.0.0 (r-quantities/units#225).
 - Implement prettier `str` print (#5).
+- Implement drop method for data frames.
 
 # quantities 0.1.3
 
