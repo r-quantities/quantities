@@ -273,7 +273,7 @@ iris.q %>%
 
 Another shortcoming is that `dplyr`'s grouped operations are not yet fully compatible with quantities (see [tidyverse/dplyr#2773](https://github.com/tidyverse/dplyr/issues/2773)):
 
-```{r}
+```{r, error=TRUE}
 iris.q %>%
   group_by(Species) %>%
   summarise_all(mean)
