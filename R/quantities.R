@@ -20,6 +20,7 @@
 #' @import units
 #' @import errors
 #' @import stats
+#' @import utils
 #' @name quantities-package
 NULL
 

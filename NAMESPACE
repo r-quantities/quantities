@@ -70,5 +70,6 @@ if(getRversion() >= "3.6.0") {
 import(errors)
 import(stats)
 import(units)
+import(utils)
 importFrom(Rcpp,evalCpp)
 useDynLib(quantities, .registration=TRUE)
