@@ -128,10 +128,8 @@ as.list.quantities <- function(x, ...)
 #'   export(pillar_shaft.quantities)
 #' }
 type_sum.quantities <- function(x) {
-  if (getRversion() >= "3.6.0") {
-    type_sum.errors <- utils::getS3method("type_sum", "errors")
-    type_sum.units <- utils::getS3method("type_sum", "units")
-  }
+  type_sum.errors <- utils::getS3method("type_sum", "errors", envir = asNamespace("pillar"))
+  type_sum.units <- utils::getS3method("type_sum", "units", envir = asNamespace("pillar"))
   out <- gsub("\\[|\\]", "", paste(type_sum.errors(x), type_sum.units(x)))
   paste0("[", out, "]")
 }
