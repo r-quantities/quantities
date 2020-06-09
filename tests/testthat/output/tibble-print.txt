@@ -1,0 +1,12 @@
+> x <- set_quantities(1:3, "cm", 3:1, mode = "standard")
+> x
+Units: [cm]
+Errors: 3 2 1
+[1] 1 2 3
+
+> tibble::tibble(x = x)
+Error in utils::getS3method("type_sum", "errors"): no function 'type_sum' could be found
+
+> tibble::tibble(tibble::tibble(x = x))
+Error in utils::getS3method("type_sum", "errors"): no function 'type_sum' could be found
+
