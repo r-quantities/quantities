@@ -87,3 +87,26 @@ test_that("quantities have coercion methods", {
     class = "vctrs_error_cast_lossy"
   )
 })
+
+
+skip_if_not_installed("dplyr")
+
+`%>%` <- dplyr::`%>%`
+
+test_that("split-apply-combine with dplyr and base agree", {
+  iris2 <- iris
+  for (i in 1:4)
+    quantities(iris2[,i]) <- list("cm", iris2[,i] * 0.05)
+
+  out <- iris2 %>%
+    dplyr::group_by(Species) %>%
+    dplyr::summarise(dplyr::across(where(is.numeric), mean))
+
+  # Transform to list of lists
+  out <- vctrs::vec_chop(out[2:5]) %>%
+    stats::setNames(out$Species) %>%
+    lapply(as.list)
+
+  exp <- lapply(split(iris2[1:4], iris2$Species), lapply, mean)
+  expect_equal(out, exp)
+})
