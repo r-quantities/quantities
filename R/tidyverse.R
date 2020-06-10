@@ -1,8 +1,14 @@
 
+vec_proxy.quantities <- function(x, ...) {
+  vec_proxy.errors <- utils::getS3method("vec_proxy", "errors", envir = asNamespace("vctrs"))
+  vec_proxy.errors(drop_units(x))
+}
+
 vec_restore.quantities <- function(x, to, ...) {
-  # Delegate errors restoration
-  x <- NextMethod()
-  set_quantities(x, units(to), errors(x), mode = "standard")
+  vec_restore.errors <- utils::getS3method("vec_restore", "errors", envir = asNamespace("vctrs"))
+
+  out <- vec_restore.errors(x, drop_units(to))
+  set_quantities(out, units(to), errors(out), mode = "standard")
 }
 
 vec_ptype2.quantities.quantities <- function(x, y, ...) {
@@ -32,6 +38,7 @@ vec_cast.quantities.quantities <- function(x, to, ...) {
 }
 
 register_tidyverse_methods = function() {
+  s3_register("vctrs::vec_proxy", "quantities")
   s3_register("vctrs::vec_restore", "quantities")
   s3_register("vctrs::vec_ptype2", "quantities.quantities")
   s3_register("vctrs::vec_cast", "quantities.quantities")

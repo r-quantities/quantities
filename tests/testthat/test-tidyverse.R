@@ -14,6 +14,12 @@ test_that("can print quantities in tibble", {
 
 skip_if_not_installed("vctrs")
 
+test_that("can proxy and restore quantities", {
+  x <- set_quantities(1:3, "cm", 3:1, mode = "standard")
+  out <- vctrs::vec_restore(vctrs::vec_proxy(x), x)
+  expect_equal(out, x)
+})
+
 test_that("can slice quantities", {
   x <- set_quantities(1:3, "cm", 3:1, mode = "standard")
   exp <- list(x[1], x[2], x[3])
@@ -26,6 +32,17 @@ test_that("can slice quantities", {
     tibble::tibble(x = tibble::tibble(x = x[3]))
   )
   expect_equal(vctrs::vec_chop(df), exp)
+})
+
+test_that("can combine quantities", {
+  x <- set_quantities(1:3, "cm", 3:1, mode = "standard")
+  df <- tibble::tibble(x = tibble::tibble(x = x))
+
+  out <- vctrs::vec_unchop(vctrs::vec_chop(x))
+  expect_equal(out, x)
+
+  out <- vctrs::vec_unchop(vctrs::vec_chop(df))
+  expect_equal(out, df)
 })
 
 test_that("quantities have coercion methods", {
