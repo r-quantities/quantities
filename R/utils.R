@@ -12,6 +12,7 @@ is_offset <- function(prev, new) {
 }
 
 # For compatibility with R < 3.6.0
+# nocov start
 s3_register <- function(generic, class, method = NULL) {
   stopifnot(is.character(generic), length(generic) == 1)
   stopifnot(is.character(class), length(class) == 1)
@@ -69,3 +70,4 @@ s3_register <- function(generic, class, method = NULL) {
 
   invisible()
 }
+# nocov end
