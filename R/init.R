@@ -1,4 +1,4 @@
 
 .onLoad = function(libname, pkgname) {
-  register_tidyverse_methods()
+  register_all_s3_methods()
 }

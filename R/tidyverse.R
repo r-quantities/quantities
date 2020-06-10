@@ -37,9 +37,33 @@ vec_cast.quantities.quantities <- function(x, to, ...) {
   set_quantities(out, to_units, out_errors, mode = "standard")
 }
 
-register_tidyverse_methods = function() {
-  s3_register("vctrs::vec_proxy", "quantities")
-  s3_register("vctrs::vec_restore", "quantities")
-  s3_register("vctrs::vec_ptype2", "quantities.quantities")
-  s3_register("vctrs::vec_cast", "quantities.quantities")
+
+#nocov start
+register_all_s3_methods <- function() {
+  register_s3_method("vctrs::vec_proxy", "quantities")
+  register_s3_method("vctrs::vec_restore", "quantities")
+  register_s3_method("vctrs::vec_ptype2", "quantities.quantities")
+  register_s3_method("vctrs::vec_cast", "quantities.quantities")
 }
+
+register_s3_method <- function(generic, class, fun=NULL) {
+  stopifnot(is.character(generic), length(generic) == 1)
+  stopifnot(is.character(class), length(class) == 1)
+
+  pieces <- strsplit(generic, "::")[[1]]
+  stopifnot(length(pieces) == 2)
+  package <- pieces[[1]]
+  generic <- pieces[[2]]
+
+  if (is.null(fun))
+    fun <- get(paste0(generic, ".", class), envir=parent.frame())
+  stopifnot(is.function(fun))
+
+  if (package %in% loadedNamespaces())
+    registerS3method(generic, class, fun, envir=asNamespace(package))
+
+  # Always register hook in case package is later unloaded & reloaded
+  setHook(packageEvent(package, "onLoad"), function(...)
+    registerS3method(generic, class, fun, envir=asNamespace(package)))
+}
+# nocov end
