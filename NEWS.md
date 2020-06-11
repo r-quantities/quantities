@@ -1,3 +1,7 @@
+# quantities 0.1.5
+
+- Fix compatibility with `dplyr` 1.0.0.
+
 # quantities 0.1.4
 
 - Add compatibility with upcoming tibble v3.0.0 (r-quantities/units#225).
