@@ -36,11 +36,11 @@
 
 #' @name units
 #' @export
-set_units.quantities <- utils::getS3method("set_units", "units")
+set_units.quantities <- getS3method("set_units", "units")
 
 #' @name units
 #' @export
-set_units.errors <- utils::getS3method("set_units", "units")
+set_units.errors <- getS3method("set_units", "units")
 
 #' @name units
 #' @export
@@ -49,4 +49,4 @@ mixed_units.quantities <- function(x, values, ...)
 
 #' @name units
 #' @export
-mixed_units.errors <- utils::getS3method("mixed_units", "numeric")
+mixed_units.errors <- getS3method("mixed_units", "numeric")

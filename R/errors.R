@@ -16,7 +16,7 @@ errors.quantities <- function(x) reclass(NextMethod())
 #' @export
 errors.units <- function(x) {
   if (length(class(x)) > 1) return(NextMethod())
-  utils::getS3method("errors", "numeric")(x)
+  getS3method("errors", "numeric")(x)
 }
 
 #' @name errors
@@ -45,15 +45,15 @@ errors.mixed_units <- function(x) sapply(x, errors)
 
 #' @name errors
 #' @export
-set_errors.quantities <- utils::getS3method("set_errors", "errors")
+set_errors.quantities <- getS3method("set_errors", "errors")
 
 #' @name errors
 #' @export
-set_errors.units <- utils::getS3method("set_errors", "numeric")
+set_errors.units <- getS3method("set_errors", "numeric")
 
 #' @name errors
 #' @export
-set_errors.mixed_units <- utils::getS3method("set_errors", "numeric")
+set_errors.mixed_units <- getS3method("set_errors", "numeric")
 
 #' @name errors
 #' @export

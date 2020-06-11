@@ -1,6 +1,6 @@
 type_sum.quantities <- function(x) {
-  type_sum.errors <- utils::getS3method("type_sum", "errors", envir=asNamespace("pillar"))
-  type_sum.units <- utils::getS3method("type_sum", "units", envir=asNamespace("pillar"))
+  type_sum.errors <- getS3method("type_sum", "errors", envir=asNamespace("pillar"))
+  type_sum.units <- getS3method("type_sum", "units", envir=asNamespace("pillar"))
   out <- paste(type_sum.errors(x), type_sum.units(x))
   structure(out, class="type_sum_errors")
 }
@@ -12,12 +12,12 @@ pillar_shaft.quantities <- function(x, ...) {
 # vctrs proxying and restoration -------------------------------------
 
 vec_proxy.quantities <- function(x, ...) {
-  vec_proxy.errors <- utils::getS3method("vec_proxy", "errors", envir = asNamespace("vctrs"))
+  vec_proxy.errors <- getS3method("vec_proxy", "errors", envir = asNamespace("vctrs"))
   vec_proxy.errors(drop_units(x))
 }
 
 vec_restore.quantities <- function(x, to, ...) {
-  vec_restore.errors <- utils::getS3method("vec_restore", "errors", envir = asNamespace("vctrs"))
+  vec_restore.errors <- getS3method("vec_restore", "errors", envir = asNamespace("vctrs"))
 
   out <- vec_restore.errors(x, drop_units(to))
   set_quantities(out, units(to), errors(out), mode = "standard")
