@@ -1,14 +1,12 @@
 type_sum.quantities <- function(x) {
   type_sum.errors <- utils::getS3method("type_sum", "errors", envir=asNamespace("pillar"))
   type_sum.units <- utils::getS3method("type_sum", "units", envir=asNamespace("pillar"))
-  out <- gsub("\\[|\\]", "", paste(type_sum.errors(x), type_sum.units(x)))
-  paste0("[", out, "]")
+  out <- paste(type_sum.errors(x), type_sum.units(x))
+  structure(out, class="type_sum_errors")
 }
 
 pillar_shaft.quantities <- function(x, ...) {
-  out <- pillar::pillar_shaft(drop_units(x), ...)
-  out <- sapply(out, paste, pillar::style_subtle(as.character(units(x))))
-  pillar::new_pillar_shaft_simple(out, align = "right", min_width = 8)
+  pillar::pillar_shaft(drop_units(x), ...)
 }
 
 # vctrs proxying and restoration -------------------------------------

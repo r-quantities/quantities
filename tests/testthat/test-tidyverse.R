@@ -3,9 +3,12 @@ context("tidyverse")
 test_that("pillar methods work for errors objects", {
   skip_if_not_installed("pillar")
 
-  expect_equal(pillar::type_sum(set_quantities(1, "m", 0.1)), "[(err) m]")
-  expect_equal(as.character(pillar::pillar_shaft(set_quantities(1, "m", 0.1))),
-               paste0("1.0", pillar::style_subtle("(1)"), " ", pillar::style_subtle("m")))
+  x <- set_quantities(1, "m", 0.1)
+
+  expect_equal(unclass(pillar::type_sum(x)), "(err) [m]")
+  expect_s3_class(pillar::type_sum(x), "type_sum_errors")
+  expect_equal(as.character(pillar::pillar_shaft(x)),
+               as.character(pillar::pillar_shaft(drop_units(x))))
 })
 
 skip_if_not_installed("vctrs", "0.3.1")
