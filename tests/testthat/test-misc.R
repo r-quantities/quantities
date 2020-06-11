@@ -123,3 +123,13 @@ test_that("bind methods work properly", {
   expect_quantities(x, rep(xval, 3), xunt, rep(xval, 3))
   expect_equal(colnames(x), c("a", "a", "a"))
 })
+
+test_that("str method works as expected", {
+  x <- set_quantities(runif(5), "m", 0.01)
+  out <- utils::capture.output(str(x))
+
+  u_char <- format(drop_errors(x)[0])
+  header <- paste0(" Units+Errors:", u_char, " num [1:", length(x), "] ")
+  vec <- paste(format(drop_units(x)), collapse=" ")
+  expect_equal(out, paste0(header, vec, " "))
+})
