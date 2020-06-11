@@ -112,37 +112,6 @@ as.data.frame.quantities <- function(x, row.names = NULL, optional = FALSE, ...)
 as.list.quantities <- function(x, ...)
   mapply(set_quantities, unclass(x), x, errors(x), mode="standard", SIMPLIFY=FALSE)
 
-#' Methods for Tidy \code{tibble} Printing
-#'
-#' S3 methods for \code{quantities} objects.
-#'
-#' @param x object of class quantities.
-#' @param ... see \link[pillar]{pillar_shaft}.
-#'
-#' @name tibble
-#' @rawNamespace if(getRversion() >= "3.6.0") {
-#'   S3method(pillar::type_sum, quantities)
-#'   S3method(pillar::pillar_shaft, quantities)
-#' } else {
-#'   export(type_sum.quantities)
-#'   export(pillar_shaft.quantities)
-#' }
-type_sum.quantities <- function(x) {
-  type_sum.errors <- utils::getS3method("type_sum", "errors", envir = asNamespace("pillar"))
-  type_sum.units <- utils::getS3method("type_sum", "units", envir = asNamespace("pillar"))
-  out <- gsub("\\[|\\]", "", paste(type_sum.errors(x), type_sum.units(x)))
-  paste0("[", out, "]")
-}
-
-#' @name tibble
-pillar_shaft.quantities <- function(x, ...) {
-  if (!requireNamespace("pillar", quietly = TRUE))
-    return(format(x))
-  out <- pillar::pillar_shaft(drop_units(x), ...)
-  out <- sapply(out, paste, pillar::style_subtle(as.character(units(x))))
-  pillar::new_pillar_shaft_simple(out, align = "right", min_width = 8)
-}
-
 #' Coerce to a Matrix
 #'
 #' S3 method for \code{quantities} objects (see \code{\link{as.matrix}}).

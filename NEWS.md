@@ -1,6 +1,6 @@
 # quantities 0.1.5
 
-- Fix compatibility with `dplyr` 1.0.0.
+- Fix compatibility with `dplyr` 1.0.0 (#8), coordinated with units and errors.
 
 # quantities 0.1.4
 

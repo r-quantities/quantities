@@ -1,18 +1,15 @@
+context("tidyverse")
 
-test_that("can print quantities in tibble", {
-  skip_if_not_installed("tibble")
+test_that("pillar methods work for errors objects", {
+  skip_if_not_installed("pillar")
 
-  verify_output(test_path("output", "tibble-print.txt"), {
-    x <- set_quantities(1:3, "cm", 3:1, mode = "standard")
-
-    x
-    tibble::tibble(x = x)
-    tibble::tibble(tibble::tibble(x = x))
-  })
+  expect_equal(pillar::type_sum(set_quantities(1, "m", 0.1)), "[(err) m]")
+  expect_equal(as.character(pillar::pillar_shaft(set_quantities(1, "m", 0.1))),
+               paste0("1.0", pillar::style_subtle("(1)"), " ", pillar::style_subtle("m")))
 })
 
-
-skip_if_not_installed("vctrs")
+skip_if_not_installed("vctrs", "0.3.1")
+skip_if_not_installed("dplyr", "1.0.0")
 
 test_that("can proxy and restore quantities", {
   x <- set_quantities(1:3, "cm", 3:1, mode = "standard")
@@ -25,18 +22,18 @@ test_that("can slice quantities", {
   exp <- list(x[1], x[2], x[3])
   expect_equal(vctrs::vec_chop(x), exp)
 
-  df <- tibble::tibble(x = tibble::tibble(x = x))
+  df <- dplyr::tibble(x = dplyr::tibble(x = x))
   exp <- list(
-    tibble::tibble(x = tibble::tibble(x = x[1])),
-    tibble::tibble(x = tibble::tibble(x = x[2])),
-    tibble::tibble(x = tibble::tibble(x = x[3]))
+    dplyr::tibble(x = dplyr::tibble(x = x[1])),
+    dplyr::tibble(x = dplyr::tibble(x = x[2])),
+    dplyr::tibble(x = dplyr::tibble(x = x[3]))
   )
   expect_equal(vctrs::vec_chop(df), exp)
 })
 
 test_that("can combine quantities", {
   x <- set_quantities(1:3, "cm", 3:1, mode = "standard")
-  df <- tibble::tibble(x = tibble::tibble(x = x))
+  df <- dplyr::tibble(x = dplyr::tibble(x = x))
 
   out <- vctrs::vec_unchop(vctrs::vec_chop(x))
   expect_equal(out, x)
@@ -87,9 +84,6 @@ test_that("quantities have coercion methods", {
     class = "vctrs_error_cast_lossy"
   )
 })
-
-
-skip_if_not_installed("dplyr")
 
 `%>%` <- dplyr::`%>%`
 

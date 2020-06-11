@@ -1,3 +1,17 @@
+type_sum.quantities <- function(x) {
+  type_sum.errors <- utils::getS3method("type_sum", "errors", envir=asNamespace("pillar"))
+  type_sum.units <- utils::getS3method("type_sum", "units", envir=asNamespace("pillar"))
+  out <- gsub("\\[|\\]", "", paste(type_sum.errors(x), type_sum.units(x)))
+  paste0("[", out, "]")
+}
+
+pillar_shaft.quantities <- function(x, ...) {
+  out <- pillar::pillar_shaft(drop_units(x), ...)
+  out <- sapply(out, paste, pillar::style_subtle(as.character(units(x))))
+  pillar::new_pillar_shaft_simple(out, align = "right", min_width = 8)
+}
+
+# vctrs proxying and restoration -------------------------------------
 
 vec_proxy.quantities <- function(x, ...) {
   vec_proxy.errors <- utils::getS3method("vec_proxy", "errors", envir = asNamespace("vctrs"))
@@ -10,6 +24,8 @@ vec_restore.quantities <- function(x, to, ...) {
   out <- vec_restore.errors(x, drop_units(to))
   set_quantities(out, units(to), errors(out), mode = "standard")
 }
+
+# vctrs coercion -----------------------------------------------------
 
 vec_ptype2.quantities.quantities <- function(x, y, ...) {
   x_units <- drop_errors(x)
@@ -37,9 +53,11 @@ vec_cast.quantities.quantities <- function(x, to, ...) {
   set_quantities(out, to_units, out_errors, mode = "standard")
 }
 
-
 #nocov start
 register_all_s3_methods <- function() {
+  register_s3_method("pillar::type_sum", "quantities")
+  register_s3_method("pillar::pillar_shaft", "quantities")
+
   register_s3_method("vctrs::vec_proxy", "quantities")
   register_s3_method("vctrs::vec_restore", "quantities")
   register_s3_method("vctrs::vec_ptype2", "quantities.quantities")
