@@ -4,9 +4,9 @@ reclass <- function(x) {
   x
 }
 
-is_offset <- function(prev, new) {
-  offset <- 0
-  units(offset) <- prev
-  units(offset) <- new
-  unclass(offset) != 0
+get_scaling <- function(prev, new) {
+  x <- c(0, 1)
+  units(x) <- prev
+  units(x) <- new
+  as.numeric(diff(x))
 }

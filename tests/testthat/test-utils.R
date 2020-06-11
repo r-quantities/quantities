@@ -15,8 +15,9 @@ test_that("objects with errors & units attributes are reclassed", {
 })
 
 test_that("offset units (vs. scale units) are detected", {
-  expect_true(is_offset(as_units("K"), as_units("celsius")))
-  expect_false(is_offset(as_units("K"), as_units("mK")))
+  expect_equal(get_scaling("K", "celsius"), 1)
+  expect_equal(get_scaling("K", "fahrenheit"), 9/5)
+  expect_equal(get_scaling("K", "mK"), 1000)
 })
 
 test_that("dots are converted to the units of the first argument", {

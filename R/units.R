@@ -14,12 +14,7 @@
 #' @name units
 #' @export
 `units<-.quantities` <- function(x, value) {
-  e <- errors(x)
-  if (!is_offset(units(x), value)) { # not offset, then scale
-    units(e) <- units(x)
-    units(e) <- value
-    units(e) <- NULL
-  }
+  e <- errors(x) * get_scaling(units(x), value)
   x <- NextMethod()
   errors(x) <- e
   x
