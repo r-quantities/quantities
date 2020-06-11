@@ -1,11 +1,11 @@
 ## Patch release
 
-Minor fixes, including WARN in vignette.
+Fixes compatibility with dplyr 1.0 and vctrs. Requires recent updates sent for
+packages units and errors.
 
 ## Test environments
 
-* Fedora 32 + GCC + clang (local), R 3.6.3
-* Ubuntu 16.04 + GCC (on travis-ci), R oldrel, release, devel
+* Ubuntu, Windows, MacOS (on GHA), R oldrel, release, devel
 * win-builder, R devel
 
 ## R CMD check results
