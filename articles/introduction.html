@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">quantities</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.4.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.5</span>
       </span>
     </div>
 
@@ -88,7 +88,7 @@
       <h1 data-toc-skip>A Guide to Working with Quantities</h1>
                         <h4 class="author">Iñaki Ucar</h4>
             
-            <h4 class="date">2020-06-06</h4>
+            <h4 class="date">2020-06-14</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/r-quantities/quantities/blob/master/vignettes/introduction.Rmd"><code>vignettes/introduction.Rmd</code></a></small>
       <div class="hidden name"><code>introduction.Rmd</code></div>
@@ -346,6 +346,7 @@
 <span class="co">#&gt; [1] '1.0.0'</span>
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">tidyr</span>); <span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span>(<span class="st">"tidyr"</span>)
 <span class="co">#&gt; [1] '1.1.0'</span></pre></body></html></div>
+<p>Since <code>dplyr</code> 1.0.0, as we will see, there is enhanced support for custom S3 classes thanks to the new implementation based on <code>vctrs</code> &gt;= 0.3.0. Packages <code>units</code> &gt;= 0.6-7, <code>errors</code> &gt;= 0.3.4 and <code>quantities</code> &gt;= 0.1.5 add support for this approach.</p>
 <div id="row-subsetting-1" class="section level3">
 <h3 class="hasAnchor">
 <a href="#row-subsetting-1" class="anchor"></a>Row Subsetting</h3>
@@ -400,34 +401,22 @@
 <div id="row-aggregation-1" class="section level3">
 <h3 class="hasAnchor">
 <a href="#row-aggregation-1" class="anchor"></a>Row Aggregation</h3>
-<p><code>dplyr</code> breaks down aggregation operations in two distinct parts: grouping (with <code>group_by</code>) and summarising (using <code>summarise</code> and others). The shortcoming of this approach is that it is possible to apply other operations (such as subsetting) to grouped data, which may lead to performance degradation.</p>
-<p>Another shortcoming is that <code>dplyr</code>’s grouped operations are not yet fully compatible with quantities (see <a href="https://github.com/tidyverse/dplyr/issues/2773">tidyverse/dplyr#2773</a>):</p>
+<p><code>dplyr</code> breaks down aggregation operations in two distinct parts: grouping (with <code>group_by</code>) and summarising (using <code>summarise</code> and others). Since <code>dplyr</code> &gt;= 1.0.0, operations on aggregated data is now fully compatible with quantities and,compared to base methods, no fancy unlisting is required:</p>
 <div class="sourceCode" id="cb25"><html><body><pre class="r"><span class="no">iris.q</span> <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span>(<span class="no">Species</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise_all.html">summarise_all</a></span>(<span class="no">mean</span>)
-<span class="co">#&gt; Error: Problem with `summarise()` input `Sepal.Length`.</span>
-<span class="co">#&gt; ✖ Input `Sepal.Length` must return compatible vectors across groups</span>
-<span class="co">#&gt; ℹ Input `Sepal.Length` is `(function (x, ...) ...`.</span>
-<span class="co">#&gt; ℹ Result type for group 1 (Species = "setosa"): &lt;quantities&gt;.</span>
-<span class="co">#&gt; ℹ Result type for group 2 (Species = "versicolor"): &lt;quantities&gt;.</span></pre></body></html></div>
-<p>As we can see above, although units are correctly preserved, uncertainty is not correctly handled.</p>
-<div class="sourceCode" id="cb26"><html><body><pre class="r"><span class="no">iris.q</span> <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate_all.html">mutate_at</a></span>(<span class="fu"><a href="https://dplyr.tidyverse.org/reference/vars.html">vars</a></span>(-<span class="no">Species</span>), <span class="no">drop_errors</span>) <span class="kw">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span>(<span class="no">Species</span>) <span class="kw">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise_all.html">summarise_all</a></span>(<span class="no">mean</span>)
 <span class="co">#&gt; # A tibble: 3 x 5</span>
 <span class="co">#&gt;   Species    Sepal.Length Sepal.Width Petal.Length Petal.Width</span>
-<span class="co">#&gt;   &lt;fct&gt;              [cm]        [cm]         [cm]        [cm]</span>
-<span class="co">#&gt; 1 setosa            5.006       3.428        1.462       0.246</span>
-<span class="co">#&gt; 2 versicolor        5.936       2.770        4.260       1.326</span>
-<span class="co">#&gt; 3 virginica         6.588       2.974        5.552       2.026</span></pre></body></html></div>
-<p>Units alone work without issue, but errors or full-featured quantities are not compatible with <code>dplyr</code>’s grouped operations.</p>
+<span class="co">#&gt;   &lt;fct&gt;        (err) [cm]  (err) [cm]   (err) [cm]  (err) [cm]</span>
+<span class="co">#&gt; 1 setosa           5.0(3)      3.4(2)      1.46(7)     0.25(1)</span>
+<span class="co">#&gt; 2 versicolor       5.9(3)      2.8(1)       4.3(2)     1.33(7)</span>
+<span class="co">#&gt; 3 virginica        6.6(3)      3.0(1)       5.6(3)      2.0(1)</span></pre></body></html></div>
 </div>
 <div id="column-joining-1" class="section level3">
 <h3 class="hasAnchor">
 <a href="#column-joining-1" class="anchor"></a>Column Joining</h3>
-<p>Several verbs are provided for different types of joins, such as <code>inner_join</code>, <code>left_join</code>, <code>right_join</code> or <code>full_join</code>. It seems that, internally, they use the same grouping mechanism than summaries, and therefore they will generally fail for errors and full-featured quantities (note the missing uncertainty, as in the previous case):</p>
-<div class="sourceCode" id="cb27"><html><body><pre class="r"><span class="no">iris.q</span> <span class="kw">%&gt;%</span>
+<p>Several verbs are provided for different types of joins, such as <code>inner_join</code>, <code>left_join</code>, <code>right_join</code> or <code>full_join</code>. Internally, they use the same grouping mechanism than summaries. Therefore, since <code>dplyr</code> &gt;= 1.0.0, these are fully compatible with quantities too:</p>
+<div class="sourceCode" id="cb26"><html><body><pre class="r"><span class="no">iris.q</span> <span class="kw">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(
     <span class="kw">Height</span> <span class="kw">=</span> <span class="fu"><a href="../reference/quantities.html">set_quantities</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">55</span>, <span class="fl">60</span>, <span class="fl">45</span>), <span class="no">cm</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">45</span>, <span class="fl">30</span>, <span class="fl">35</span>)),
     <span class="kw">Species</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"setosa"</span>, <span class="st">"virginica"</span>, <span class="st">"versicolor"</span>)
@@ -441,63 +430,54 @@
 <span class="co">#&gt; 4  4.6(2) [cm] 3.1(2) [cm] 1.50(8) [cm] 0.20(1) [cm]  setosa 60(40) [cm]</span>
 <span class="co">#&gt; 5  5.0(2) [cm] 3.6(2) [cm] 1.40(7) [cm] 0.20(1) [cm]  setosa 60(40) [cm]</span>
 <span class="co">#&gt; 6  5.4(3) [cm] 3.9(2) [cm] 1.70(8) [cm] 0.40(2) [cm]  setosa 60(40) [cm]</span></pre></body></html></div>
+<p>The only difference with base <code>merge</code> here is that <code>dplyr</code> does not reorder columns with respect to the left-hand side.</p>
 </div>
 <div id="unpivoting-1" class="section level3">
 <h3 class="hasAnchor">
 <a href="#unpivoting-1" class="anchor"></a>(Un)Pivoting</h3>
-<p>Finally, pivoting and unpivoting is handled by a separate package, <code>tidyr</code>, using the verbs <code>spread</code> (pivot) and <code>gather</code> (unpivot).</p>
-<p>The unpivoting operation is substantially more straightforward. In the next example, we directly merge the four columns of interest into the <code>value</code> column, and the correspoding column names are gathered into the <code>key</code> column. Such a column is then separated into flower <code>part</code> (sepal, petal) and <code>dim</code> (length, height):</p>
-<div class="sourceCode" id="cb28"><html><body><pre class="r"><span class="no">iris.q</span> <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/gather.html">gather</a></span>(<span class="st">"key"</span>, <span class="st">"value"</span>, <span class="fl">1</span>:<span class="fl">4</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/separate.html">separate</a></span>(<span class="no">key</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"part"</span>, <span class="st">"dim"</span>)) <span class="kw">%&gt;%</span>
+<p>Finally, pivoting and unpivoting is handled by a separate package, <code>tidyr</code>. Historically, this was managed using the verbs <code>spread</code> (pivot) and <code>gather</code> (unpivot). These verbs, which are not compatible with quantities, are deprecated and no longer maintained.</p>
+<p>Instead, there are new and more straightforward verbs for (un)pivoting data frames called <code>pivot_wider</code> (equivalent to <code>spread</code>) and <code>pivot_longer</code> (equivalent to <code>gather</code>). These verbs do make use of the new approach brought by <code>vctrs</code> and therefore are fully compatible with quantities.</p>
+<p>Compared to base R, the unpivoting operation is substantially more straightforward. In the next example, we directly merge the four columns of interest into the <code>value</code> column, and the correspoding column names are gathered into the <code>name</code> column. Such a column is then separated into flower <code>part</code> (sepal, petal) and <code>dim</code> (length, height):</p>
+<div class="sourceCode" id="cb27"><html><body><pre class="r"><span class="no">iris.q</span> <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span>(<span class="fl">1</span>:<span class="fl">4</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/separate.html">separate</a></span>(<span class="no">name</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"part"</span>, <span class="st">"dim"</span>)) <span class="kw">%&gt;%</span>
   <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>()
-<span class="co">#&gt; Warning: attributes are not identical across measure variables;</span>
-<span class="co">#&gt; they will be dropped</span>
-<span class="co">#&gt;   Species  part    dim value</span>
-<span class="co">#&gt; 1  setosa Sepal Length   5.1</span>
-<span class="co">#&gt; 2  setosa Sepal Length   4.9</span>
-<span class="co">#&gt; 3  setosa Sepal Length   4.7</span>
-<span class="co">#&gt; 4  setosa Sepal Length   4.6</span>
-<span class="co">#&gt; 5  setosa Sepal Length   5.0</span>
-<span class="co">#&gt; 6  setosa Sepal Length   5.4</span></pre></body></html></div>
-<p>Unfortunately, it is evident that the operation completely drops all classes and attributes, and then quantities are not preserved.</p>
-<p>The pivoting operation does preserve classes and attributes, but the latter ones are not correctly handled. In the following example, we first gather the original data set, then we assign quantities and try to spread it to obtain <code>iris.q</code>:</p>
-<div class="sourceCode" id="cb29"><html><body><pre class="r"><span class="no">wide</span> <span class="kw">&lt;-</span> <span class="no">iris</span> <span class="kw">%&gt;%</span>
+<span class="co">#&gt; # A tibble: 6 x 4</span>
+<span class="co">#&gt;   Species part  dim         value</span>
+<span class="co">#&gt;   &lt;fct&gt;   &lt;chr&gt; &lt;chr&gt;  (err) [cm]</span>
+<span class="co">#&gt; 1 setosa  Sepal Length     5.1(3)</span>
+<span class="co">#&gt; 2 setosa  Sepal Width      3.5(2)</span>
+<span class="co">#&gt; 3 setosa  Petal Length    1.40(7)</span>
+<span class="co">#&gt; 4 setosa  Petal Width     0.20(1)</span>
+<span class="co">#&gt; 5 setosa  Sepal Length     4.9(2)</span>
+<span class="co">#&gt; 6 setosa  Sepal Width      3.0(2)</span></pre></body></html></div>
+<p>In the following example, we first unpivot the original data set, then we assign quantities and try to pivot it to obtain <code>iris.q</code> back, and it just works:</p>
+<div class="sourceCode" id="cb28"><html><body><pre class="r"><span class="no">iris</span> <span class="kw">%&gt;%</span>
   <span class="co"># first gather, with row numbers as row_id</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="kw">row_id</span> <span class="kw">=</span> <span class="fl">1</span>:<span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span>()) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/gather.html">gather</a></span>(<span class="st">"key"</span>, <span class="st">"value"</span>, <span class="fl">1</span>:<span class="fl">4</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/separate.html">separate</a></span>(<span class="no">key</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"part"</span>, <span class="st">"dim"</span>)) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span>(<span class="fl">1</span>:<span class="fl">4</span>) <span class="kw">%&gt;%</span>
   <span class="co"># assign quantities</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="kw">value</span> <span class="kw">=</span> <span class="fu"><a href="../reference/quantities.html">set_quantities</a></span>(<span class="no">value</span>, <span class="no">cm</span>, <span class="no">value</span> * <span class="fl">0.05</span>)) <span class="kw">%&gt;%</span>
-  <span class="co"># now spread</span>
-  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/unite.html">unite</a></span>(<span class="no">key</span>, <span class="no">part</span>, <span class="no">dim</span>, <span class="kw">sep</span><span class="kw">=</span><span class="st">"."</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/spread.html">spread</a></span>(<span class="no">key</span>, <span class="no">value</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(-<span class="no">row_id</span>)
-
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">wide</span>)
-<span class="co">#&gt;   Species Petal.Length  Petal.Width Sepal.Length  Sepal.Width</span>
-<span class="co">#&gt; 1  setosa 1.40(7) [cm] 0.20(7) [cm] 5.10(7) [cm] 3.50(7) [cm]</span>
-<span class="co">#&gt; 2  setosa 1.40(7) [cm] 0.20(7) [cm] 4.90(7) [cm] 3.00(7) [cm]</span>
-<span class="co">#&gt; 3  setosa 1.30(6) [cm] 0.20(6) [cm] 4.70(6) [cm] 3.20(6) [cm]</span>
-<span class="co">#&gt; 4  setosa 1.50(8) [cm] 0.20(8) [cm] 4.60(8) [cm] 3.10(8) [cm]</span>
-<span class="co">#&gt; 5  setosa 1.40(7) [cm] 0.20(7) [cm] 5.00(7) [cm] 3.60(7) [cm]</span>
-<span class="co">#&gt; 6  setosa 1.70(8) [cm] 0.40(8) [cm] 5.40(8) [cm] 3.90(8) [cm]</span></pre></body></html></div>
-<p>Apparently, everything worked, but in fact it didn’t:</p>
-<div class="sourceCode" id="cb30"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/all.html">all</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">iris.q</span>), <span class="kw">function</span>(<span class="no">col</span>) <span class="fu"><a href="https://rdrr.io/r/base/all.html">all</a></span>(<span class="no">iris.q</span><span class="kw">[[</span><span class="no">col</span>]] <span class="kw">==</span> <span class="no">wide</span><span class="kw">[[</span><span class="no">col</span>]])))
-<span class="co">#&gt; Error in `errors&lt;-.errors`(`*tmp*`, value = e): any(length(value) == c(length(x), 1L)) is not TRUE</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="fu"><a href="../reference/errors.html">errors</a></span>(<span class="no">iris.q</span>$<span class="no">Sepal.Length</span>))
-<span class="co">#&gt; [1] 150</span>
-<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="fu"><a href="../reference/errors.html">errors</a></span>(<span class="no">wide</span>$<span class="no">Sepal.Length</span>))
-<span class="co">#&gt; [1] 600</span></pre></body></html></div>
-<p>As shown above, the uncertainty was not properly subset and pivoted.</p>
+  <span class="co"># now spread and remove the row_id</span>
+  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html">pivot_wider</a></span>() <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(-<span class="no">row_id</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>()
+<span class="co">#&gt; # A tibble: 6 x 5</span>
+<span class="co">#&gt;   Species Sepal.Length Sepal.Width Petal.Length Petal.Width</span>
+<span class="co">#&gt;   &lt;fct&gt;     (err) [cm]  (err) [cm]   (err) [cm]  (err) [cm]</span>
+<span class="co">#&gt; 1 setosa        5.1(3)      3.5(2)      1.40(7)     0.20(1)</span>
+<span class="co">#&gt; 2 setosa        4.9(2)      3.0(2)      1.40(7)     0.20(1)</span>
+<span class="co">#&gt; 3 setosa        4.7(2)      3.2(2)      1.30(6)     0.20(1)</span>
+<span class="co">#&gt; 4 setosa        4.6(2)      3.1(2)      1.50(8)     0.20(1)</span>
+<span class="co">#&gt; 5 setosa        5.0(2)      3.6(2)      1.40(7)     0.20(1)</span>
+<span class="co">#&gt; 6 setosa        5.4(3)      3.9(2)      1.70(8)     0.40(2)</span></pre></body></html></div>
 </div>
 </div>
 <div id="summary" class="section level2">
 <h2 class="hasAnchor">
 <a href="#summary" class="anchor"></a>Summary</h2>
 <p>R base works smoothly with quantities in most cases. The only shortcoming is that some care must be applied to aggregations. In particular, simplification must be explicitly disabled (<code>simplify=FALSE</code>), and such a simplification (i.e., converting lists to vectors of quantities) must be applied manually while avoiding <code>unlist</code>.</p>
-<p>The tidyverse handles quantities correctly for subsetting, ordering and transformations. It fails to do so for aggregations (grouped operations in general), column joining and (un)pivoting. Most of these incompatibilities are due to the same internal grouping mechanism, which is in C and prevents the R subsetting operator from being called (which in turn calls the subsetting operator on the errors attribute). Interestingly, those operations still work for units alone, except for column gathering, which drops all classes and attributes.</p>
+<p>Since <code>dplyr</code> 1.0.0 and <code>tidyr</code> 1.1.0 (for <code>units</code> &gt;= 0.6-7, <code>errors</code> &gt;= 0.3.4 and <code>quantities</code> &gt;= 0.1.5), the new <code>vctrs</code>-based approach brings us full compatibility with quantities for all the operations considered in this document, including grouped operations, joining and pivoting, which did not work for previous versions.</p>
 </div>
 <div id="a-note-on-data-table" class="section level2">
 <h2 class="hasAnchor">
