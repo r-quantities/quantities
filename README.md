@@ -18,8 +18,8 @@ Blog posts:
 
 Vignettes:
 
-- [A Guide to Working with Quantities](https://github.com/r-quantities/quantities/blob/master/vignettes/introduction.Rmd).
-- [Parsing Quantities](https://github.com/r-quantities/quantities/blob/master/vignettes/parsing.Rmd).
+- [A Guide to Working with Quantities](https://r-quantities.github.io/quantities/articles/introduction.html).
+- [Parsing Quantities](https://r-quantities.github.io/quantities/articles/parsing.html).
 
 Papers:
 
