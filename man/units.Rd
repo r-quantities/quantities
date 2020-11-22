@@ -23,11 +23,12 @@
 \method{mixed_units}{errors}(x, values, ...)
 }
 \arguments{
-\item{x}{numeric vector, or object of class \code{units}}
+\item{x}{numeric vector, or object of class \code{units}.}
 
-\item{value}{object of class \code{units} or \code{symbolic_units}, or in the case of \code{set_units} expression with symbols that can be resolved in \link[units]{ud_units} (see examples).}
+\item{value}{object of class \code{units} or \code{symbolic_units}, or in the
+case of \code{set_units} expression with symbols (see examples).}
 
-\item{...}{passed on to \code{as_units}}
+\item{...}{passed on to other methods.}
 
 \item{mode}{if \code{"symbols"} (the default), then unit is constructed from
 the expression supplied. Otherwise, if\code{mode = "standard"},

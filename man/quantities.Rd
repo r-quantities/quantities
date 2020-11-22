@@ -27,7 +27,7 @@ of length 1 or the same length as \code{x} (see \code{\link[errors]{errors}}).}
 \item{errors}{a numeric vector of length 1 or the same length as \code{x}
 (see \code{\link[errors:errors]{set_errors}}).}
 
-\item{...}{passed on to \code{as_units}}
+\item{...}{passed on to other methods.}
 
 \item{mode}{if \code{"symbols"} (the default), then unit is constructed from
 the expression supplied. Otherwise, if\code{mode = "standard"},
