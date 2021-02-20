@@ -9,7 +9,7 @@
 #' @inheritParams units::mixed_units
 #' @inheritParams quantities
 #'
-#' @seealso \code{\link[units]{units}}, \code{\link[units]{set_units}}.
+#' @seealso \code{\link[units]{units}}, \code{\link[units:units]{set_units}}.
 #'
 #' @name units
 #' @export

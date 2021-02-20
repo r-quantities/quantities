@@ -43,5 +43,5 @@ Set or retrieve measurement units to/from numeric vectors and convert units
 \code{errors} objects).
 }
 \seealso{
-\code{\link[units]{units}}, \code{\link[units]{set_units}}.
+\code{\link[units]{units}}, \code{\link[units:units]{set_units}}.
 }

@@ -28,7 +28,6 @@ test_that("math methods work properly", {
 
   expect_error(sqrt(x))
   expect_quantities(sqrt(x^2), sqrt(xval^2), units(sqrt(xu^2)), errors(sqrt(xe^2)))
-  expect_warning(expect_errors(exp(x), exp(xval), errors(exp(xe))))
   expect_quantities(log(x), log(xval), units(log(xu)), errors(log(xe)))
   expect_quantities(log10(x), log(xval, 10), units(log(xu, 10)), errors(log(xe, 10)))
   expect_quantities(log2(x), log(xval, 2), units(log(xu, 2)), errors(log(xe, 2)))

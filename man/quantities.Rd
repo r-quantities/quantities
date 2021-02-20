@@ -22,7 +22,7 @@ or \code{errors}.}
 of length 1 or the same length as \code{x} (see \code{\link[errors]{errors}}).}
 
 \item{unit}{a \code{units} object, or something coercible to one with
-\code{as_units} (see \code{\link[units]{set_units}}).}
+\code{as_units} (see \code{\link[units:units]{set_units}}).}
 
 \item{errors}{a numeric vector of length 1 or the same length as \code{x}
 (see \code{\link[errors:errors]{set_errors}}).}

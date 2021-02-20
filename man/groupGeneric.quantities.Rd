@@ -35,7 +35,6 @@ See \code{\link[errors]{groupGeneric.errors}},
 }
 \examples{
 x <- set_quantities(1:3, m/s, 0.1)
-exp(x)
 log(x)
 cumsum(x)
 cumprod(x)
