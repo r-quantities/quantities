@@ -1,7 +1,6 @@
 ## Patch release
 
-Fixes compatibility with dplyr 1.0 and vctrs. Requires recent updates sent for
-packages units and errors.
+Fixes compatibility with upcoming `units` 0.7-0.
 
 ## Test environments
 
@@ -14,4 +13,4 @@ There were no ERRORs, WARNINGs or NOTEs.
 
 ## Downstream dependencies
 
-There are no downstream dependencies.
+No changes.
