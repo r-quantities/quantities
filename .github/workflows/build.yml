@@ -1,8 +1,4 @@
-on:
-  push:
-  pull_request:
-  repository_dispatch:
-    types: [units, errors]
+on: [push, pull_request]
 
 name: build
 
@@ -10,65 +6,47 @@ jobs:
   build:
     if: ${{ !contains(github.event.head_commit.message, '[ci skip]') }}
     runs-on: ${{ matrix.config.os }}
-    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+    name: check on ${{ matrix.config.os }} (${{ matrix.config.r }})
 
     strategy:
       fail-fast: false
       matrix:
         config:
-        - {os: macOS-latest, r: 'devel'}
         - {os: macOS-latest, r: 'release'}
         - {os: windows-latest, r: 'release'}
+        - {os: ubuntu-latest, r: 'devel', http-user-agent: 'release'}
         - {os: ubuntu-latest, r: 'release', covr: 'yes'}
         - {os: ubuntu-latest, r: 'oldrel'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+      R_KEEP_PKG_SOURCE: yes
       _R_CHECK_CRAN_INCOMING_REMOTE_: false
 
     steps:
-    - name: Configure git
-      if: ${{ runner.os == 'Windows' }}
-      run: git config --global core.autocrlf false
-
     - uses: actions/checkout@v2
-    - uses: r-lib/actions/setup-r@v1
-      with:
-        r-version: ${{ matrix.config.r }}
-    - uses: r-lib/actions/setup-pandoc@v1
-
-    - name: Query dependencies
+    - name: Add units and errors as Remotes
       run: |
-        install.packages('remotes')
-        saveRDS(remotes::dev_package_deps(dependencies=TRUE), ".github/depends.Rds", version=2)
-      shell: Rscript {0}
-
-    - name: Cache R packages
-      if: ${{ runner.os != 'Windows' }}
-      uses: actions/cache@v1
-      with:
-        path: ${{ env.R_LIBS_USER }}
-        key: ${{ matrix.config.os }}-r-${{ matrix.config.r }}-1-${{ hashFiles('.github/depends.Rds') }}
-        restore-keys: ${{ matrix.config.os }}-r-${{ matrix.config.r }}-1-
-
-    - name: Install Linux dependencies
-      if: ${{ runner.os == 'Linux' }}
-      run: sudo apt-get install devscripts libcurl4-openssl-dev libudunits2-dev
+        echo "Remotes: r-quantities/units, r-quantities/errors" >> DESCRIPTION
+    - uses: r-lib/actions/setup-r@v1
+     with:
+        r-version: ${{ matrix.config.r }}
+        http-user-agent: ${{ matrix.config.http-user-agent }}
+        use-public-rspm: true
+    - uses: r-lib/actions/setup-pandoc@v1
 
     - name: Install macOS dependencies
       if: ${{ runner.os == 'macOS' }}
       run: brew install automake udunits
 
-    - name: Install dependencies
-      run: |
-        remotes::install_github(paste0("r-quantities/", c("units", "errors")))
-        remotes::install_deps(dependencies=TRUE)
-        remotes::install_cran(c("rcmdcheck", "covr"))
-      shell: Rscript {0}
+    - uses: r-lib/actions/setup-r-dependencies@v1
+      with:
+        extra-packages: rcmdcheck, covr
 
     - name: Check
-      run: rcmdcheck::rcmdcheck(args=c("--no-manual", "--as-cran"), error_on="warning", check_dir="check")
+      run: |
+        rcmdcheck::rcmdcheck(args=c("--no-manual", "--as-cran"),
+          error_on="warning", check_dir="check")
       shell: Rscript {0}
 
     - name: Upload check results
