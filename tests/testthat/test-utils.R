@@ -1,5 +1,3 @@
-context("utils")
-
 test_that("objects with errors & units attributes are reclassed", {
   x <- 1
   expect_is(reclass(x), "numeric")

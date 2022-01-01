@@ -1,5 +1,3 @@
-context("ops")
-
 test_that("arithmetic operators work properly", {
   xval <- 1.1:10.1/100
   yval <- xval - 0.001

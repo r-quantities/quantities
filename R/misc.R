@@ -109,8 +109,7 @@ as.data.frame.quantities <- function(x, row.names = NULL, optional = FALSE, ...)
 #' as.list(x)
 #'
 #' @export
-as.list.quantities <- function(x, ...)
-  mapply(set_quantities, unclass(x), x, errors(x), mode="standard", SIMPLIFY=FALSE)
+as.list.quantities <- function(x, ...) reclass(NextMethod())
 
 #' Coerce to a Matrix
 #'

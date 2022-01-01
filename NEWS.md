@@ -1,7 +1,8 @@
-# quantities 0.1.6.1
+# quantities 0.1.6.2
 
 - Add compatibility between `errors::geom_errors` (r-quantities/errors#52) and
   `units::scale_[x|y]_units` (r-quantities/units#294) (#13).
+- Fix warning in `as.list.quantities`.
 
 # quantities 0.1.6
 

@@ -1,5 +1,3 @@
-context("misc")
-
 test_that("subsetting methods work properly", {
   xval <- 1.1:10.1
   xerr <- seq(0.005, 0.05, 0.005)

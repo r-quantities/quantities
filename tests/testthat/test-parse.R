@@ -1,5 +1,3 @@
-context("parse")
-
 test_that("basic parsing works", {
   expect_quantities(parse_quantities("a"), NA_real_, unitless, NA_real_)
   expect_quantities(parse_quantities("-1.234"), -1.234, unitless, 0)

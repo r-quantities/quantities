@@ -1,3 +1,6 @@
+options(errors.warn.bool = FALSE)
+options(errors.warn.coercion = FALSE)
+options(errors.warn.matmult = FALSE)
 
 expect_quantities <- function(x, xval, xunt, xerr) {
   expect_equal(class(x), c("quantities", "units", "errors"))

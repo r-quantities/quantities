@@ -1,5 +1,3 @@
-context("math")
-
 test_that("rounding methods work properly", {
   x <- set_quantities(c(-2, 0, 2), "m/s", 0.1)
   expect_equal(sign(x), c(-1, 0, 1))
