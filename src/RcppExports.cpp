@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // parse_vector_
 NumericVector parse_vector_(CharacterVector x, char decimalMark, char groupingMark);
 RcppExport SEXP _quantities_parse_vector_(SEXP xSEXP, SEXP decimalMarkSEXP, SEXP groupingMarkSEXP) {

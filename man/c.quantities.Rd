@@ -7,7 +7,9 @@
 \method{c}{quantities}(...)
 }
 \arguments{
-\item{...}{objects to be concatenated.}
+\item{...}{objects to be concatenated.  All \code{\link[base]{NULL}} entries
+    are dropped before method dispatch unless at the very beginning of the
+    argument list.}
 }
 \description{
 S3 method for \code{quantities} objects (see \code{\link{c}}).
