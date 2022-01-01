@@ -6,11 +6,12 @@ jobs:
   build:
     if: ${{ !contains(github.event.head_commit.message, '[ci skip]') }}
     runs-on: ${{ matrix.config.os }}
-    name: check on ${{ matrix.config.os }} (${{ matrix.config.r }})
+    name: check on ${{ matrix.config.os }} (${{ matrix.config.r }}, ${{ matrix.version }})
 
     strategy:
       fail-fast: false
       matrix:
+        version: [devel, cran]
         config:
         - {os: macOS-latest, r: 'release'}
         - {os: windows-latest, r: 'release'}
@@ -26,6 +27,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Add units and errors as Remotes
+      if: ${{ matrix.version == 'devel' }}
       run: |
         echo "Remotes: r-quantities/units, r-quantities/errors" >> DESCRIPTION
     - uses: r-lib/actions/setup-r@v1
