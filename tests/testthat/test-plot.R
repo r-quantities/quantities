@@ -1,5 +1,7 @@
 test_that("base plots work as expected", suppressWarnings({
   skip_if_not_installed("vdiffr")
+  skip_if_not_installed("errors", "0.3.6.1")
+  skip_if_not_installed("units", "0.8-0")
 
   iris.q <- iris
   for (i in 1:4)
