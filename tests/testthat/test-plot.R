@@ -1,6 +1,6 @@
-skip_if_not_installed("vdiffr")
-
 test_that("base plots work as expected", suppressWarnings({
+  skip_if_not_installed("vdiffr")
+
   iris.q <- iris
   for (i in 1:4)
     quantities(iris.q[,i]) <- list("cm", iris.q[,i] * 0.02)
@@ -29,11 +29,11 @@ test_that("base plots work as expected", suppressWarnings({
     iris.q, plot(Sepal.Length, drop_quantities(Sepal.Width), col=Species)))
 }))
 
-skip_if_not_installed("ggplot2")
-skip_if_not_installed("errors", "0.3.6.1")
-skip_if_not_installed("units", "0.8-0")
-
 test_that("ggplot2 plots work as expected", suppressWarnings({
+  skip_if_not_installed("vdiffr")
+  skip_if_not_installed("ggplot2")
+  skip_if_not_installed("errors", "0.3.6.1")
+  skip_if_not_installed("units", "0.8-0")
   library(ggplot2)
 
   iris.q <- iris
