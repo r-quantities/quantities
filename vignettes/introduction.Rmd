@@ -24,14 +24,14 @@ Let us consider the traditional `iris` data set for this exercise. According to 
 
 > `iris` is a data frame with 150 cases (rows) and 5 variables (columns) named `Sepal.Length`, `Sepal.Width`, `Petal.Length`, `Petal.Width`, and `Species`.
 
-And values are provided in centimeters. If we consider, for instance, a 5% of uncertainty, the first step is to define proper quantities. Then we will work on the resulting data frame for the rest of this article.
+And values are provided in centimeters. If we consider, for instance, a 2% of uncertainty, the first step is to define proper quantities. Then we will work on the resulting data frame for the rest of this article.
 
 ```{r}
 library(quantities)
 
 iris.q <- iris
 for (i in 1:4)
-  quantities(iris.q[,i]) <- list("cm", iris.q[,i] * 0.05)
+  quantities(iris.q[,i]) <- list("cm", iris.q[,i] * 0.02)
 head(iris.q)
 ```
 
@@ -54,8 +54,8 @@ print(c("base", "compiler", "datasets", "graphics", "grDevices", "grid", "method
 Quantities objects have all the subsetting methods defined (`[`, `[[`, `[<-`, `[[<-`). Therefore they can be used in the same way as with plain numeric vectors, and in conjunction with `which` and other functions to perform subsetting. The `subset` function is very handy too and achieves the same result:
 
 ```{r}
-iris.q[which(iris.q$Sepal.Length > set_quantities(7.5, cm)), ]
-subset(iris.q, Sepal.Length > set_quantities(7.5, cm))
+iris.q[which(iris.q$Sepal.Length > set_quantities(75, mm)), ]
+subset(iris.q, Sepal.Length > set_quantities(75, mm))
 ```
 
 Note that another quantities object is defined for the comparison. This is needed because different units are incomparable. Also note that the first line throws a warning telling us that the uncertainty was dropped for this operation. This kind of warning is thrown once, and this is why `subset` succeeds silently.
@@ -213,20 +213,82 @@ We have seen that quantities have been correctly preserved through the whole pro
 all(sapply(colnames(iris.q), function(col) all(iris.q[[col]] == wide.2[[col]])))
 ```
 
+### Plotting
+
+```{r, cache = FALSE, include=FALSE}
+required <- c(
+  packageVersion("errors") >= "0.3.6.1",
+  packageVersion("units") >= "0.8-0"
+)
+
+if (!all(required))
+  knitr::opts_chunk$set(eval = FALSE)
+```
+
+Quantities support R base scatterplots out of the box: errors are displayed as segments around each point and units are automatically added to the corresponding axis label.
+
+Here is an example of a simple plot of a single quantity, where each value is automatically indexed in the x-axis:
+
+```{r}
+# vector plots
+with(iris.q, plot(Sepal.Width, col=Species))
+```
+
+X-Y scatterplots support units and errors in both axes:
+
+```{r, eval=FALSE}
+# x-y plots
+with(iris.q, plot(Sepal.Length, Sepal.Width, col=Species))
+# dataframe plots
+plot(iris.q[, c("Sepal.Length", "Sepal.Width")], col=iris.q$Species)
+```
+
+which are equivalent, and produce the same result, as the formula method:
+
+```{r}
+plot(Sepal.Width ~ Sepal.Length, iris.q, col=Species)
+```
+
+There is a fundamental limitation in R base for mixed quantities and non-quantities data due to S3 dispatch. It is possible, for instance, to plot quantities in the x-axis and numeric data in the y-axis:
+
+```{r}
+plot(as.numeric(Sepal.Width) ~ Sepal.Length, iris.q, col=Species)
+```
+
+However, when the x-axis has numeric data, quantities methods will not be dispatched for the y-axis:
+
+```{r}
+plot(Sepal.Width ~ as.numeric(Sepal.Length), iris.q, col=Species)
+```
+
+One way to overcome this limitation is to set unitless and errorless quantities in the x-axis:
+
+```{r}
+plot(Sepal.Width ~ set_quantities(as.numeric(Sepal.Length), 1, 0), iris.q, col=Species)
+```
+
 ## Tidyverse
 
 ```{r, cache = FALSE, include=FALSE}
 required <- c("dplyr", "tidyr")
 
+knitr::opts_chunk$set(eval = TRUE)
 if (!all(sapply(required, requireNamespace, quietly = TRUE)))
   knitr::opts_chunk$set(eval = FALSE)
 ```
 
-The [*core tidyverse*](https://www.tidyverse.org/packages/) includes the following packages: `ggplot2`, `dplyr`, `tidyr`, `readr`, `purrr`, `tibble`, `stringr` and `forcats`. This section covers use cases for [`dplyr`](https://dplyr.tidyverse.org/) (everything except for pivoting and unpivoting) and [`tidyr`](https://tidyr.tidyverse.org/) (for pivoting and unpivoting).
+The [*core tidyverse*](https://www.tidyverse.org/packages/) includes the following packages: `ggplot2`, `dplyr`, `tidyr`, `readr`, `purrr`, `tibble`, `stringr` and `forcats`. This section covers use cases for [`dplyr`](https://dplyr.tidyverse.org/) (everything except for pivoting and unpivoting), [`tidyr`](https://tidyr.tidyverse.org/) (for pivoting and unpivoting) and `ggplot2` (for plotting).
 
 ```{r, message=FALSE, warning=FALSE}
 library(dplyr); packageVersion("dplyr")
 library(tidyr); packageVersion("tidyr")
+```
+
+Although not strictly necessary, we will convert the data frame to `tibble` format to enjoy the formatting provided by `pillar`.
+
+```{r}
+iris.q <- as_tibble(iris.q)
+head(iris.q)
 ```
 
 Since `dplyr` 1.0.0, as we will see, there is enhanced support for custom S3 classes thanks to the new implementation based on `vctrs` >= 0.3.0. Packages `units` >= 0.6-7, `errors` >= 0.3.4 and `quantities` >= 0.1.5 add support for this approach.
@@ -237,7 +299,7 @@ The `filter` generic finds observations where conditions hold. The main differen
 
 ```{r}
 iris.q %>%
-  filter(Sepal.Length > set_quantities(7.5, cm)) %>%
+  filter(Sepal.Length > set_quantities(75, mm)) %>%
   head()
 ```
 
@@ -324,11 +386,61 @@ iris %>%
   head()
 ```
 
+### Plotting
+
+```{r, cache = FALSE, include=FALSE}
+required <- c(
+  packageVersion("errors") >= "0.3.6.1",
+  packageVersion("units") >= "0.8-0"
+)
+
+if (!all(required))
+  knitr::opts_chunk$set(eval = FALSE)
+```
+
+```{r, message=FALSE, warning=FALSE}
+library(ggplot2); packageVersion("ggplot2")
+```
+
+Quantities packages provide `ggplot2` elements to make scatterplots straightforward:
+
+- `units` provides automatic detection of units scale type, with optional conversion and customization via `scale_x_units()` and `scale_y_units()`.
+- `errors` provides automatic placement of errorbars via `geom_errors()`.
+- `quantities` provides a compatibility layer between them, so that conversions from `scale_[x|y]_units` affect errorbars too.
+
+By default, units are automatically placed in the axes:
+
+```{r}
+p0 <- ggplot(iris.q) + aes(Sepal.Length, Sepal.Width, color=Species) +
+  geom_point()
+p0
+```
+
+And errobars can be requested via `geom_errors()`:
+
+```{r}
+p0 + geom_errors()
+```
+
+Errors may be dropped from any axis:
+
+```{r}
+p0 + geom_errors(aes(x=drop_errors(Sepal.Length)))
+```
+
+And units can be converted for display:
+
+```{r}
+p0 + geom_errors() + scale_x_units(unit="mm") + scale_y_units(unit="m")
+```
+
 ## Summary
 
 R base works smoothly with quantities in most cases. The only shortcoming is that some care must be applied to aggregations. In particular, simplification must be explicitly disabled (`simplify=FALSE`), and such a simplification (i.e., converting lists to vectors of quantities) must be applied manually while avoiding `unlist`.
 
 Since `dplyr` 1.0.0 and `tidyr` 1.1.0 (for `units` >= 0.6-7, `errors` >= 0.3.4 and `quantities` >= 0.1.5), the new `vctrs`-based approach brings us full compatibility with quantities for all the operations considered in this document, including grouped operations, joining and pivoting, which did not work for previous versions.
+
+Both R base and `ggplot2` plots work out of the box, although the latter provides much more flexibility and can be used independently of the tidyverse.
 
 ## A Note on `data.table`
 
