@@ -36,7 +36,8 @@ y <- set_quantities(4:6, m/s, 0.2)
 (z <- rbind(x, y))
 z[2, 2]
 z[2, 2] <- -1
-errors(z[[1, 2]]) <- 0.8
+errors(z[[1, 2]]) <- 0.8 # assumes same unit
+errors(z[[2, 2]]) <- set_units(80, cm/s)
 z[, 2]
 
 }

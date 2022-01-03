@@ -13,7 +13,8 @@
 #' (z <- rbind(x, y))
 #' z[2, 2]
 #' z[2, 2] <- -1
-#' errors(z[[1, 2]]) <- 0.8
+#' errors(z[[1, 2]]) <- 0.8 # assumes same unit
+#' errors(z[[2, 2]]) <- set_units(80, cm/s)
 #' z[, 2]
 #'
 #' @export
@@ -181,14 +182,6 @@ cbind.quantities <- function(..., deparse.level = 1) {
 #' @rdname cbind.quantities
 #' @export
 rbind.quantities <- cbind.quantities
-
-#' @export
-all.equal.quantities <- function(target, current, ...) {
-  units(current) <- units(target)
-  class(target) <- "errors"
-  class(current) <- "errors"
-  all.equal(target, current, ...)
-}
 
 #' @export
 str.quantities <- function(object, ...) {

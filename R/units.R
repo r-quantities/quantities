@@ -4,20 +4,30 @@
 #' (extensions to the \pkg{units} package for \code{quantities} and
 #' \code{errors} objects).
 #'
+#' @param x a numeric object, or object of class \code{quantities}, \code{units}
+#' or \code{errors}.
 #' @inheritParams units::units
-#' @inheritParams units::set_units
 #' @inheritParams units::mixed_units
-#' @inheritParams quantities
+#'
+#' @details For objects of class \code{quantities}, methods \code{`units<-`()}
+#' and \code{set_units()} automatically convert the associated uncertainty to
+#' the new unit (see examples below).
 #'
 #' @seealso \code{\link[units]{units}}, \code{\link[units:units]{set_units}}.
+#'
+#' @examples
+#' (x <- set_quantities(1:5, m, 0.01))
+#' set_units(x, cm)
 #'
 #' @name units
 #' @export
 `units<-.quantities` <- function(x, value) {
-  e <- errors(x) * get_scaling(units(x), value)
-  x <- NextMethod()
+  xx <- errors_max(x)
+  units(xx) <- value
+  x <- unclass(NextMethod())
+  e <- as.numeric(xx) - as.numeric(x)
   errors(x) <- e
-  x
+  reclass(x)
 }
 
 #' @name units
@@ -28,10 +38,6 @@
   class(x) <- "errors"
   reclass(x)
 }
-
-#' @name units
-#' @export
-set_units.quantities <- getS3method("set_units", "units")
 
 #' @name units
 #' @export

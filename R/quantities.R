@@ -77,6 +77,8 @@ quantities.quantities <- function(x) {
   stopifnot(length(value) == 2)
 
   units(x) <- value[[1]]
+  if (!is.null(value[[2]]))
+    units(value[[2]]) <- value[[1]]
   errors(x) <- value[[2]]
   x
 }

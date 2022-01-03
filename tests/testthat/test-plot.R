@@ -2,33 +2,34 @@ test_that("base plots work as expected", suppressWarnings({
   skip_if_not_installed("vdiffr")
   skip_if_not_installed("errors", "0.3.6.1")
   skip_if_not_installed("units", "0.8-0")
+  fplot <- function(...) function() plot(...)
 
   iris.q <- iris
   for (i in 1:4)
     quantities(iris.q[,i]) <- list("cm", iris.q[,i] * 0.02)
 
-  vdiffr::expect_doppelganger("plot dataframe", plot(
+  vdiffr::expect_doppelganger("plot dataframe", fplot(
     iris.q[, c("Sepal.Length", "Sepal.Width")], col=iris.q$Species))
 
   vdiffr::expect_doppelganger("plot x", with(
-    iris.q, plot(Sepal.Width, col=Species)))
+    iris.q, fplot(Sepal.Width, col=Species)))
   vdiffr::expect_doppelganger("plot x drop units", with(
-    iris.q, plot(drop_units(Sepal.Width), col=Species)))
+    iris.q, fplot(drop_units(Sepal.Width), col=Species)))
   vdiffr::expect_doppelganger("plot x drop errors", with(
-    iris.q, plot(drop_errors(Sepal.Width), col=Species)))
+    iris.q, fplot(drop_errors(Sepal.Width), col=Species)))
 
   vdiffr::expect_doppelganger("plot xy", with(
-    iris.q, plot(Sepal.Length, Sepal.Width, col=Species)))
+    iris.q, fplot(Sepal.Length, Sepal.Width, col=Species)))
   vdiffr::expect_doppelganger("plot xy drop units x", with(
-    iris.q, plot(drop_units(Sepal.Length), Sepal.Width, col=Species)))
+    iris.q, fplot(drop_units(Sepal.Length), Sepal.Width, col=Species)))
   vdiffr::expect_doppelganger("plot xy drop units y", with(
-    iris.q, plot(Sepal.Length, drop_units(Sepal.Width), col=Species)))
+    iris.q, fplot(Sepal.Length, drop_units(Sepal.Width), col=Species)))
   vdiffr::expect_doppelganger("plot xy drop errors x", with(
-    iris.q, plot(drop_errors(Sepal.Length), Sepal.Width, col=Species)))
-  #vdiffr::expect_doppelganger("plot xy drop errors y", with(
-  #  iris.q, plot(Sepal.Length, drop_errors(Sepal.Width), col=Species)))
+    iris.q, fplot(drop_errors(Sepal.Length), Sepal.Width, col=Species)))
+  vdiffr::expect_doppelganger("plot xy drop errors y", with(
+    iris.q, fplot(Sepal.Length, drop_errors(Sepal.Width), col=Species)))
   vdiffr::expect_doppelganger("plot xy drop quantities y", with(
-    iris.q, plot(Sepal.Length, drop_quantities(Sepal.Width), col=Species)))
+    iris.q, fplot(Sepal.Length, drop_quantities(Sepal.Width), col=Species)))
 }))
 
 test_that("ggplot2 plots work as expected", suppressWarnings({

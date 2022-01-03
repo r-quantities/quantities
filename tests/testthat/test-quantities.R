@@ -24,11 +24,11 @@ test_that("quantities objects are correctly created (standard)", {
   expect_quantities(x, xval, xunt, xerr)
 
   x <- set_units(xval, xunt, mode="standard")
-  errors(x) <- xerr
+  errors(x) <- set_units(xerr, xunt, mode="standard")
   expect_quantities(x, xval, xunt, xerr)
 
   x <- set_units(xval, xunt, mode="standard")
-  x <- set_errors(x, xerr)
+  x <- set_errors(x, set_units(xerr, xunt, mode="standard"))
   expect_quantities(x, xval, xunt, xerr)
 
   x <- set_errors(xval, xerr)
@@ -74,14 +74,14 @@ test_that("units and errors can be converted", {
   expect_error(units(x) <- "l")
   units(x) <- xunt_conv
   expect_quantities(x, 3.6 * xval, xunt_conv, 3.6 * xerr)
-  errors(x) <- 2 * xerr
+  errors(x) <- set_units(2 * xerr, xunt_conv, mode="standard")
   expect_quantities(x, 3.6 * xval, xunt_conv, 2 * xerr)
 
   x <- set_quantities(xval, xunt, xerr, mode="standard")
   expect_error(set_units(x, "l"))
   x <- set_units(x, xunt_conv, mode="standard")
   expect_quantities(x, 3.6 * xval, xunt_conv, 3.6 * xerr)
-  x <- set_errors(x, 2 * xerr)
+  x <- set_errors(x,set_units(2 * xerr, xunt_conv, mode="standard"))
   expect_quantities(x, 3.6 * xval, xunt_conv, 2 * xerr)
 
   x <- set_quantities(xval, xunt, xerr, mode="standard")
@@ -144,18 +144,18 @@ test_that("units and errors are correctly retrieved", {
   xunt <- "m/s"
 
   x <- set_quantities(xval, xunt, xerr, mode="standard")
-  expect_equal(as.character(quantities(x)[["units"]]), xunt)
-  expect_equal(as.character(units(x)), xunt)
+  expect_equal(quantities(x)[["units"]], units(as_units(xunt)))
+  expect_equal(units(x), units(as_units(xunt)))
   expect_equal(quantities(x)[["errors"]], xerr)
-  expect_equal(errors(x), xerr)
+  expect_equal(drop_units(errors(x)), xerr)
 })
 
 test_that("defaults work as expected", {
   xval <- c(0, NA, NaN, Inf)
   x <- set_quantities(xval)
-  expect_equal(as.character(units(x)), "1")
+  expect_equal(units(x), units(as_units("1")))
   expect_equal(as.numeric(x), xval)
-  expect_equal(errors(x), xval)
+  expect_equal(drop_units(errors(x)), xval)
 })
 
 test_that("a zero-valued non-offset quantity DOES scale errors", {
@@ -163,9 +163,25 @@ test_that("a zero-valued non-offset quantity DOES scale errors", {
   expect_quantities(x, 0, "km", 0.001)
 })
 
-test_that("an offset quantity DOES NOT scale errors", {
-  xval <- as.numeric(set_units(set_units(0, "celsius"), "K"))
-  xerr <- 1
-  x <- set_units(set_quantities(0, "celsius", xerr), "K")
-  expect_quantities(x, xval, "K", xerr)
+test_that("unit conversion of errors works correctly", {
+  xval <- 0:1
+  xerr <- 0.2
+
+  x <- set_errors(set_quantities(xval, "m", xerr), set_units(1, "mm"))
+  y <- set_units(set_quantities(xval, "m", xerr), "mm")
+  yval <- as.numeric(set_units(set_units(xval, "m"), "mm"))
+  expect_quantities(x, xval, "m", rep(1/diff(yval), 2))
+  expect_quantities(y, yval, "mm", rep(xerr*diff(yval), 2))
+
+  x <- set_errors(set_quantities(xval, "celsius", xerr), set_units(1, "K"))
+  y <- set_units(set_quantities(xval, "celsius", xerr), "K")
+  yval <- as.numeric(set_units(set_units(xval, "celsius"), "K"))
+  expect_quantities(x, xval, "celsius", rep(1/diff(yval), 2))
+  expect_quantities(y, yval, "K", rep(xerr*diff(yval), 2))
+
+  x <- set_errors(set_quantities(xval, "celsius", xerr), set_units(1, "Fahrenheit"))
+  y <- set_units(set_quantities(xval, "celsius", xerr), "Fahrenheit")
+  yval <- as.numeric(set_units(set_units(xval, "celsius"), "Fahrenheit"))
+  expect_quantities(x, xval, "celsius", rep(1/diff(yval), 2))
+  expect_quantities(y, yval, "Fahrenheit", rep(xerr*diff(yval), 2))
 })

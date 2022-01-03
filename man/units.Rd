@@ -4,7 +4,6 @@
 \alias{units}
 \alias{units<-.quantities}
 \alias{units<-.errors}
-\alias{set_units.quantities}
 \alias{set_units.errors}
 \alias{mixed_units.quantities}
 \alias{mixed_units.errors}
@@ -14,8 +13,6 @@
 
 \method{units}{errors}(x) <- value
 
-\method{set_units}{quantities}(x, value, ..., mode = units_options("set_units_mode"))
-
 \method{set_units}{errors}(x, value, ..., mode = units_options("set_units_mode"))
 
 \method{mixed_units}{quantities}(x, values, ...)
@@ -23,7 +20,8 @@
 \method{mixed_units}{errors}(x, values, ...)
 }
 \arguments{
-\item{x}{numeric vector, or object of class \code{units}.}
+\item{x}{a numeric object, or object of class \code{quantities}, \code{units}
+or \code{errors}.}
 
 \item{value}{object of class \code{units} or \code{symbolic_units}, or in the
 case of \code{set_units} expression with symbols (see examples).}
@@ -41,6 +39,16 @@ via a global option \code{units_options(set_units_mode = "standard")}}
 Set or retrieve measurement units to/from numeric vectors and convert units
 (extensions to the \pkg{units} package for \code{quantities} and
 \code{errors} objects).
+}
+\details{
+For objects of class \code{quantities}, methods \code{`units<-`()}
+and \code{set_units()} automatically convert the associated uncertainty to
+the new unit (see examples below).
+}
+\examples{
+(x <- set_quantities(1:5, m, 0.01))
+set_units(x, cm)
+
 }
 \seealso{
 \code{\link[units]{units}}, \code{\link[units:units]{set_units}}.
