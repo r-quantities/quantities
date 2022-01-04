@@ -10,6 +10,8 @@
 \alias{set_errors.mixed_units}
 \alias{errors_max.units}
 \alias{errors_min.units}
+\alias{correl<-.quantities}
+\alias{covar<-.quantities}
 \title{Handle Measurement Uncertainty on a Numeric Vector}
 \usage{
 \method{errors}{units}(x)
@@ -27,6 +29,10 @@
 \method{errors_max}{units}(x)
 
 \method{errors_min}{units}(x)
+
+\method{correl}{quantities}(x, y) <- value
+
+\method{covar}{quantities}(x, y) <- value
 }
 \arguments{
 \item{x}{a numeric object, or object of class \code{quantities}, \code{units}

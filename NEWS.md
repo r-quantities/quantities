@@ -12,6 +12,8 @@
   this way, uncertainty can be provided in different (but compatible) units,
   and it will be automatically converted to the units of `x` (see
   `help("errors", "quantities")`).
+- Add support for correlations and covariances with units for objects of class
+  `quantities` (as part of #14).
 - Remove some superfluous `.quantities` methods (as part of #14).
 
 # quantities 0.1.6

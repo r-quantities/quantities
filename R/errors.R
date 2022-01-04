@@ -76,3 +76,22 @@ errors_max.units <- function(x)
 #' @export
 errors_min.units <- function(x)
   set_units(errors_min(drop_units(x)), units(x), mode="standard")
+
+#' @name errors
+#' @export
+`correl<-.quantities` <- function(x, y, value) {
+  stopifnot(inherits(y, "quantities"))
+  if (inherits(value, "units"))
+    stopifnot(units(value) == units(as_units(1)))
+  else units(value) <- 1
+  NextMethod()
+}
+
+#' @name errors
+#' @export
+`covar<-.quantities` <- function(x, y, value) {
+  stopifnot(inherits(y, "quantities"))
+  stopifnot(inherits(value, "units"))
+  stopifnot(ud_are_convertible(units(value), units(x*y)))
+  NextMethod()
+}
