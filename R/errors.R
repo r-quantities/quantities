@@ -77,7 +77,29 @@ errors_max.units <- function(x)
 errors_min.units <- function(x)
   set_units(errors_min(drop_units(x)), units(x), mode="standard")
 
-#' @name errors
+#' Handle Correlations Between \code{quantities} Objects
+#'
+#' Methods to set or retrieve correlations or covariances between
+#' \code{quantities} objects.
+#'
+#' @param x an object of class \code{quantities}.
+#' @param y an object of class \code{quantities} of the same length as \code{x}.
+#' @param value a compatible object of class \code{units} of length 1 or the
+#' same length as \code{x}. For correlations, this means a unitless vector (a
+#' numeric vector is also accepted in this case). For covariances, this means
+#' the same magnitude as \code{x*y}.
+#'
+#' @seealso \code{\link[errors]{correl}}.
+#'
+#' @examples
+#' x <- set_quantities(1:10, m/s, 0.1)
+#' y <- set_quantities(10:1, km/h, 0.2)
+#' correl(x, y) <- 0.1 # accepted
+#' correl(x, y) <- set_units(0.1) # recommended
+#' correl(x, y)
+#' covar(x, y)
+#'
+#' @name correl
 #' @export
 `correl<-.quantities` <- function(x, y, value) {
   stopifnot(inherits(y, "quantities"))
@@ -87,7 +109,7 @@ errors_min.units <- function(x)
   NextMethod()
 }
 
-#' @name errors
+#' @name correl
 #' @export
 `covar<-.quantities` <- function(x, y, value) {
   stopifnot(inherits(y, "quantities"))
