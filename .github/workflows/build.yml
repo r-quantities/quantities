@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: [devel, cran]
+        version: [devel]
         config:
         - {os: macOS-latest, r: 'release'}
         - {os: windows-latest, r: 'release'}

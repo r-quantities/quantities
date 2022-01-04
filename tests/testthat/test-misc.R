@@ -27,8 +27,8 @@ test_that("diff method works properly", {
   xerr <- seq(0.005, 0.05, 0.005)
   xunt <- "m/s"
   x <- set_quantities(xval, xunt, xerr, mode="standard")
+  y <- drop_units(x)
 
-  y <- x
   for (i in 1:(length(y)-1)) y[i] <- y[i+1] - y[i]
   expect_quantities(diff(x), diff(xval), xunt, errors(y)[1:9])
 })

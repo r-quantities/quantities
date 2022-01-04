@@ -1,9 +1,20 @@
-# quantities 0.1.6.3
+# quantities 0.2.0
 
 - Add compatibility between `errors::geom_errors` (r-quantities/errors#52) and
   `units::scale_[x|y]_units` (r-quantities/units#294) (#13).
 - Fix warning in `as.list.quantities`.
 - Add plotting examples to introductory vignette.
+- Add support for errors with units (#14). For objects of class `quantities` or
+  `units`, the `errors()` method now returns a `units` object that matches the
+  units of `x`. Methods `errors<-()` and `set_errors()` assume that the provided
+  uncertainty (`value`) has the same units as `x` (for backwards compatibility).
+  However, it is a best practice to provide a `value` with explicit units. In
+  this way, uncertainty can be provided in different (but compatible) units,
+  and it will be automatically converted to the units of `x` (see
+  `help("errors", "quantities")`).
+- Add support for correlations and covariances with units for objects of class
+  `quantities` (as part of #14).
+- Remove some superfluous `.quantities` methods (as part of #14).
 
 # quantities 0.1.6
 

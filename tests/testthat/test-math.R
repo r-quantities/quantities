@@ -74,8 +74,8 @@ test_that("cumulative methods work properly", {
   xu <- set_units(xval, xunt, mode="standard")
   xe <- set_errors(xval, xerr)
 
-  expect_quantities(cumsum(x), cumsum(xval), units(cumsum(xu)), errors(cumsum(x)))
+  expect_quantities(cumsum(x), cumsum(xval), units(cumsum(xu)), errors(cumsum(xe)))
   expect_warning(expect_errors(cumprod(x), cumprod(xval), errors(cumprod(xe))))
-  expect_quantities(cummax(x), cummax(xval), units(cummax(xu)), errors(cummax(x)))
-  expect_quantities(cummin(x), cummin(xval), units(cummin(xu)), errors(cummin(x)))
+  expect_quantities(cummax(x), cummax(xval), units(cummax(xu)), errors(cummax(xe)))
+  expect_quantities(cummin(x), cummin(xval), units(cummin(xu)), errors(cummin(xe)))
 })

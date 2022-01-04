@@ -2,49 +2,60 @@
 % Please edit documentation in R/errors.R
 \name{errors}
 \alias{errors}
-\alias{errors.quantities}
 \alias{errors.units}
 \alias{errors.mixed_units}
-\alias{errors<-.quantities}
 \alias{errors<-.units}
 \alias{errors<-.mixed_units}
-\alias{set_errors.quantities}
 \alias{set_errors.units}
 \alias{set_errors.mixed_units}
-\alias{errors_max.quantities}
-\alias{errors_min.quantities}
+\alias{errors_max.units}
+\alias{errors_min.units}
 \title{Handle Measurement Uncertainty on a Numeric Vector}
 \usage{
-\method{errors}{quantities}(x)
-
 \method{errors}{units}(x)
 
 \method{errors}{mixed_units}(x)
-
-\method{errors}{quantities}(x) <- value
 
 \method{errors}{units}(x) <- value
 
 \method{errors}{mixed_units}(x) <- value
 
-\method{set_errors}{quantities}(x, value = 0)
-
 \method{set_errors}{units}(x, value = 0)
 
 \method{set_errors}{mixed_units}(x, value = 0)
 
-\method{errors_max}{quantities}(x)
+\method{errors_max}{units}(x)
 
-\method{errors_min}{quantities}(x)
+\method{errors_min}{units}(x)
 }
 \arguments{
-\item{x}{a numeric object, or object of class \code{errors}.}
+\item{x}{a numeric object, or object of class \code{quantities}, \code{units}
+or \code{errors}.}
 
-\item{value}{a numeric vector of length 1 or the same length as \code{x}.}
+\item{value}{a numeric vector or \code{units} object of length 1, or the same
+length as \code{x} (see details).}
 }
 \description{
 Set or retrieve measurement uncertainty to/from numeric vectors (extensions
 to the \pkg{errors} package for \code{quantities} and \code{units} objects).
+}
+\details{
+For objects of class \code{quantities} or \code{units}, the
+\code{errors()} method returns a \code{units} object that matches the units
+of \code{x}. Methods \code{`errors<-`()} and \code{set_errors()} assume that
+the provided uncertainty (\code{value}) has the same units as \code{x}.
+However, it is a best practice to provide a \code{value} with explicit units.
+In this way, uncertainty can be provided in different (but compatible) units,
+and it will be automatically converted to the units of \code{x} (see examples
+below).
+}
+\examples{
+x <- set_units(1:5, m)
+errors(x) <- 0.01 # implicit units, same as x
+errors(x)
+errors(x) <- set_units(1, cm) # explicit units
+errors(x)
+
 }
 \seealso{
 \code{\link[errors]{errors}}.
