@@ -15,6 +15,7 @@
 - Add support for correlations and covariances with units for objects of class
   `quantities` (as part of #14).
 - Remove some superfluous `.quantities` methods (as part of #14).
+- Implement methods for `duplicated`, `anyDuplicated` and `unique` (#12).
 
 # quantities 0.1.6
 

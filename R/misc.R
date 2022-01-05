@@ -190,3 +190,13 @@ str.quantities <- function(object, ...) {
   err <- capture.output(str(drop_units(object), ...))
   cat(paste0(" Units+Errors: ", unit_string, sub("^ [[:graph:]]*", "", err)[1]))
 }
+
+#' @export
+duplicated.quantities <- getS3method("duplicated", "errors")
+
+#' @export
+anyDuplicated.quantities <- getS3method("anyDuplicated", "errors")
+
+#' @export
+unique.quantities <- function(x, incomparables = FALSE, ...)
+  reclass(getS3method("unique", "errors")(x, incomparables, ...))
