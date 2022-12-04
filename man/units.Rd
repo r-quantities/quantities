@@ -13,7 +13,8 @@
 
 \method{units}{errors}(x) <- value
 
-\method{set_units}{errors}(x, value, ..., mode = units_options("set_units_mode"))
+\method{set_units}{errors}(x, value, ...,
+  mode = units_options("set_units_mode"))
 
 \method{mixed_units}{quantities}(x, values, ...)
 

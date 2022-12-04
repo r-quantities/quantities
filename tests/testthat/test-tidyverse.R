@@ -41,10 +41,10 @@ test_that("can combine quantities", {
   x <- set_quantities(1:3, "cm", 3:1, mode = "standard")
   df <- dplyr::tibble(x = dplyr::tibble(x = x))
 
-  out <- vctrs::vec_unchop(vctrs::vec_chop(x))
+  out <- vctrs::list_unchop(vctrs::vec_chop(x))
   expect_equal(out, x)
 
-  out <- vctrs::vec_unchop(vctrs::vec_chop(df))
+  out <- vctrs::list_unchop(vctrs::vec_chop(df))
   expect_equal(out, df)
 })
 
