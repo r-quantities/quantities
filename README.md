@@ -1,7 +1,7 @@
 # <img src="https://avatars1.githubusercontent.com/u/32303769?s=40&v=4"> quantities: Quantity Calculus for R Vectors
 
 [![Build Status](https://github.com/r-quantities/quantities/workflows/build/badge.svg)](https://github.com/r-quantities/quantities/actions)
-[![Coverage Status](https://codecov.io/gh/r-quantities/quantities/branch/master/graph/badge.svg)](https://codecov.io/gh/r-quantities/quantities) 
+[![Coverage Status](https://codecov.io/gh/r-quantities/quantities/branch/master/graph/badge.svg)](https://app.codecov.io/gh/r-quantities/quantities) 
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/quantities)](https://cran.r-project.org/package=quantities)
 [![Downloads](https://cranlogs.r-pkg.org/badges/quantities)](https://cran.r-project.org/package=quantities)
 
@@ -11,10 +11,10 @@ The **quantities** package provides integration of the 'units' and 'errors' pack
 
 Blog posts:
 
-1. [Quantities for R -- First working prototype](https://www.r-spatial.org/r/2018/03/01/quantities-first-prototype.html), Mar 1, 2018.
-2. [Using quantities to parse data with units and errors](https://www.r-spatial.org/r/2018/05/07/parsing-quantities.html), May 7, 2018.
-3. [Data wrangling operations with quantities](https://www.r-spatial.org/r/2018/06/27/wrangling-quantities.html), Jun 27, 2018.
-4. [Quantities for R -- Ready for a CRAN release](https://www.r-spatial.org/r/2018/08/31/quantities-final.html), Aug 31, 2018.
+1. [Quantities for R -- First working prototype](https://r-spatial.org/r/2018/03/01/quantities-first-prototype.html), Mar 1, 2018.
+2. [Using quantities to parse data with units and errors](https://r-spatial.org/r/2018/05/07/parsing-quantities.html), May 7, 2018.
+3. [Data wrangling operations with quantities](https://r-spatial.org/r/2018/06/27/wrangling-quantities.html), Jun 27, 2018.
+4. [Quantities for R -- Ready for a CRAN release](https://r-spatial.org/r/2018/08/31/quantities-final.html), Aug 31, 2018.
 
 Vignettes:
 
@@ -45,6 +45,6 @@ remotes::install_github(paste("r-quantities", c("units", "errors", "quantities")
 
 This project gratefully acknowledges financial [support](https://www.r-consortium.org/projects) from the
 
-<a href="https://www.r-consortium.org/projects/awarded-projects">
+<a href="https://www.r-consortium.org/all-projects/awarded-projects">
 <img src="http://pebesma.staff.ifgi.de/RConsortium_Horizontal_Pantone.png" width="300">
 </a>
