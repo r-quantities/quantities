@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,23 +33,17 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">quantities</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -67,7 +63,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/r-quantities/quantities/">
+  <a href="https://github.com/r-quantities/quantities/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -82,111 +78,149 @@
 
       
 
-      </header><script src="parsing_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Parsing Quantities</h1>
-                        <h4 class="author">Iñaki Ucar</h4>
+                        <h4 data-toc-skip class="author">Iñaki Ucar</h4>
             
-            <h4 class="date">2021-02-21</h4>
+            <h4 data-toc-skip class="date">2022-12-05</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/r-quantities/quantities/blob/master/vignettes/parsing.Rmd"><code>vignettes/parsing.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/r-quantities/quantities/blob/HEAD/vignettes/parsing.Rmd" class="external-link"><code>vignettes/parsing.Rmd</code></a></small>
       <div class="hidden name"><code>parsing.Rmd</code></div>
 
     </div>
 
     
     
-<div id="introduction" class="section level2">
-<h2 class="hasAnchor">
-<a href="#introduction" class="anchor"></a>Introduction</h2>
-<p>The <a href="http://www.bipm.org/">BIPM</a> (<em>Bureau International des Poids et Mesures</em>) is the international <em>authority</em> on measurement units and uncertainty. The Joint Committee for Guides in Metrology (JCGM), dependent on the BIPM together with other international standardisation bodies, maintains two fundamental guides in metrology: the <a href="http://www.bipm.org/vim">VIM</a> (“The International Vocabulary of Metrology – Basic and General Concepts and Associated Terms”) and the <a href="https://www.bipm.org/en/publications/guides/gum.html">GUM</a> (“Evaluation of Measurement Data – Guide to the Expression of Uncertainty in Measurement”). The latter defines four ways of reporting standard uncertainty. For example, if we are reporting a nominal mass <span class="math inline">\(m_S\)</span> of 100 g with some uncertainty <span class="math inline">\(u_c\)</span>:</p>
+<div class="section level2">
+<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+</h2>
+<p>The <a href="https://www.bipm.org/" class="external-link">BIPM</a> (<em>Bureau
+International des Poids et Mesures</em>) is the international
+<em>authority</em> on measurement units and uncertainty. The Joint
+Committee for Guides in Metrology (JCGM), dependent on the BIPM together
+with other international standardisation bodies, maintains two
+fundamental guides in metrology: the <a href="https://www.bipm.org/en/committees/jc/jcgm/publications" class="external-link">VIM</a>
+(“The International Vocabulary of Metrology – Basic and General Concepts
+and Associated Terms”) and the <a href="https://www.bipm.org/en/committees/jc/jcgm/publications" class="external-link">GUM</a>
+(“Evaluation of Measurement Data – Guide to the Expression of
+Uncertainty in Measurement”). The latter defines four ways of reporting
+standard uncertainty. For example, if we are reporting a nominal mass
+<span class="math inline">\(m_S\)</span> of 100 g with some uncertainty
+<span class="math inline">\(u_c\)</span>:</p>
 <ol style="list-style-type: decimal">
 <li>
-<span class="math inline">\(m_S\)</span> = 100.02147 g, <span class="math inline">\(u_c\)</span> = 0.35 mg; that is, quantity an uncertainty are reported separatedly, and thus they may be expressed in different units.</li>
+<span class="math inline">\(m_S\)</span> = 100.02147 g, <span class="math inline">\(u_c\)</span> = 0.35 mg; that is, quantity an
+uncertainty are reported separatedly, and thus they may be expressed in
+different units.</li>
 <li>
-<span class="math inline">\(m_S\)</span> = 100.02147(35) g, where the number in parentheses is the value of <span class="math inline">\(u_c\)</span> referred to the corresponding last digits of the reported quantity.</li>
+<span class="math inline">\(m_S\)</span> = 100.02147(35) g, where
+the number in parentheses is the value of <span class="math inline">\(u_c\)</span> referred to the corresponding last
+digits of the reported quantity.</li>
 <li>
-<span class="math inline">\(m_S\)</span> = 100.02147(0.00035) g, where the number in parentheses is the value of <span class="math inline">\(u_c\)</span> expressed in the unit of the reported quantity.</li>
+<span class="math inline">\(m_S\)</span> = 100.02147(0.00035) g,
+where the number in parentheses is the value of <span class="math inline">\(u_c\)</span> expressed in the unit of the reported
+quantity.</li>
 <li>
-<span class="math inline">\(m_S\)</span> = (100.02147 <span class="math inline">\(\pm\)</span> 0.00035), where the number following the symbol <span class="math inline">\(\pm\)</span> is the value of <span class="math inline">\(u_c\)</span> in the unit of the reported quantity.</li>
+<span class="math inline">\(m_S\)</span> = (100.02147 <span class="math inline">\(\pm\)</span> 0.00035), where the number following
+the symbol <span class="math inline">\(\pm\)</span> is the value of
+<span class="math inline">\(u_c\)</span> in the unit of the reported
+quantity.</li>
 </ol>
-<p>The second scheme is the most compact one, and it is the default reporting mode in the <code>errors</code> package. The fourth scheme is also supported given that it is a very extended notation, but the GUM discourages its use to prevent confusion with confidence intervals.</p>
-<p>In the same lines, the BIMP also publishes the <a href="https://www.bipm.org/en/measurement-units/">International System of Units</a> (SI), which consist of seven base units and derived units, many of them with special names and symbols. Units are reported after the corresponding quantity using products of powers of symbols (e.g., 1 N = 1 m kg s-2).</p>
+<p>The second scheme is the most compact one, and it is the default
+reporting mode in the <code>errors</code> package. The fourth scheme is
+also supported given that it is a very extended notation, but the GUM
+discourages its use to prevent confusion with confidence intervals.</p>
+<p>In the same lines, the BIMP also publishes the <a href="https://www.bipm.org/en/measurement-units/" class="external-link">International System
+of Units</a> (SI), which consist of seven base units and derived units,
+many of them with special names and symbols. Units are reported after
+the corresponding quantity using products of powers of symbols (e.g., 1
+N = 1 m kg s-2).</p>
 </div>
-<div id="available-parsers" class="section level2">
-<h2 class="hasAnchor">
-<a href="#available-parsers" class="anchor"></a>Available parsers</h2>
-<p>The <code>quantities</code> package provides three methods that parse units and uncertainty following the GUM’s recommendations:</p>
+<div class="section level2">
+<h2 id="available-parsers">Available parsers<a class="anchor" aria-label="anchor" href="#available-parsers"></a>
+</h2>
+<p>The <code>quantities</code> package provides three methods that parse
+units and uncertainty following the GUM’s recommendations:</p>
 <ul>
 <li>
-<code><a href="../reference/parse_quantities.html">parse_quantities()</a></code>: The returned value is always a <code>quantities</code> object.
+<code><a href="../reference/parse_quantities.html">parse_quantities()</a></code>: The returned value is always a
+<code>quantities</code> object.
 <ul>
-<li>If no uncertainty was found, a zero error is assumed for all values.</li>
+<li>If no uncertainty was found, a zero error is assumed for all
+values.</li>
 <li>If no units were found, all values are supposed to be unitless.</li>
 </ul>
 </li>
 <li>
-<code><a href="../reference/parse_quantities.html">parse_errors()</a></code>: The returned value is always an <code>errors</code> object.
+<code><a href="../reference/parse_quantities.html">parse_errors()</a></code>: The returned value is always an
+<code>errors</code> object.
 <ul>
-<li>If no uncertainty was found, a zero error is assumed for all values.</li>
+<li>If no uncertainty was found, a zero error is assumed for all
+values.</li>
 <li>If units were found, a warning is emitted.</li>
 </ul>
 </li>
 <li>
-<code><a href="../reference/parse_quantities.html">parse_units()</a></code>: The returned value is always a <code>units</code> object.
+<code><a href="../reference/parse_quantities.html">parse_units()</a></code>: The returned value is always a
+<code>units</code> object.
 <ul>
 <li>If uncertaint was found, a warning is emitted.</li>
 <li>If no units were found, all values are supposed to be unitless.</li>
 </ul>
 </li>
 </ul>
-<p>Given a rectangular data file, such as a CSV file, it can be read with any CSV reader (e.g., base <code>read.csv</code>, <code>readr</code>’s <code>read_csv</code> or <code>data.table</code>’s <code>fread</code>). Then, a proper parser can be used to convert columns as required.</p>
+<p>Given a rectangular data file, such as a CSV file, it can be read
+with any CSV reader (e.g., base <code>read.csv</code>,
+<code>readr</code>’s <code>read_csv</code> or <code>data.table</code>’s
+<code>fread</code>). Then, a proper parser can be used to convert
+columns as required.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="op">(</span><span class="va">d.quantities</span> <span class="op">&lt;-</span> <span class="va">d.units</span> <span class="op">&lt;-</span> <span class="va">d.errors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/textconnections.html">textConnection</a></span><span class="op">(</span><span class="st">"
-quantities,        units,  errors
-1.02(5) g,         1.02 g, 1.02(5)
-2.51(0.01) V,      2.51 V, 2.51(0.01)
-(3.23 +/- 0.12) m, 3.23 m, 3.23 +/- 0.12"</span><span class="op">)</span>, stringsAsFactors<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt;          quantities           units         errors</span>
-<span class="co">#&gt; 1         1.02(5) g          1.02 g        1.02(5)</span>
-<span class="co">#&gt; 2      2.51(0.01) V          2.51 V     2.51(0.01)</span>
-<span class="co">#&gt; 3 (3.23 +/- 0.12) m          3.23 m  3.23 +/- 0.12</span></code></pre></div>
+<code class="sourceCode R"><span><span class="op">(</span><span class="va">d.quantities</span> <span class="op">&lt;-</span> <span class="va">d.units</span> <span class="op">&lt;-</span> <span class="va">d.errors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/textconnections.html" class="external-link">textConnection</a></span><span class="op">(</span><span class="st">"</span></span>
+<span><span class="st">quantities,        units,  errors</span></span>
+<span><span class="st">1.02(5) g,         1.02 g, 1.02(5)</span></span>
+<span><span class="st">2.51(0.01) V,      2.51 V, 2.51(0.01)</span></span>
+<span><span class="st">(3.23 +/- 0.12) m, 3.23 m, 3.23 +/- 0.12"</span><span class="op">)</span>, stringsAsFactors<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;          quantities           units         errors</span></span>
+<span><span class="co">#&gt; 1         1.02(5) g          1.02 g        1.02(5)</span></span>
+<span><span class="co">#&gt; 2      2.51(0.01) V          2.51 V     2.51(0.01)</span></span>
+<span><span class="co">#&gt; 3 (3.23 +/- 0.12) m          3.23 m  3.23 +/- 0.12</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-quantities/quantities">quantities</a></span><span class="op">)</span>
-<span class="co">#&gt; Loading required package: units</span>
-<span class="co">#&gt; udunits system database from /usr/local/share/udunits</span>
-<span class="co">#&gt; Loading required package: errors</span>
-
-<span class="kw">for</span> <span class="op">(</span><span class="va">name</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">d.quantities</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/message.html">message</a></span><span class="op">(</span><span class="va">name</span><span class="op">)</span>
-  <span class="va">d.quantities</span><span class="op">[[</span><span class="va">name</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/parse_quantities.html">parse_quantities</a></span><span class="op">(</span><span class="va">d.quantities</span><span class="op">[[</span><span class="va">name</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>
-  <span class="va">d.units</span><span class="op">[[</span><span class="va">name</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/parse_quantities.html">parse_units</a></span><span class="op">(</span><span class="va">d.units</span><span class="op">[[</span><span class="va">name</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>
-  <span class="va">d.errors</span><span class="op">[[</span><span class="va">name</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/parse_quantities.html">parse_errors</a></span><span class="op">(</span><span class="va">d.errors</span><span class="op">[[</span><span class="va">name</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>
-<span class="op">}</span>
-<span class="co">#&gt; quantities</span>
-<span class="co">#&gt; Warning in parse_units(d.units[[name]]): errors present but ignored</span>
-<span class="co">#&gt; Warning in parse_errors(d.errors[[name]]): units present but ignored</span>
-<span class="co">#&gt; units</span>
-<span class="co">#&gt; Warning in parse_errors(d.errors[[name]]): units present but ignored</span>
-<span class="co">#&gt; errors</span>
-<span class="co">#&gt; Warning in parse_units(d.units[[name]]): errors present but ignored</span>
-
-<span class="va">d.quantities</span>
-<span class="co">#&gt;    quantities       units      errors</span>
-<span class="co">#&gt; 1 1.02(5) [g] 1.02(0) [g] 1.02(5) [1]</span>
-<span class="co">#&gt; 2 2.51(1) [V] 2.51(0) [V] 2.51(1) [1]</span>
-<span class="co">#&gt; 3  3.2(1) [m] 3.23(0) [m]  3.2(1) [1]</span>
-<span class="va">d.units</span>
-<span class="co">#&gt;   quantities    units   errors</span>
-<span class="co">#&gt; 1   1.02 [g] 1.02 [g] 1.02 [1]</span>
-<span class="co">#&gt; 2   2.51 [V] 2.51 [V] 2.51 [1]</span>
-<span class="co">#&gt; 3   3.23 [m] 3.23 [m] 3.23 [1]</span>
-<span class="va">d.errors</span>
-<span class="co">#&gt;   quantities   units  errors</span>
-<span class="co">#&gt; 1    1.02(5) 1.02(0) 1.02(5)</span>
-<span class="co">#&gt; 2    2.51(1) 2.51(0) 2.51(1)</span>
-<span class="co">#&gt; 3     3.2(1) 3.23(0)  3.2(1)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-quantities/quantities" class="external-link">quantities</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Loading required package: units</span></span>
+<span><span class="co">#&gt; udunits database from /usr/local/share/udunits/udunits2.xml</span></span>
+<span><span class="co">#&gt; Loading required package: errors</span></span>
+<span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">name</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">d.quantities</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="va">name</span><span class="op">)</span></span>
+<span>  <span class="va">d.quantities</span><span class="op">[[</span><span class="va">name</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/parse_quantities.html">parse_quantities</a></span><span class="op">(</span><span class="va">d.quantities</span><span class="op">[[</span><span class="va">name</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="va">d.units</span><span class="op">[[</span><span class="va">name</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/parse_quantities.html">parse_units</a></span><span class="op">(</span><span class="va">d.units</span><span class="op">[[</span><span class="va">name</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="va">d.errors</span><span class="op">[[</span><span class="va">name</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/parse_quantities.html">parse_errors</a></span><span class="op">(</span><span class="va">d.errors</span><span class="op">[[</span><span class="va">name</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="co">#&gt; quantities</span></span>
+<span><span class="co">#&gt; Warning in parse_units(d.units[[name]]): errors present but ignored</span></span>
+<span><span class="co">#&gt; Warning in parse_errors(d.errors[[name]]): units present but ignored</span></span>
+<span><span class="co">#&gt; units</span></span>
+<span><span class="co">#&gt; Warning in parse_errors(d.errors[[name]]): units present but ignored</span></span>
+<span><span class="co">#&gt; errors</span></span>
+<span><span class="co">#&gt; Warning in parse_units(d.units[[name]]): errors present but ignored</span></span>
+<span></span>
+<span><span class="va">d.quantities</span></span>
+<span><span class="co">#&gt;    quantities       units      errors</span></span>
+<span><span class="co">#&gt; 1 1.02(5) [g] 1.02(0) [g] 1.02(5) [1]</span></span>
+<span><span class="co">#&gt; 2 2.51(1) [V] 2.51(0) [V] 2.51(1) [1]</span></span>
+<span><span class="co">#&gt; 3  3.2(1) [m] 3.23(0) [m]  3.2(1) [1]</span></span>
+<span><span class="va">d.units</span></span>
+<span><span class="co">#&gt;   quantities    units   errors</span></span>
+<span><span class="co">#&gt; 1   1.02 [g] 1.02 [g] 1.02 [1]</span></span>
+<span><span class="co">#&gt; 2   2.51 [V] 2.51 [V] 2.51 [1]</span></span>
+<span><span class="co">#&gt; 3   3.23 [m] 3.23 [m] 3.23 [1]</span></span>
+<span><span class="va">d.errors</span></span>
+<span><span class="co">#&gt;   quantities   units  errors</span></span>
+<span><span class="co">#&gt; 1    1.02(5) 1.02(0) 1.02(5)</span></span>
+<span><span class="co">#&gt; 2    2.51(1) 2.51(0) 2.51(1)</span></span>
+<span><span class="co">#&gt; 3     3.2(1) 3.23(0)  3.2(1)</span></span></code></pre></div>
 </div>
   </div>
 
@@ -201,11 +235,13 @@ quantities,        units,  errors
 
 
       <footer><div class="copyright">
-  <p>Developed by Iñaki Ucar.</p>
+  <p></p>
+<p>Developed by Iñaki Ucar.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>
@@ -213,6 +249,8 @@ quantities,        units,  errors
 
   
 
+
+  
 
   </body>
 </html>

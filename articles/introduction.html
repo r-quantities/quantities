@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,23 +33,17 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">quantities</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -67,7 +63,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/r-quantities/quantities/">
+  <a href="https://github.com/r-quantities/quantities/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -82,437 +78,704 @@
 
       
 
-      </header><script src="introduction_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>A Guide to Working with Quantities</h1>
-                        <h4 class="author">Iñaki Ucar</h4>
+                        <h4 data-toc-skip class="author">Iñaki Ucar</h4>
             
-            <h4 class="date">2021-02-21</h4>
+            <h4 data-toc-skip class="date">2022-12-05</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/r-quantities/quantities/blob/master/vignettes/introduction.Rmd"><code>vignettes/introduction.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/r-quantities/quantities/blob/HEAD/vignettes/introduction.Rmd" class="external-link"><code>vignettes/introduction.Rmd</code></a></small>
       <div class="hidden name"><code>introduction.Rmd</code></div>
 
     </div>
 
     
     
-<div id="introduction" class="section level2">
-<h2 class="hasAnchor">
-<a href="#introduction" class="anchor"></a>Introduction</h2>
-<p>This document intends to be a guide on how to work with quantities data (magnitudes with units and/or uncertainty) in two distinct workflows: R <em>base</em> and the so-called <a href="https://www.tidyverse.org/"><em>tidyverse</em></a>. Units and errors (and, by extension, quantities) objects essentially are numeric vectors, arrays and matrices with associated metadata. This metadata is not always compatible with some functions, and thus we here explore the most common operations in data wrangling (subsetting, ordering, transformations, aggregations…) to identify potential issues and propose possible workarounds.</p>
-<p>Let us consider the traditional <code>iris</code> data set for this exercise. According to its documentation,</p>
-<blockquote>
-<p><code>iris</code> is a data frame with 150 cases (rows) and 5 variables (columns) named <code>Sepal.Length</code>, <code>Sepal.Width</code>, <code>Petal.Length</code>, <code>Petal.Width</code>, and <code>Species</code>.</p>
-</blockquote>
-<p>And values are provided in centimeters. If we consider, for instance, a 5% of uncertainty, the first step is to define proper quantities. Then we will work on the resulting data frame for the rest of this article.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-quantities/quantities">quantities</a></span><span class="op">)</span>
-<span class="co">#&gt; Loading required package: units</span>
-<span class="co">#&gt; udunits system database from /usr/local/share/udunits</span>
-<span class="co">#&gt; Loading required package: errors</span>
-
-<span class="va">iris.q</span> <span class="op">&lt;-</span> <span class="va">iris</span>
-<span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span>
-  <span class="fu"><a href="../reference/quantities.html">quantities</a></span><span class="op">(</span><span class="va">iris.q</span><span class="op">[</span>,<span class="va">i</span><span class="op">]</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"cm"</span>, <span class="va">iris.q</span><span class="op">[</span>,<span class="va">i</span><span class="op">]</span> <span class="op">*</span> <span class="fl">0.05</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">iris.q</span><span class="op">)</span>
-<span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length  Petal.Width Species</span>
-<span class="co">#&gt; 1  5.1(3) [cm] 3.5(2) [cm] 1.40(7) [cm] 0.20(1) [cm]  setosa</span>
-<span class="co">#&gt; 2  4.9(2) [cm] 3.0(2) [cm] 1.40(7) [cm] 0.20(1) [cm]  setosa</span>
-<span class="co">#&gt; 3  4.7(2) [cm] 3.2(2) [cm] 1.30(6) [cm] 0.20(1) [cm]  setosa</span>
-<span class="co">#&gt; 4  4.6(2) [cm] 3.1(2) [cm] 1.50(8) [cm] 0.20(1) [cm]  setosa</span>
-<span class="co">#&gt; 5  5.0(2) [cm] 3.6(2) [cm] 1.40(7) [cm] 0.20(1) [cm]  setosa</span>
-<span class="co">#&gt; 6  5.4(3) [cm] 3.9(2) [cm] 1.70(8) [cm] 0.40(2) [cm]  setosa</span></code></pre></div>
-<p>Note that, throughout this document, and unless otherwise stated, we will talk about <em>quantities objects</em> as a shortcut for <em>quantities, units and errors objects</em>.</p>
-</div>
-<div id="r-base" class="section level2">
-<h2 class="hasAnchor">
-<a href="#r-base" class="anchor"></a>R Base</h2>
-<p>In this section, we consider all the methods and functions included in the default packages, i.e., those that are automatically installed along with any R distribution:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/installed.packages.html">installed.packages</a></span><span class="op">(</span>priority<span class="op">=</span><span class="st">"base"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt;  [1] "base"      "compiler"  "datasets"  "graphics"  "grDevices" "grid"     
-#&gt;  [7] "methods"   "parallel"  "splines"   "stats"     "stats4"    "tcltk"    
-#&gt; [13] "tools"     "utils"</code></pre>
-<div id="row-subsetting" class="section level3">
-<h3 class="hasAnchor">
-<a href="#row-subsetting" class="anchor"></a>Row Subsetting</h3>
-<p>Quantities objects have all the subsetting methods defined (<code><a href="https://rdrr.io/r/base/Extract.html">[</a></code>, <code><a href="https://rdrr.io/r/base/Extract.html">[[</a></code>, <code>[&lt;-</code>, <code>[[&lt;-</code>). Therefore they can be used in the same way as with plain numeric vectors, and in conjunction with <code>which</code> and other functions to perform subsetting. The <code>subset</code> function is very handy too and achieves the same result:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">iris.q</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html">which</a></span><span class="op">(</span><span class="va">iris.q</span><span class="op">$</span><span class="va">Sepal.Length</span> <span class="op">&gt;</span> <span class="fu"><a href="../reference/quantities.html">set_quantities</a></span><span class="op">(</span><span class="fl">7.5</span>, <span class="va">cm</span><span class="op">)</span><span class="op">)</span>, <span class="op">]</span>
-<span class="co">#&gt; Warning: In '&gt;' : boolean operators not defined for 'errors' objects,</span>
-<span class="co">#&gt; uncertainty dropped</span>
-<span class="co">#&gt;     Sepal.Length Sepal.Width Petal.Length Petal.Width   Species</span>
-<span class="co">#&gt; 106  7.6(4) [cm] 3.0(2) [cm]  6.6(3) [cm] 2.1(1) [cm] virginica</span>
-<span class="co">#&gt; 118  7.7(4) [cm] 3.8(2) [cm]  6.7(3) [cm] 2.2(1) [cm] virginica</span>
-<span class="co">#&gt; 119  7.7(4) [cm] 2.6(1) [cm]  6.9(3) [cm] 2.3(1) [cm] virginica</span>
-<span class="co">#&gt; 123  7.7(4) [cm] 2.8(1) [cm]  6.7(3) [cm] 2.0(1) [cm] virginica</span>
-<span class="co">#&gt; 132  7.9(4) [cm] 3.8(2) [cm]  6.4(3) [cm] 2.0(1) [cm] virginica</span>
-<span class="co">#&gt; 136  7.7(4) [cm] 3.0(2) [cm]  6.1(3) [cm] 2.3(1) [cm] virginica</span>
-<span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span><span class="op">(</span><span class="va">iris.q</span>, <span class="va">Sepal.Length</span> <span class="op">&gt;</span> <span class="fu"><a href="../reference/quantities.html">set_quantities</a></span><span class="op">(</span><span class="fl">7.5</span>, <span class="va">cm</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt;     Sepal.Length Sepal.Width Petal.Length Petal.Width   Species</span>
-<span class="co">#&gt; 106  7.6(4) [cm] 3.0(2) [cm]  6.6(3) [cm] 2.1(1) [cm] virginica</span>
-<span class="co">#&gt; 118  7.7(4) [cm] 3.8(2) [cm]  6.7(3) [cm] 2.2(1) [cm] virginica</span>
-<span class="co">#&gt; 119  7.7(4) [cm] 2.6(1) [cm]  6.9(3) [cm] 2.3(1) [cm] virginica</span>
-<span class="co">#&gt; 123  7.7(4) [cm] 2.8(1) [cm]  6.7(3) [cm] 2.0(1) [cm] virginica</span>
-<span class="co">#&gt; 132  7.9(4) [cm] 3.8(2) [cm]  6.4(3) [cm] 2.0(1) [cm] virginica</span>
-<span class="co">#&gt; 136  7.7(4) [cm] 3.0(2) [cm]  6.1(3) [cm] 2.3(1) [cm] virginica</span></code></pre></div>
-<p>Note that another quantities object is defined for the comparison. This is needed because different units are incomparable. Also note that the first line throws a warning telling us that the uncertainty was dropped for this operation. This kind of warning is thrown once, and this is why <code>subset</code> succeeds silently.</p>
-</div>
-<div id="row-ordering" class="section level3">
-<h3 class="hasAnchor">
-<a href="#row-ordering" class="anchor"></a>Row Ordering</h3>
-<p>The <code>sort</code> function, as its name suggests, <em>sorts</em> vectors, and it is compatible with quantities:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">iris.q</span><span class="op">$</span><span class="va">Sepal.Length</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span>
-<span class="co">#&gt; Units: [cm]</span>
-<span class="co">#&gt; Errors: 0.255 0.245 0.235 0.230 0.250</span>
-<span class="co">#&gt; [1] 5.1 4.9 4.7 4.6 5.0</span>
-<span class="fu"><a href="https://rdrr.io/r/base/sort.html">sort</a></span><span class="op">(</span><span class="va">iris.q</span><span class="op">$</span><span class="va">Sepal.Length</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span>
-<span class="co">#&gt; Units: [cm]</span>
-<span class="co">#&gt; Errors: 0.230 0.235 0.245 0.250 0.255</span>
-<span class="co">#&gt; [1] 4.6 4.7 4.9 5.0 5.1</span></code></pre></div>
-<p>More generally, the <code>order</code> function can be used for data frame ordering:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">iris.q</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">iris.q</span><span class="op">$</span><span class="va">Sepal.Length</span><span class="op">)</span>, <span class="op">]</span><span class="op">)</span>
-<span class="co">#&gt;    Sepal.Length Sepal.Width Petal.Length   Petal.Width Species</span>
-<span class="co">#&gt; 14  4.3(2) [cm] 3.0(2) [cm] 1.10(6) [cm] 0.100(5) [cm]  setosa</span>
-<span class="co">#&gt; 9   4.4(2) [cm] 2.9(1) [cm] 1.40(7) [cm]  0.20(1) [cm]  setosa</span>
-<span class="co">#&gt; 39  4.4(2) [cm] 3.0(2) [cm] 1.30(6) [cm]  0.20(1) [cm]  setosa</span>
-<span class="co">#&gt; 43  4.4(2) [cm] 3.2(2) [cm] 1.30(6) [cm]  0.20(1) [cm]  setosa</span>
-<span class="co">#&gt; 42  4.5(2) [cm] 2.3(1) [cm] 1.30(6) [cm]  0.30(2) [cm]  setosa</span>
-<span class="co">#&gt; 4   4.6(2) [cm] 3.1(2) [cm] 1.50(8) [cm]  0.20(1) [cm]  setosa</span></code></pre></div>
-</div>
-<div id="column-transformation" class="section level3">
-<h3 class="hasAnchor">
-<a href="#column-transformation" class="anchor"></a>Column Transformation</h3>
-<p>The <code>transform</code> function is able to modify variables in a data frame or to create new ones. The <code>within</code> function provides a similar but more flexible approach though. Both are fully compatible with quantities:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/with.html">within</a></span><span class="op">(</span><span class="va">iris.q</span>, <span class="op">{</span>
-  <span class="va">Sepal.Area</span> <span class="op">&lt;-</span> <span class="va">Sepal.Length</span> <span class="op">*</span> <span class="va">Sepal.Width</span>
-  <span class="va">Petal.Area</span> <span class="op">&lt;-</span> <span class="va">Petal.Length</span> <span class="op">*</span> <span class="va">Petal.Width</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/rm.html">rm</a></span><span class="op">(</span><span class="va">Sepal.Length</span>, <span class="va">Sepal.Width</span>, <span class="va">Petal.Length</span>, <span class="va">Petal.Width</span><span class="op">)</span>
-<span class="op">}</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt;   Species     Petal.Area   Sepal.Area</span>
-<span class="co">#&gt; 1  setosa 0.28(2) [cm^2] 18(1) [cm^2]</span>
-<span class="co">#&gt; 2  setosa 0.28(2) [cm^2] 15(1) [cm^2]</span>
-<span class="co">#&gt; 3  setosa 0.26(2) [cm^2] 15(1) [cm^2]</span>
-<span class="co">#&gt; 4  setosa 0.30(2) [cm^2] 14(1) [cm^2]</span>
-<span class="co">#&gt; 5  setosa 0.28(2) [cm^2] 18(1) [cm^2]</span>
-<span class="co">#&gt; 6  setosa 0.68(5) [cm^2] 21(1) [cm^2]</span></code></pre></div>
-</div>
-<div id="row-aggregation" class="section level3">
-<h3 class="hasAnchor">
-<a href="#row-aggregation" class="anchor"></a>Row Aggregation</h3>
-<p>Row aggregation is the process of summarising data based on some grouping variable(s). There are several ways of working with data split by factors in R base, and, although they tend to preserve classes, they are generally not very kind to other metadata (i.e., attributes) by default.</p>
-<p>In the following example, the average <code>Sepal.Length</code> is computed per <code>Species</code>, but the metadata gets dropped:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/tapply.html">tapply</a></span><span class="op">(</span><span class="va">iris.q</span><span class="op">$</span><span class="va">Sepal.Length</span>, <span class="va">iris.q</span><span class="op">$</span><span class="va">Species</span>, <span class="va">mean</span><span class="op">)</span>
-<span class="co">#&gt;     setosa versicolor  virginica </span>
-<span class="co">#&gt;      5.006      5.936      6.588</span></code></pre></div>
-<p>Many of these functions include a <code>simplify</code> parameter which, if set to <code>FALSE</code>, preserves quantities metadata:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="op">(</span><span class="va">sepal.length.agg</span> <span class="op">&lt;-</span> 
-   <span class="fu"><a href="https://rdrr.io/r/base/tapply.html">tapply</a></span><span class="op">(</span><span class="va">iris.q</span><span class="op">$</span><span class="va">Sepal.Length</span>, <span class="va">iris.q</span><span class="op">$</span><span class="va">Species</span>, <span class="va">mean</span>, simplify<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; $setosa</span>
-<span class="co">#&gt; 5.0(3) [cm]</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; $versicolor</span>
-<span class="co">#&gt; 5.9(3) [cm]</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; $virginica</span>
-<span class="co">#&gt; 6.6(3) [cm]</span></code></pre></div>
-<p>The only drawback is that the result is a list, and such a list must be unlisted with care, otherwise, metadata gets dropped again:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># drops quantities</span>
-<span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="va">sepal.length.agg</span><span class="op">)</span>
-<span class="co">#&gt;     setosa versicolor  virginica </span>
-<span class="co">#&gt;      5.006      5.936      6.588</span>
-
-<span class="co"># preserves quantities</span>
-<span class="fu"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span><span class="op">(</span><span class="va">c</span>, <span class="va">sepal.length.agg</span><span class="op">)</span>
-<span class="co">#&gt; Units: [cm]</span>
-<span class="co">#&gt; Errors: 0.2503 0.2968 0.3294</span>
-<span class="co">#&gt;     setosa versicolor  virginica </span>
-<span class="co">#&gt;      5.006      5.936      6.588</span></code></pre></div>
-<p>The <code>by</code> function is an object-oriented wrapper for <code>tapply</code> applied to data frames which also provides a <code>simplify</code> parameter. A more convenient way of working with summary statistics is the <code>aggregate</code> generic, from the <code>stats</code> namespace. Although there is a <code>aggregate.data.frame</code> method, there is a more intuitive interface to it through the <code>aggregate.formula</code> method. Again, it is necessary to set <code>simplify=FALSE</code> to keep quantities:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="op">(</span><span class="va">iris.q.agg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">.</span> <span class="op">~</span> <span class="va">Species</span>, data <span class="op">=</span> <span class="va">iris.q</span>, <span class="va">mean</span>, simplify<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt;      Species Sepal.Length Sepal.Width Petal.Length Petal.Width</span>
-<span class="co">#&gt; 1     setosa        5.006       3.428        1.462       0.246</span>
-<span class="co">#&gt; 2 versicolor        5.936        2.77         4.26       1.326</span>
-<span class="co">#&gt; 3  virginica        6.588       2.974        5.552       2.026</span></code></pre></div>
-<p>Apparently, the output has no metadata associated, but what really happens is that the resulting columns are lists:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">iris.q.agg</span><span class="op">$</span><span class="va">Sepal.Length</span><span class="op">)</span>
-<span class="co">#&gt; [1] "list"</span></code></pre></div>
-<p>Therefore, as in the <code>tapply</code>/<code>by</code> case, they must be unlisted with care to still preserve the metadata:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">unlist_quantities</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">is.list</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">||</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">is.data.frame</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span>
-  
-  <span class="va">unlist</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span>
-    <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/any.html">any</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">x</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"quantities"</span>, <span class="st">"units"</span>, <span class="st">"errors"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-      <span class="fu"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span><span class="op">(</span><span class="va">c</span>, <span class="va">x</span><span class="op">)</span>
-    <span class="kw">else</span> <span class="va">x</span>
-  <span class="op">}</span>
-  
-  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">is.data.frame</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">unlist</span><span class="op">)</span>, col.names<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span>
-  <span class="kw">else</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>
-<span class="op">}</span>
-
-<span class="fu">unlist_quantities</span><span class="op">(</span><span class="va">iris.q.agg</span><span class="op">)</span>
-<span class="co">#&gt;      Species Sepal.Length Sepal.Width Petal.Length  Petal.Width</span>
-<span class="co">#&gt; 1     setosa  5.0(3) [cm] 3.4(2) [cm] 1.46(7) [cm] 0.25(1) [cm]</span>
-<span class="co">#&gt; 2 versicolor  5.9(3) [cm] 2.8(1) [cm]  4.3(2) [cm] 1.33(7) [cm]</span>
-<span class="co">#&gt; 3  virginica  6.6(3) [cm] 3.0(1) [cm]  5.6(3) [cm]  2.0(1) [cm]</span></code></pre></div>
-<p>And this method works for the <code>tapply</code>/<code>by</code> case too:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">unlist_quantities</span><span class="op">(</span><span class="va">sepal.length.agg</span><span class="op">)</span>
-<span class="co">#&gt; Units: [cm]</span>
-<span class="co">#&gt; Errors: 0.2503 0.2968 0.3294</span>
-<span class="co">#&gt;     setosa versicolor  virginica </span>
-<span class="co">#&gt;      5.006      5.936      6.588</span></code></pre></div>
-</div>
-<div id="column-joining" class="section level3">
-<h3 class="hasAnchor">
-<a href="#column-joining" class="anchor"></a>Column Joining</h3>
-<p>Joining data frames by common columns can done with the <code>merge</code> generic. Such operations are based on appending columns, which may be subset or replicated to fit the length of the merged observations. Therefore, quantities should be preserved in all cases. In the following example, we generate a data frame with the height per species and then merge it with the main data set:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">height</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>
-  Height <span class="op">=</span> <span class="fu"><a href="../reference/quantities.html">set_quantities</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">55</span>, <span class="fl">60</span>, <span class="fl">45</span><span class="op">)</span>, <span class="va">cm</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">45</span>, <span class="fl">30</span>, <span class="fl">35</span><span class="op">)</span><span class="op">)</span>,
-  Species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"setosa"</span>, <span class="st">"virginica"</span>, <span class="st">"versicolor"</span><span class="op">)</span>
-<span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/merge.html">merge</a></span><span class="op">(</span><span class="va">iris.q</span>, <span class="va">height</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt;   Species Sepal.Length Sepal.Width Petal.Length  Petal.Width      Height</span>
-<span class="co">#&gt; 1  setosa  5.1(3) [cm] 3.5(2) [cm] 1.40(7) [cm] 0.20(1) [cm] 60(40) [cm]</span>
-<span class="co">#&gt; 2  setosa  4.9(2) [cm] 3.0(2) [cm] 1.40(7) [cm] 0.20(1) [cm] 60(40) [cm]</span>
-<span class="co">#&gt; 3  setosa  4.7(2) [cm] 3.2(2) [cm] 1.30(6) [cm] 0.20(1) [cm] 60(40) [cm]</span>
-<span class="co">#&gt; 4  setosa  4.6(2) [cm] 3.1(2) [cm] 1.50(8) [cm] 0.20(1) [cm] 60(40) [cm]</span>
-<span class="co">#&gt; 5  setosa  5.0(2) [cm] 3.6(2) [cm] 1.40(7) [cm] 0.20(1) [cm] 60(40) [cm]</span>
-<span class="co">#&gt; 6  setosa  5.4(3) [cm] 3.9(2) [cm] 1.70(8) [cm] 0.40(2) [cm] 60(40) [cm]</span></code></pre></div>
-</div>
-<div id="unpivoting" class="section level3">
-<h3 class="hasAnchor">
-<a href="#unpivoting" class="anchor"></a>(Un)Pivoting</h3>
-<p>The <code>reshape</code> function, from the <code>stats</code> namespace, provides an interface for both pivoting and unpivoting (i.e., <em>tidyfying</em> data). In the case of the <code>iris</code> data set, we would say that it is in the <em>wide format</em>, because each row has more than one observation.</p>
-<p>This function has a quite peculiar nomenclature. First of all, the unpivoting operation is accessed by providing the argument <code>direction="long"</code>. We need to define the <code>varying</code> columns (columns to unpivot), as character or indices, and they are unpivoted based on their names. By default, the separator <code>sep="."</code> is used, which means that <code>Sepal.Width</code> will be broken down into <code>Sepal</code> and <code>Width</code>, and the former will be unpivoted with the latter as grouping variable. We can specify the name of the grouping variable with the <code>timevar</code> argument.</p>
-<p>Putting everything together, this is how to unpivot the data set by the dimension (which we will call it <code>dim</code>) of the petal/sepal:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">long.1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/reshape.html">reshape</a></span><span class="op">(</span><span class="va">iris.q</span>, varying<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, timevar<span class="op">=</span><span class="st">"dim"</span>, idvar<span class="op">=</span><span class="st">"dim.id"</span>, direction<span class="op">=</span><span class="st">"long"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">long.1</span><span class="op">)</span>
-<span class="co">#&gt;          Species    dim       Sepal        Petal dim.id</span>
-<span class="co">#&gt; 1.Length  setosa Length 5.1(3) [cm] 1.40(7) [cm]      1</span>
-<span class="co">#&gt; 2.Length  setosa Length 4.9(2) [cm] 1.40(7) [cm]      2</span>
-<span class="co">#&gt; 3.Length  setosa Length 4.7(2) [cm] 1.30(6) [cm]      3</span>
-<span class="co">#&gt; 4.Length  setosa Length 4.6(2) [cm] 1.50(8) [cm]      4</span>
-<span class="co">#&gt; 5.Length  setosa Length 5.0(2) [cm] 1.40(7) [cm]      5</span>
-<span class="co">#&gt; 6.Length  setosa Length 5.4(3) [cm] 1.70(8) [cm]      6</span></code></pre></div>
-<p>It can be noted that the unpivoting also generates an index to indentify multiple records from the same group. We have changed the name of that identifier to <code>dim.id</code> (just <code>id</code> by default).</p>
-<p>We can further unpivot sepal and petal as the <code>part</code> of the flower. First, we need to prepend a common identifier to columns 3 and 4, which are to be unpivoted:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">long.1</span><span class="op">)</span><span class="op">[</span><span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"value."</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">long.1</span><span class="op">)</span><span class="op">[</span><span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span><span class="op">)</span>
-<span class="va">long.2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/reshape.html">reshape</a></span><span class="op">(</span><span class="va">long.1</span>, varying<span class="op">=</span><span class="fl">3</span><span class="op">:</span><span class="fl">4</span>, timevar<span class="op">=</span><span class="st">"part"</span>, idvar<span class="op">=</span><span class="st">"part.id"</span>, direction<span class="op">=</span><span class="st">"long"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">long.2</span><span class="op">)</span>
-<span class="co">#&gt;         Species    dim dim.id  part       value part.id</span>
-<span class="co">#&gt; 1.Sepal  setosa Length      1 Sepal 5.1(3) [cm]       1</span>
-<span class="co">#&gt; 2.Sepal  setosa Length      2 Sepal 4.9(2) [cm]       2</span>
-<span class="co">#&gt; 3.Sepal  setosa Length      3 Sepal 4.7(2) [cm]       3</span>
-<span class="co">#&gt; 4.Sepal  setosa Length      4 Sepal 4.6(2) [cm]       4</span>
-<span class="co">#&gt; 5.Sepal  setosa Length      5 Sepal 5.0(2) [cm]       5</span>
-<span class="co">#&gt; 6.Sepal  setosa Length      6 Sepal 5.4(3) [cm]       6</span></code></pre></div>
-<p>And the final result has one tidy observation per row.</p>
-<p>The pivoting operation can be accessed by providing the argument <code>direction="wide"</code>. The process is almost symmetrical, but we need to specify <code>v.names</code>, as character, instead of <code>varying</code> columns. First, we can pivot by flower part:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">wide.1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/reshape.html">reshape</a></span><span class="op">(</span><span class="va">long.2</span>, v.names<span class="op">=</span><span class="st">"value"</span>, timevar<span class="op">=</span><span class="st">"part"</span>, idvar<span class="op">=</span><span class="st">"part.id"</span>, direction<span class="op">=</span><span class="st">"wide"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">wide.1</span><span class="op">)</span>
-<span class="co">#&gt;         Species    dim dim.id part.id value.Sepal  value.Petal</span>
-<span class="co">#&gt; 1.Sepal  setosa Length      1       1 5.1(3) [cm] 1.40(7) [cm]</span>
-<span class="co">#&gt; 2.Sepal  setosa Length      2       2 4.9(2) [cm] 1.40(7) [cm]</span>
-<span class="co">#&gt; 3.Sepal  setosa Length      3       3 4.7(2) [cm] 1.30(6) [cm]</span>
-<span class="co">#&gt; 4.Sepal  setosa Length      4       4 4.6(2) [cm] 1.50(8) [cm]</span>
-<span class="co">#&gt; 5.Sepal  setosa Length      5       5 5.0(2) [cm] 1.40(7) [cm]</span>
-<span class="co">#&gt; 6.Sepal  setosa Length      6       6 5.4(3) [cm] 1.70(8) [cm]</span></code></pre></div>
-<p>Then, we remove <code>"value."</code> from the column names and pivot by dimension (note that indices are removed to match the initial data frame):</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">wide.1</span><span class="op">)</span><span class="op">[</span><span class="fl">5</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">sub</a></span><span class="op">(</span><span class="st">"value\\."</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">wide.1</span><span class="op">)</span><span class="op">[</span><span class="fl">5</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span><span class="op">)</span>
-<span class="va">wide.2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/reshape.html">reshape</a></span><span class="op">(</span><span class="va">wide.1</span>, v.names<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Sepal"</span>, <span class="st">"Petal"</span><span class="op">)</span>, timevar<span class="op">=</span><span class="st">"dim"</span>, idvar<span class="op">=</span><span class="st">"dim.id"</span>, direction<span class="op">=</span><span class="st">"wide"</span><span class="op">)</span>
-<span class="co">#&gt; Warning in reshapeWide(data, idvar = idvar, timevar = timevar, varying =</span>
-<span class="co">#&gt; varying, : some constant variables (part.id) are really varying</span>
-<span class="va">wide.2</span><span class="op">$</span><span class="va">dim.id</span> <span class="op">&lt;-</span> <span class="cn">NULL</span>
-<span class="va">wide.2</span><span class="op">$</span><span class="va">part.id</span> <span class="op">&lt;-</span> <span class="cn">NULL</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">wide.2</span><span class="op">)</span>
-<span class="co">#&gt;         Species Sepal.Length Petal.Length Sepal.Width  Petal.Width</span>
-<span class="co">#&gt; 1.Sepal  setosa  5.1(3) [cm] 1.40(7) [cm] 3.5(2) [cm] 0.20(1) [cm]</span>
-<span class="co">#&gt; 2.Sepal  setosa  4.9(2) [cm] 1.40(7) [cm] 3.0(2) [cm] 0.20(1) [cm]</span>
-<span class="co">#&gt; 3.Sepal  setosa  4.7(2) [cm] 1.30(6) [cm] 3.2(2) [cm] 0.20(1) [cm]</span>
-<span class="co">#&gt; 4.Sepal  setosa  4.6(2) [cm] 1.50(8) [cm] 3.1(2) [cm] 0.20(1) [cm]</span>
-<span class="co">#&gt; 5.Sepal  setosa  5.0(2) [cm] 1.40(7) [cm] 3.6(2) [cm] 0.20(1) [cm]</span>
-<span class="co">#&gt; 6.Sepal  setosa  5.4(3) [cm] 1.70(8) [cm] 3.9(2) [cm] 0.40(2) [cm]</span></code></pre></div>
-<p>We have seen that quantities have been correctly preserved through the whole process. Finally, we can check whether both data frames are identical. Given that the order of columns have changed, we can simply check this column name by column name and then put everything together:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/all.html">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">iris.q</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">col</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/all.html">all</a></span><span class="op">(</span><span class="va">iris.q</span><span class="op">[[</span><span class="va">col</span><span class="op">]</span><span class="op">]</span> <span class="op">==</span> <span class="va">wide.2</span><span class="op">[[</span><span class="va">col</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; [1] TRUE</span></code></pre></div>
-</div>
-</div>
-<div id="tidyverse" class="section level2">
-<h2 class="hasAnchor">
-<a href="#tidyverse" class="anchor"></a>Tidyverse</h2>
-<p>The <a href="https://www.tidyverse.org/packages/"><em>core tidyverse</em></a> includes the following packages: <code>ggplot2</code>, <code>dplyr</code>, <code>tidyr</code>, <code>readr</code>, <code>purrr</code>, <code>tibble</code>, <code>stringr</code> and <code>forcats</code>. This section covers use cases for <a href="https://dplyr.tidyverse.org/"><code>dplyr</code></a> (everything except for pivoting and unpivoting) and <a href="https://tidyr.tidyverse.org/"><code>tidyr</code></a> (for pivoting and unpivoting).</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">"dplyr"</span><span class="op">)</span>
-<span class="co">#&gt; [1] '1.0.4'</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org">tidyr</a></span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">"tidyr"</span><span class="op">)</span>
-<span class="co">#&gt; [1] '1.1.2'</span></code></pre></div>
-<p>Since <code>dplyr</code> 1.0.0, as we will see, there is enhanced support for custom S3 classes thanks to the new implementation based on <code>vctrs</code> &gt;= 0.3.0. Packages <code>units</code> &gt;= 0.6-7, <code>errors</code> &gt;= 0.3.4 and <code>quantities</code> &gt;= 0.1.5 add support for this approach.</p>
-<div id="row-subsetting-1" class="section level3">
-<h3 class="hasAnchor">
-<a href="#row-subsetting-1" class="anchor"></a>Row Subsetting</h3>
-<p>The <code>filter</code> generic finds observations where conditions hold. The main difference with base subsetting is that, if a condition evaluates to <code>NA</code> for a certain row, it is dropped. As in the base case, another quantities object must be defined for the comparison:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">iris.q</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">Sepal.Length</span> <span class="op">&gt;</span> <span class="fu"><a href="../reference/quantities.html">set_quantities</a></span><span class="op">(</span><span class="fl">7.5</span>, <span class="va">cm</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width   Species</span>
-<span class="co">#&gt; 1  7.6(4) [cm] 3.0(2) [cm]  6.6(3) [cm] 2.1(1) [cm] virginica</span>
-<span class="co">#&gt; 2  7.7(4) [cm] 3.8(2) [cm]  6.7(3) [cm] 2.2(1) [cm] virginica</span>
-<span class="co">#&gt; 3  7.7(4) [cm] 2.6(1) [cm]  6.9(3) [cm] 2.3(1) [cm] virginica</span>
-<span class="co">#&gt; 4  7.7(4) [cm] 2.8(1) [cm]  6.7(3) [cm] 2.0(1) [cm] virginica</span>
-<span class="co">#&gt; 5  7.9(4) [cm] 3.8(2) [cm]  6.4(3) [cm] 2.0(1) [cm] virginica</span>
-<span class="co">#&gt; 6  7.7(4) [cm] 3.0(2) [cm]  6.1(3) [cm] 2.3(1) [cm] virginica</span></code></pre></div>
-<p>There are also three scoped variants available (<code>filter_all</code>, <code>filter_if</code>, <code>filter_at</code>) and a subsetting function by row number called <code>slice</code>. All of them preserve quantities.</p>
-</div>
-<div id="row-ordering-1" class="section level3">
-<h3 class="hasAnchor">
-<a href="#row-ordering-1" class="anchor"></a>Row Ordering</h3>
-<p>The <code>arrange</code> generic sorts variables in a straightforward way, and it is compatible with quantities:</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">iris.q</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">Sepal.Length</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length   Petal.Width Species</span>
-<span class="co">#&gt; 1  4.3(2) [cm] 3.0(2) [cm] 1.10(6) [cm] 0.100(5) [cm]  setosa</span>
-<span class="co">#&gt; 2  4.4(2) [cm] 2.9(1) [cm] 1.40(7) [cm]  0.20(1) [cm]  setosa</span>
-<span class="co">#&gt; 3  4.4(2) [cm] 3.0(2) [cm] 1.30(6) [cm]  0.20(1) [cm]  setosa</span>
-<span class="co">#&gt; 4  4.4(2) [cm] 3.2(2) [cm] 1.30(6) [cm]  0.20(1) [cm]  setosa</span>
-<span class="co">#&gt; 5  4.5(2) [cm] 2.3(1) [cm] 1.30(6) [cm]  0.30(2) [cm]  setosa</span>
-<span class="co">#&gt; 6  4.6(2) [cm] 3.1(2) [cm] 1.50(8) [cm]  0.20(1) [cm]  setosa</span></code></pre></div>
-<p>The <code>desc</code> function can be applied to individual variables to arrange in descending order.</p>
-</div>
-<div id="column-transformation-1" class="section level3">
-<h3 class="hasAnchor">
-<a href="#column-transformation-1" class="anchor"></a>Column Transformation</h3>
-<p>There are two generics for column transformations: <code>mutate</code> modifies or adds new variables preserving the existing ones, while <code>transmute</code> drops the existing variables. The syntax is very similar to base functions <code>transform</code> and <code>within</code>, and equally compatible with quantities:</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">iris.q</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">transmute</a></span><span class="op">(</span>
-    Species <span class="op">=</span> <span class="va">Species</span>,
-    Petal.Area <span class="op">=</span> <span class="va">Petal.Length</span> <span class="op">*</span> <span class="va">Petal.Width</span>,
-    Sepal.Area <span class="op">=</span> <span class="va">Sepal.Length</span> <span class="op">*</span> <span class="va">Sepal.Width</span>
-  <span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt;   Species     Petal.Area   Sepal.Area</span>
-<span class="co">#&gt; 1  setosa 0.28(2) [cm^2] 18(1) [cm^2]</span>
-<span class="co">#&gt; 2  setosa 0.28(2) [cm^2] 15(1) [cm^2]</span>
-<span class="co">#&gt; 3  setosa 0.26(2) [cm^2] 15(1) [cm^2]</span>
-<span class="co">#&gt; 4  setosa 0.30(2) [cm^2] 14(1) [cm^2]</span>
-<span class="co">#&gt; 5  setosa 0.28(2) [cm^2] 18(1) [cm^2]</span>
-<span class="co">#&gt; 6  setosa 0.68(5) [cm^2] 21(1) [cm^2]</span></code></pre></div>
-</div>
-<div id="row-aggregation-1" class="section level3">
-<h3 class="hasAnchor">
-<a href="#row-aggregation-1" class="anchor"></a>Row Aggregation</h3>
-<p><code>dplyr</code> breaks down aggregation operations in two distinct parts: grouping (with <code>group_by</code>) and summarising (using <code>summarise</code> and others). Since <code>dplyr</code> &gt;= 1.0.0, operations on aggregated data is now fully compatible with quantities and,compared to base methods, no fancy unlisting is required:</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">iris.q</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">Species</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise_all.html">summarise_all</a></span><span class="op">(</span><span class="va">mean</span><span class="op">)</span>
-<span class="co">#&gt; # A tibble: 3 x 5</span>
-<span class="co">#&gt;   Species    Sepal.Length Sepal.Width Petal.Length Petal.Width</span>
-<span class="co">#&gt; * &lt;fct&gt;        (err) [cm]  (err) [cm]   (err) [cm]  (err) [cm]</span>
-<span class="co">#&gt; 1 setosa           5.0(3)      3.4(2)      1.46(7)     0.25(1)</span>
-<span class="co">#&gt; 2 versicolor       5.9(3)      2.8(1)       4.3(2)     1.33(7)</span>
-<span class="co">#&gt; 3 virginica        6.6(3)      3.0(1)       5.6(3)      2.0(1)</span></code></pre></div>
-</div>
-<div id="column-joining-1" class="section level3">
-<h3 class="hasAnchor">
-<a href="#column-joining-1" class="anchor"></a>Column Joining</h3>
-<p>Several verbs are provided for different types of joins, such as <code>inner_join</code>, <code>left_join</code>, <code>right_join</code> or <code>full_join</code>. Internally, they use the same grouping mechanism than summaries. Therefore, since <code>dplyr</code> &gt;= 1.0.0, these are fully compatible with quantities too:</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">iris.q</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>
-    Height <span class="op">=</span> <span class="fu"><a href="../reference/quantities.html">set_quantities</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">55</span>, <span class="fl">60</span>, <span class="fl">45</span><span class="op">)</span>, <span class="va">cm</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">45</span>, <span class="fl">30</span>, <span class="fl">35</span><span class="op">)</span><span class="op">)</span>,
-    Species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"setosa"</span>, <span class="st">"virginica"</span>, <span class="st">"versicolor"</span><span class="op">)</span>
-  <span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; Joining, by = "Species"</span>
-<span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length  Petal.Width Species      Height</span>
-<span class="co">#&gt; 1  5.1(3) [cm] 3.5(2) [cm] 1.40(7) [cm] 0.20(1) [cm]  setosa 60(40) [cm]</span>
-<span class="co">#&gt; 2  4.9(2) [cm] 3.0(2) [cm] 1.40(7) [cm] 0.20(1) [cm]  setosa 60(40) [cm]</span>
-<span class="co">#&gt; 3  4.7(2) [cm] 3.2(2) [cm] 1.30(6) [cm] 0.20(1) [cm]  setosa 60(40) [cm]</span>
-<span class="co">#&gt; 4  4.6(2) [cm] 3.1(2) [cm] 1.50(8) [cm] 0.20(1) [cm]  setosa 60(40) [cm]</span>
-<span class="co">#&gt; 5  5.0(2) [cm] 3.6(2) [cm] 1.40(7) [cm] 0.20(1) [cm]  setosa 60(40) [cm]</span>
-<span class="co">#&gt; 6  5.4(3) [cm] 3.9(2) [cm] 1.70(8) [cm] 0.40(2) [cm]  setosa 60(40) [cm]</span></code></pre></div>
-<p>The only difference with base <code>merge</code> here is that <code>dplyr</code> does not reorder columns with respect to the left-hand side.</p>
-</div>
-<div id="unpivoting-1" class="section level3">
-<h3 class="hasAnchor">
-<a href="#unpivoting-1" class="anchor"></a>(Un)Pivoting</h3>
-<p>Finally, pivoting and unpivoting is handled by a separate package, <code>tidyr</code>. Historically, this was managed using the verbs <code>spread</code> (pivot) and <code>gather</code> (unpivot). These verbs, which are not compatible with quantities, are deprecated and no longer maintained.</p>
-<p>Instead, there are new and more straightforward verbs for (un)pivoting data frames called <code>pivot_wider</code> (equivalent to <code>spread</code>) and <code>pivot_longer</code> (equivalent to <code>gather</code>). These verbs do make use of the new approach brought by <code>vctrs</code> and therefore are fully compatible with quantities.</p>
-<p>Compared to base R, the unpivoting operation is substantially more straightforward. In the next example, we directly merge the four columns of interest into the <code>value</code> column, and the correspoding column names are gathered into the <code>name</code> column. Such a column is then separated into flower <code>part</code> (sepal, petal) and <code>dim</code> (length, height):</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">iris.q</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/separate.html">separate</a></span><span class="op">(</span><span class="va">name</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"part"</span>, <span class="st">"dim"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; # A tibble: 6 x 4</span>
-<span class="co">#&gt;   Species part  dim         value</span>
-<span class="co">#&gt;   &lt;fct&gt;   &lt;chr&gt; &lt;chr&gt;  (err) [cm]</span>
-<span class="co">#&gt; 1 setosa  Sepal Length     5.1(3)</span>
-<span class="co">#&gt; 2 setosa  Sepal Width      3.5(2)</span>
-<span class="co">#&gt; 3 setosa  Petal Length    1.40(7)</span>
-<span class="co">#&gt; 4 setosa  Petal Width     0.20(1)</span>
-<span class="co">#&gt; 5 setosa  Sepal Length     4.9(2)</span>
-<span class="co">#&gt; 6 setosa  Sepal Width      3.0(2)</span></code></pre></div>
-<p>In the following example, we first unpivot the original data set, then we assign quantities and try to pivot it to obtain <code>iris.q</code> back, and it just works:</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">iris</span> <span class="op">%&gt;%</span>
-  <span class="co"># first gather, with row numbers as row_id</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>row_id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="co"># assign quantities</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="../reference/quantities.html">set_quantities</a></span><span class="op">(</span><span class="va">value</span>, <span class="va">cm</span>, <span class="va">value</span> <span class="op">*</span> <span class="fl">0.05</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="co"># now spread and remove the row_id</span>
-  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html">pivot_wider</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">row_id</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; # A tibble: 6 x 5</span>
-<span class="co">#&gt;   Species Sepal.Length Sepal.Width Petal.Length Petal.Width</span>
-<span class="co">#&gt;   &lt;fct&gt;     (err) [cm]  (err) [cm]   (err) [cm]  (err) [cm]</span>
-<span class="co">#&gt; 1 setosa        5.1(3)      3.5(2)      1.40(7)     0.20(1)</span>
-<span class="co">#&gt; 2 setosa        4.9(2)      3.0(2)      1.40(7)     0.20(1)</span>
-<span class="co">#&gt; 3 setosa        4.7(2)      3.2(2)      1.30(6)     0.20(1)</span>
-<span class="co">#&gt; 4 setosa        4.6(2)      3.1(2)      1.50(8)     0.20(1)</span>
-<span class="co">#&gt; 5 setosa        5.0(2)      3.6(2)      1.40(7)     0.20(1)</span>
-<span class="co">#&gt; 6 setosa        5.4(3)      3.9(2)      1.70(8)     0.40(2)</span></code></pre></div>
-</div>
-</div>
-<div id="summary" class="section level2">
-<h2 class="hasAnchor">
-<a href="#summary" class="anchor"></a>Summary</h2>
-<p>R base works smoothly with quantities in most cases. The only shortcoming is that some care must be applied to aggregations. In particular, simplification must be explicitly disabled (<code>simplify=FALSE</code>), and such a simplification (i.e., converting lists to vectors of quantities) must be applied manually while avoiding <code>unlist</code>.</p>
-<p>Since <code>dplyr</code> 1.0.0 and <code>tidyr</code> 1.1.0 (for <code>units</code> &gt;= 0.6-7, <code>errors</code> &gt;= 0.3.4 and <code>quantities</code> &gt;= 0.1.5), the new <code>vctrs</code>-based approach brings us full compatibility with quantities for all the operations considered in this document, including grouped operations, joining and pivoting, which did not work for previous versions.</p>
-</div>
-<div id="a-note-on-data-table" class="section level2">
-<h2 class="hasAnchor">
-<a href="#a-note-on-data-table" class="anchor"></a>A Note on <code>data.table</code>
+<div class="section level2">
+<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>The <a href="https://github.com/Rdatatable/data.table/wiki"><code>data.table</code></a> package is another popular data tools, which provides <em>a high-performance version of base R’s <code>data.frame</code> with syntax and feature enhancements for ease of use, convenience and programming speed</em>.</p>
-<p>Long story short, we have not included a section on <code>data.table</code> because <em>currently</em> (v1.11.4) it does not work well with vectorised attributes. The underlying problem is similar to <code>dplyr</code>’s issue, but unfortunately it affects more operations, including row subsetting and ordering. Only column transformation seems to work, and other operations generate corrupted objects.</p>
-<p>We have found that defining quantities columns as lists (where each element consists of a single value, with unit and uncertainty) may be a workaround, but this probably would be a serious performance penalty for a package that is typically chosen for speed reasons.</p>
+<p>This document intends to be a guide on how to work with quantities
+data (magnitudes with units and/or uncertainty) in two distinct
+workflows: R <em>base</em> and the so-called <a href="https://www.tidyverse.org/" class="external-link"><em>tidyverse</em></a>. Units and
+errors (and, by extension, quantities) objects essentially are numeric
+vectors, arrays and matrices with associated metadata. This metadata is
+not always compatible with some functions, and thus we here explore the
+most common operations in data wrangling (subsetting, ordering,
+transformations, aggregations…) to identify potential issues and propose
+possible workarounds.</p>
+<p>Let us consider the traditional <code>iris</code> data set for this
+exercise. According to its documentation,</p>
+<blockquote>
+<p><code>iris</code> is a data frame with 150 cases (rows) and 5
+variables (columns) named <code>Sepal.Length</code>,
+<code>Sepal.Width</code>, <code>Petal.Length</code>,
+<code>Petal.Width</code>, and <code>Species</code>.</p>
+</blockquote>
+<p>And values are provided in centimeters. If we consider, for instance,
+a 2% of uncertainty, the first step is to define proper quantities. Then
+we will work on the resulting data frame for the rest of this
+article.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-quantities/quantities" class="external-link">quantities</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Loading required package: units</span></span>
+<span><span class="co">#&gt; udunits database from /usr/local/share/udunits/udunits2.xml</span></span>
+<span><span class="co">#&gt; Loading required package: errors</span></span>
+<span></span>
+<span><span class="va">iris.q</span> <span class="op">&lt;-</span> <span class="va">iris</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/quantities.html">quantities</a></span><span class="op">(</span><span class="va">iris.q</span><span class="op">[</span>,<span class="va">i</span><span class="op">]</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"cm"</span>, <span class="va">iris.q</span><span class="op">[</span>,<span class="va">i</span><span class="op">]</span> <span class="op">*</span> <span class="fl">0.02</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">iris.q</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   Sepal.Length  Sepal.Width Petal.Length   Petal.Width Species</span></span>
+<span><span class="co">#&gt; 1  5.1(1) [cm] 3.50(7) [cm] 1.40(3) [cm] 0.200(4) [cm]  setosa</span></span>
+<span><span class="co">#&gt; 2  4.9(1) [cm] 3.00(6) [cm] 1.40(3) [cm] 0.200(4) [cm]  setosa</span></span>
+<span><span class="co">#&gt; 3 4.70(9) [cm] 3.20(6) [cm] 1.30(3) [cm] 0.200(4) [cm]  setosa</span></span>
+<span><span class="co">#&gt; 4 4.60(9) [cm] 3.10(6) [cm] 1.50(3) [cm] 0.200(4) [cm]  setosa</span></span>
+<span><span class="co">#&gt; 5  5.0(1) [cm] 3.60(7) [cm] 1.40(3) [cm] 0.200(4) [cm]  setosa</span></span>
+<span><span class="co">#&gt; 6  5.4(1) [cm] 3.90(8) [cm] 1.70(3) [cm] 0.400(8) [cm]  setosa</span></span></code></pre></div>
+<p>Note that, throughout this document, and unless otherwise stated, we
+will talk about <em>quantities objects</em> as a shortcut for
+<em>quantities, units and errors objects</em>.</p>
+</div>
+<div class="section level2">
+<h2 id="r-base">R Base<a class="anchor" aria-label="anchor" href="#r-base"></a>
+</h2>
+<p>In this section, we consider all the methods and functions included
+in the default packages, i.e., those that are automatically installed
+along with any R distribution:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/installed.packages.html" class="external-link">installed.packages</a></span><span class="op">(</span>priority<span class="op">=</span><span class="st">"base"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt;  [1] "base"      "compiler"  "datasets"  "graphics"  "grDevices" "grid"     </span></span>
+<span><span class="co">#&gt;  [7] "methods"   "parallel"  "splines"   "stats"     "stats4"    "tcltk"    </span></span>
+<span><span class="co">#&gt; [13] "tools"     "utils"</span></span></code></pre>
+<div class="section level3">
+<h3 id="row-subsetting">Row Subsetting<a class="anchor" aria-label="anchor" href="#row-subsetting"></a>
+</h3>
+<p>Quantities objects have all the subsetting methods defined
+(<code>[</code>, <code>[[</code>, <code>[&lt;-</code>,
+<code>[[&lt;-</code>). Therefore they can be used in the same way as
+with plain numeric vectors, and in conjunction with <code>which</code>
+and other functions to perform subsetting. The <code>subset</code>
+function is very handy too and achieves the same result:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">iris.q</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">iris.q</span><span class="op">$</span><span class="va">Sepal.Length</span> <span class="op">&gt;</span> <span class="fu"><a href="../reference/quantities.html">set_quantities</a></span><span class="op">(</span><span class="fl">75</span>, <span class="va">mm</span><span class="op">)</span><span class="op">)</span>, <span class="op">]</span></span>
+<span><span class="co">#&gt; Warning: In '&gt;' : boolean operators not defined for 'errors' objects,</span></span>
+<span><span class="co">#&gt; uncertainty dropped</span></span>
+<span><span class="co">#&gt;     Sepal.Length  Sepal.Width Petal.Length  Petal.Width   Species</span></span>
+<span><span class="co">#&gt; 106  7.6(2) [cm] 3.00(6) [cm]  6.6(1) [cm] 2.10(4) [cm] virginica</span></span>
+<span><span class="co">#&gt; 118  7.7(2) [cm] 3.80(8) [cm]  6.7(1) [cm] 2.20(4) [cm] virginica</span></span>
+<span><span class="co">#&gt; 119  7.7(2) [cm] 2.60(5) [cm]  6.9(1) [cm] 2.30(5) [cm] virginica</span></span>
+<span><span class="co">#&gt; 123  7.7(2) [cm] 2.80(6) [cm]  6.7(1) [cm] 2.00(4) [cm] virginica</span></span>
+<span><span class="co">#&gt; 132  7.9(2) [cm] 3.80(8) [cm]  6.4(1) [cm] 2.00(4) [cm] virginica</span></span>
+<span><span class="co">#&gt; 136  7.7(2) [cm] 3.00(6) [cm]  6.1(1) [cm] 2.30(5) [cm] virginica</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">iris.q</span>, <span class="va">Sepal.Length</span> <span class="op">&gt;</span> <span class="fu"><a href="../reference/quantities.html">set_quantities</a></span><span class="op">(</span><span class="fl">75</span>, <span class="va">mm</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;     Sepal.Length  Sepal.Width Petal.Length  Petal.Width   Species</span></span>
+<span><span class="co">#&gt; 106  7.6(2) [cm] 3.00(6) [cm]  6.6(1) [cm] 2.10(4) [cm] virginica</span></span>
+<span><span class="co">#&gt; 118  7.7(2) [cm] 3.80(8) [cm]  6.7(1) [cm] 2.20(4) [cm] virginica</span></span>
+<span><span class="co">#&gt; 119  7.7(2) [cm] 2.60(5) [cm]  6.9(1) [cm] 2.30(5) [cm] virginica</span></span>
+<span><span class="co">#&gt; 123  7.7(2) [cm] 2.80(6) [cm]  6.7(1) [cm] 2.00(4) [cm] virginica</span></span>
+<span><span class="co">#&gt; 132  7.9(2) [cm] 3.80(8) [cm]  6.4(1) [cm] 2.00(4) [cm] virginica</span></span>
+<span><span class="co">#&gt; 136  7.7(2) [cm] 3.00(6) [cm]  6.1(1) [cm] 2.30(5) [cm] virginica</span></span></code></pre></div>
+<p>Note that another quantities object is defined for the comparison.
+This is needed because different units are incomparable. Also note that
+the first line throws a warning telling us that the uncertainty was
+dropped for this operation. This kind of warning is thrown once, and
+this is why <code>subset</code> succeeds silently.</p>
+</div>
+<div class="section level3">
+<h3 id="row-ordering">Row Ordering<a class="anchor" aria-label="anchor" href="#row-ordering"></a>
+</h3>
+<p>The <code>sort</code> function, as its name suggests, <em>sorts</em>
+vectors, and it is compatible with quantities:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">iris.q</span><span class="op">$</span><span class="va">Sepal.Length</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span>
+<span><span class="co">#&gt; Units: [cm]</span></span>
+<span><span class="co">#&gt; Errors: 0.102 0.098 0.094 0.092 0.100</span></span>
+<span><span class="co">#&gt; [1] 5.1 4.9 4.7 4.6 5.0</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="va">iris.q</span><span class="op">$</span><span class="va">Sepal.Length</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Units: [cm]</span></span>
+<span><span class="co">#&gt; Errors: 0.092 0.094 0.098 0.100 0.102</span></span>
+<span><span class="co">#&gt; [1] 4.6 4.7 4.9 5.0 5.1</span></span></code></pre></div>
+<p>More generally, the <code>order</code> function can be used for data
+frame ordering:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">iris.q</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">iris.q</span><span class="op">$</span><span class="va">Sepal.Length</span><span class="op">)</span>, <span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    Sepal.Length  Sepal.Width Petal.Length   Petal.Width Species</span></span>
+<span><span class="co">#&gt; 14 4.30(9) [cm] 3.00(6) [cm] 1.10(2) [cm] 0.100(2) [cm]  setosa</span></span>
+<span><span class="co">#&gt; 9  4.40(9) [cm] 2.90(6) [cm] 1.40(3) [cm] 0.200(4) [cm]  setosa</span></span>
+<span><span class="co">#&gt; 39 4.40(9) [cm] 3.00(6) [cm] 1.30(3) [cm] 0.200(4) [cm]  setosa</span></span>
+<span><span class="co">#&gt; 43 4.40(9) [cm] 3.20(6) [cm] 1.30(3) [cm] 0.200(4) [cm]  setosa</span></span>
+<span><span class="co">#&gt; 42 4.50(9) [cm] 2.30(5) [cm] 1.30(3) [cm] 0.300(6) [cm]  setosa</span></span>
+<span><span class="co">#&gt; 4  4.60(9) [cm] 3.10(6) [cm] 1.50(3) [cm] 0.200(4) [cm]  setosa</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="column-transformation">Column Transformation<a class="anchor" aria-label="anchor" href="#column-transformation"></a>
+</h3>
+<p>The <code>transform</code> function is able to modify variables in a
+data frame or to create new ones. The <code>within</code> function
+provides a similar but more flexible approach though. Both are fully
+compatible with quantities:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">within</a></span><span class="op">(</span><span class="va">iris.q</span>, <span class="op">{</span></span>
+<span>  <span class="va">Sepal.Area</span> <span class="op">&lt;-</span> <span class="va">Sepal.Length</span> <span class="op">*</span> <span class="va">Sepal.Width</span></span>
+<span>  <span class="va">Petal.Area</span> <span class="op">&lt;-</span> <span class="va">Petal.Length</span> <span class="op">*</span> <span class="va">Petal.Width</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">Sepal.Length</span>, <span class="va">Sepal.Width</span>, <span class="va">Petal.Length</span>, <span class="va">Petal.Width</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   Species      Petal.Area     Sepal.Area</span></span>
+<span><span class="co">#&gt; 1  setosa 0.280(8) [cm^2] 17.8(5) [cm^2]</span></span>
+<span><span class="co">#&gt; 2  setosa 0.280(8) [cm^2] 14.7(4) [cm^2]</span></span>
+<span><span class="co">#&gt; 3  setosa 0.260(7) [cm^2] 15.0(4) [cm^2]</span></span>
+<span><span class="co">#&gt; 4  setosa 0.300(8) [cm^2] 14.3(4) [cm^2]</span></span>
+<span><span class="co">#&gt; 5  setosa 0.280(8) [cm^2] 18.0(5) [cm^2]</span></span>
+<span><span class="co">#&gt; 6  setosa  0.68(2) [cm^2] 21.1(6) [cm^2]</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="row-aggregation">Row Aggregation<a class="anchor" aria-label="anchor" href="#row-aggregation"></a>
+</h3>
+<p>Row aggregation is the process of summarising data based on some
+grouping variable(s). There are several ways of working with data split
+by factors in R base, and, although they tend to preserve classes, they
+are generally not very kind to other metadata (i.e., attributes) by
+default.</p>
+<p>In the following example, the average <code>Sepal.Length</code> is
+computed per <code>Species</code>, but the metadata gets dropped:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/tapply.html" class="external-link">tapply</a></span><span class="op">(</span><span class="va">iris.q</span><span class="op">$</span><span class="va">Sepal.Length</span>, <span class="va">iris.q</span><span class="op">$</span><span class="va">Species</span>, <span class="va">mean</span><span class="op">)</span></span>
+<span><span class="co">#&gt;     setosa versicolor  virginica </span></span>
+<span><span class="co">#&gt;      5.006      5.936      6.588</span></span></code></pre></div>
+<p>Many of these functions include a <code>simplify</code> parameter
+which, if set to <code>FALSE</code>, preserves quantities metadata:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="op">(</span><span class="va">sepal.length.agg</span> <span class="op">&lt;-</span> </span>
+<span>   <span class="fu"><a href="https://rdrr.io/r/base/tapply.html" class="external-link">tapply</a></span><span class="op">(</span><span class="va">iris.q</span><span class="op">$</span><span class="va">Sepal.Length</span>, <span class="va">iris.q</span><span class="op">$</span><span class="va">Species</span>, <span class="va">mean</span>, simplify<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $setosa</span></span>
+<span><span class="co">#&gt; 5.0(1) [cm]</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $versicolor</span></span>
+<span><span class="co">#&gt; 5.9(1) [cm]</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $virginica</span></span>
+<span><span class="co">#&gt; 6.6(1) [cm]</span></span></code></pre></div>
+<p>The only drawback is that the result is a list, and such a list must
+be unlisted with care, otherwise, metadata gets dropped again:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># drops quantities</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">sepal.length.agg</span><span class="op">)</span></span>
+<span><span class="co">#&gt;     setosa versicolor  virginica </span></span>
+<span><span class="co">#&gt;      5.006      5.936      6.588</span></span>
+<span></span>
+<span><span class="co"># preserves quantities</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">c</span>, <span class="va">sepal.length.agg</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Units: [cm]</span></span>
+<span><span class="co">#&gt; Errors: 0.10012 0.11872 0.13176</span></span>
+<span><span class="co">#&gt;     setosa versicolor  virginica </span></span>
+<span><span class="co">#&gt;      5.006      5.936      6.588</span></span></code></pre></div>
+<p>The <code>by</code> function is an object-oriented wrapper for
+<code>tapply</code> applied to data frames which also provides a
+<code>simplify</code> parameter. A more convenient way of working with
+summary statistics is the <code>aggregate</code> generic, from the
+<code>stats</code> namespace. Although there is a
+<code>aggregate.data.frame</code> method, there is a more intuitive
+interface to it through the <code>aggregate.formula</code> method.
+Again, it is necessary to set <code>simplify=FALSE</code> to keep
+quantities:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="op">(</span><span class="va">iris.q.agg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html" class="external-link">aggregate</a></span><span class="op">(</span><span class="va">.</span> <span class="op">~</span> <span class="va">Species</span>, data <span class="op">=</span> <span class="va">iris.q</span>, <span class="va">mean</span>, simplify<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;      Species Sepal.Length Sepal.Width Petal.Length Petal.Width</span></span>
+<span><span class="co">#&gt; 1     setosa        5.006       3.428        1.462       0.246</span></span>
+<span><span class="co">#&gt; 2 versicolor        5.936        2.77         4.26       1.326</span></span>
+<span><span class="co">#&gt; 3  virginica        6.588       2.974        5.552       2.026</span></span></code></pre></div>
+<p>Apparently, the output has no metadata associated, but what really
+happens is that the resulting columns are lists:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">iris.q.agg</span><span class="op">$</span><span class="va">Sepal.Length</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "list"</span></span></code></pre></div>
+<p>Therefore, as in the <code>tapply</code>/<code>by</code> case, they
+must be unlisted with care to still preserve the metadata:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">unlist_quantities</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">is.list</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">||</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">is.data.frame</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="va">unlist</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">x</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"quantities"</span>, <span class="st">"units"</span>, <span class="st">"errors"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">c</span>, <span class="va">x</span><span class="op">)</span></span>
+<span>    <span class="kw">else</span> <span class="va">x</span></span>
+<span>  <span class="op">}</span></span>
+<span>  </span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">is.data.frame</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">unlist</span><span class="op">)</span>, col.names<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="kw">else</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu">unlist_quantities</span><span class="op">(</span><span class="va">iris.q.agg</span><span class="op">)</span></span>
+<span><span class="co">#&gt;      Species Sepal.Length  Sepal.Width Petal.Length  Petal.Width</span></span>
+<span><span class="co">#&gt; 1     setosa  5.0(1) [cm] 3.43(7) [cm] 1.46(3) [cm] 0.25(1) [cm]</span></span>
+<span><span class="co">#&gt; 2 versicolor  5.9(1) [cm] 2.77(6) [cm] 4.26(9) [cm] 1.33(3) [cm]</span></span>
+<span><span class="co">#&gt; 3  virginica  6.6(1) [cm] 2.97(6) [cm]  5.6(1) [cm] 2.03(4) [cm]</span></span></code></pre></div>
+<p>And this method works for the <code>tapply</code>/<code>by</code>
+case too:</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">unlist_quantities</span><span class="op">(</span><span class="va">sepal.length.agg</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Units: [cm]</span></span>
+<span><span class="co">#&gt; Errors: 0.10012 0.11872 0.13176</span></span>
+<span><span class="co">#&gt;     setosa versicolor  virginica </span></span>
+<span><span class="co">#&gt;      5.006      5.936      6.588</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="column-joining">Column Joining<a class="anchor" aria-label="anchor" href="#column-joining"></a>
+</h3>
+<p>Joining data frames by common columns can done with the
+<code>merge</code> generic. Such operations are based on appending
+columns, which may be subset or replicated to fit the length of the
+merged observations. Therefore, quantities should be preserved in all
+cases. In the following example, we generate a data frame with the
+height per species and then merge it with the main data set:</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">height</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  Height <span class="op">=</span> <span class="fu"><a href="../reference/quantities.html">set_quantities</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">55</span>, <span class="fl">60</span>, <span class="fl">45</span><span class="op">)</span>, <span class="va">cm</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">45</span>, <span class="fl">30</span>, <span class="fl">35</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  Species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"setosa"</span>, <span class="st">"virginica"</span>, <span class="st">"versicolor"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge</a></span><span class="op">(</span><span class="va">iris.q</span>, <span class="va">height</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   Species Sepal.Length  Sepal.Width Petal.Length   Petal.Width      Height</span></span>
+<span><span class="co">#&gt; 1  setosa  5.1(1) [cm] 3.50(7) [cm] 1.40(3) [cm] 0.200(4) [cm] 60(40) [cm]</span></span>
+<span><span class="co">#&gt; 2  setosa  4.9(1) [cm] 3.00(6) [cm] 1.40(3) [cm] 0.200(4) [cm] 60(40) [cm]</span></span>
+<span><span class="co">#&gt; 3  setosa 4.70(9) [cm] 3.20(6) [cm] 1.30(3) [cm] 0.200(4) [cm] 60(40) [cm]</span></span>
+<span><span class="co">#&gt; 4  setosa 4.60(9) [cm] 3.10(6) [cm] 1.50(3) [cm] 0.200(4) [cm] 60(40) [cm]</span></span>
+<span><span class="co">#&gt; 5  setosa  5.0(1) [cm] 3.60(7) [cm] 1.40(3) [cm] 0.200(4) [cm] 60(40) [cm]</span></span>
+<span><span class="co">#&gt; 6  setosa  5.4(1) [cm] 3.90(8) [cm] 1.70(3) [cm] 0.400(8) [cm] 60(40) [cm]</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="unpivoting">(Un)Pivoting<a class="anchor" aria-label="anchor" href="#unpivoting"></a>
+</h3>
+<p>The <code>reshape</code> function, from the <code>stats</code>
+namespace, provides an interface for both pivoting and unpivoting (i.e.,
+<em>tidyfying</em> data). In the case of the <code>iris</code> data set,
+we would say that it is in the <em>wide format</em>, because each row
+has more than one observation.</p>
+<p>This function has a quite peculiar nomenclature. First of all, the
+unpivoting operation is accessed by providing the argument
+<code>direction="long"</code>. We need to define the
+<code>varying</code> columns (columns to unpivot), as character or
+indices, and they are unpivoted based on their names. By default, the
+separator <code>sep="."</code> is used, which means that
+<code>Sepal.Width</code> will be broken down into <code>Sepal</code> and
+<code>Width</code>, and the former will be unpivoted with the latter as
+grouping variable. We can specify the name of the grouping variable with
+the <code>timevar</code> argument.</p>
+<p>Putting everything together, this is how to unpivot the data set by
+the dimension (which we will call it <code>dim</code>) of the
+petal/sepal:</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">long.1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/reshape.html" class="external-link">reshape</a></span><span class="op">(</span><span class="va">iris.q</span>, varying<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, timevar<span class="op">=</span><span class="st">"dim"</span>, idvar<span class="op">=</span><span class="st">"dim.id"</span>, direction<span class="op">=</span><span class="st">"long"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">long.1</span><span class="op">)</span></span>
+<span><span class="co">#&gt;          Species    dim        Sepal        Petal dim.id</span></span>
+<span><span class="co">#&gt; 1.Length  setosa Length  5.1(1) [cm] 1.40(3) [cm]      1</span></span>
+<span><span class="co">#&gt; 2.Length  setosa Length  4.9(1) [cm] 1.40(3) [cm]      2</span></span>
+<span><span class="co">#&gt; 3.Length  setosa Length 4.70(9) [cm] 1.30(3) [cm]      3</span></span>
+<span><span class="co">#&gt; 4.Length  setosa Length 4.60(9) [cm] 1.50(3) [cm]      4</span></span>
+<span><span class="co">#&gt; 5.Length  setosa Length  5.0(1) [cm] 1.40(3) [cm]      5</span></span>
+<span><span class="co">#&gt; 6.Length  setosa Length  5.4(1) [cm] 1.70(3) [cm]      6</span></span></code></pre></div>
+<p>It can be noted that the unpivoting also generates an index to
+indentify multiple records from the same group. We have changed the name
+of that identifier to <code>dim.id</code> (just <code>id</code> by
+default).</p>
+<p>We can further unpivot sepal and petal as the <code>part</code> of
+the flower. First, we need to prepend a common identifier to columns 3
+and 4, which are to be unpivoted:</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">long.1</span><span class="op">)</span><span class="op">[</span><span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"value."</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">long.1</span><span class="op">)</span><span class="op">[</span><span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">long.2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/reshape.html" class="external-link">reshape</a></span><span class="op">(</span><span class="va">long.1</span>, varying<span class="op">=</span><span class="fl">3</span><span class="op">:</span><span class="fl">4</span>, timevar<span class="op">=</span><span class="st">"part"</span>, idvar<span class="op">=</span><span class="st">"part.id"</span>, direction<span class="op">=</span><span class="st">"long"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">long.2</span><span class="op">)</span></span>
+<span><span class="co">#&gt;         Species    dim dim.id  part        value part.id</span></span>
+<span><span class="co">#&gt; 1.Sepal  setosa Length      1 Sepal  5.1(1) [cm]       1</span></span>
+<span><span class="co">#&gt; 2.Sepal  setosa Length      2 Sepal  4.9(1) [cm]       2</span></span>
+<span><span class="co">#&gt; 3.Sepal  setosa Length      3 Sepal 4.70(9) [cm]       3</span></span>
+<span><span class="co">#&gt; 4.Sepal  setosa Length      4 Sepal 4.60(9) [cm]       4</span></span>
+<span><span class="co">#&gt; 5.Sepal  setosa Length      5 Sepal  5.0(1) [cm]       5</span></span>
+<span><span class="co">#&gt; 6.Sepal  setosa Length      6 Sepal  5.4(1) [cm]       6</span></span></code></pre></div>
+<p>And the final result has one tidy observation per row.</p>
+<p>The pivoting operation can be accessed by providing the argument
+<code>direction="wide"</code>. The process is almost symmetrical, but we
+need to specify <code>v.names</code>, as character, instead of
+<code>varying</code> columns. First, we can pivot by flower part:</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">wide.1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/reshape.html" class="external-link">reshape</a></span><span class="op">(</span><span class="va">long.2</span>, v.names<span class="op">=</span><span class="st">"value"</span>, timevar<span class="op">=</span><span class="st">"part"</span>, idvar<span class="op">=</span><span class="st">"part.id"</span>, direction<span class="op">=</span><span class="st">"wide"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">wide.1</span><span class="op">)</span></span>
+<span><span class="co">#&gt;         Species    dim dim.id part.id  value.Sepal  value.Petal</span></span>
+<span><span class="co">#&gt; 1.Sepal  setosa Length      1       1  5.1(1) [cm] 1.40(3) [cm]</span></span>
+<span><span class="co">#&gt; 2.Sepal  setosa Length      2       2  4.9(1) [cm] 1.40(3) [cm]</span></span>
+<span><span class="co">#&gt; 3.Sepal  setosa Length      3       3 4.70(9) [cm] 1.30(3) [cm]</span></span>
+<span><span class="co">#&gt; 4.Sepal  setosa Length      4       4 4.60(9) [cm] 1.50(3) [cm]</span></span>
+<span><span class="co">#&gt; 5.Sepal  setosa Length      5       5  5.0(1) [cm] 1.40(3) [cm]</span></span>
+<span><span class="co">#&gt; 6.Sepal  setosa Length      6       6  5.4(1) [cm] 1.70(3) [cm]</span></span></code></pre></div>
+<p>Then, we remove <code>"value."</code> from the column names and pivot
+by dimension (note that indices are removed to match the initial data
+frame):</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">wide.1</span><span class="op">)</span><span class="op">[</span><span class="fl">5</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">sub</a></span><span class="op">(</span><span class="st">"value\\."</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">wide.1</span><span class="op">)</span><span class="op">[</span><span class="fl">5</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">wide.2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/reshape.html" class="external-link">reshape</a></span><span class="op">(</span><span class="va">wide.1</span>, v.names<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sepal"</span>, <span class="st">"Petal"</span><span class="op">)</span>, timevar<span class="op">=</span><span class="st">"dim"</span>, idvar<span class="op">=</span><span class="st">"dim.id"</span>, direction<span class="op">=</span><span class="st">"wide"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in reshapeWide(data, idvar = idvar, timevar = timevar, varying =</span></span>
+<span><span class="co">#&gt; varying, : some constant variables (part.id) are really varying</span></span>
+<span><span class="va">wide.2</span><span class="op">$</span><span class="va">dim.id</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span>
+<span><span class="va">wide.2</span><span class="op">$</span><span class="va">part.id</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">wide.2</span><span class="op">)</span></span>
+<span><span class="co">#&gt;         Species Sepal.Length Petal.Length  Sepal.Width   Petal.Width</span></span>
+<span><span class="co">#&gt; 1.Sepal  setosa  5.1(1) [cm] 1.40(3) [cm] 3.50(7) [cm] 0.200(4) [cm]</span></span>
+<span><span class="co">#&gt; 2.Sepal  setosa  4.9(1) [cm] 1.40(3) [cm] 3.00(6) [cm] 0.200(4) [cm]</span></span>
+<span><span class="co">#&gt; 3.Sepal  setosa 4.70(9) [cm] 1.30(3) [cm] 3.20(6) [cm] 0.200(4) [cm]</span></span>
+<span><span class="co">#&gt; 4.Sepal  setosa 4.60(9) [cm] 1.50(3) [cm] 3.10(6) [cm] 0.200(4) [cm]</span></span>
+<span><span class="co">#&gt; 5.Sepal  setosa  5.0(1) [cm] 1.40(3) [cm] 3.60(7) [cm] 0.200(4) [cm]</span></span>
+<span><span class="co">#&gt; 6.Sepal  setosa  5.4(1) [cm] 1.70(3) [cm] 3.90(8) [cm] 0.400(8) [cm]</span></span></code></pre></div>
+<p>We have seen that quantities have been correctly preserved through
+the whole process. Finally, we can check whether both data frames are
+identical. Given that the order of columns have changed, we can simply
+check this column name by column name and then put everything
+together:</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">iris.q</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">col</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="va">iris.q</span><span class="op">[[</span><span class="va">col</span><span class="op">]</span><span class="op">]</span> <span class="op">==</span> <span class="va">wide.2</span><span class="op">[[</span><span class="va">col</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="plotting">Plotting<a class="anchor" aria-label="anchor" href="#plotting"></a>
+</h3>
+<p>Quantities support R base scatterplots out of the box: errors are
+displayed as segments around each point and units are automatically
+added to the corresponding axis label.</p>
+<p>Here is an example of a simple plot of a single quantity, where each
+value is automatically indexed in the x-axis:</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># vector plots</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">iris.q</span>, <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Sepal.Width</span>, col<span class="op">=</span><span class="va">Species</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="introduction_files/figure-html/unnamed-chunk-23-1.png" width="576" style="display: block; margin: auto;"></p>
+<p>X-Y scatterplots support units and errors in both axes:</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># x-y plots</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">iris.q</span>, <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Sepal.Length</span>, <span class="va">Sepal.Width</span>, col<span class="op">=</span><span class="va">Species</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># dataframe plots</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">iris.q</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sepal.Length"</span>, <span class="st">"Sepal.Width"</span><span class="op">)</span><span class="op">]</span>, col<span class="op">=</span><span class="va">iris.q</span><span class="op">$</span><span class="va">Species</span><span class="op">)</span></span></code></pre></div>
+<p>which are equivalent, and produce the same result, as the formula
+method:</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Sepal.Width</span> <span class="op">~</span> <span class="va">Sepal.Length</span>, <span class="va">iris.q</span>, col<span class="op">=</span><span class="va">Species</span><span class="op">)</span></span></code></pre></div>
+<p><img src="introduction_files/figure-html/unnamed-chunk-25-1.png" width="576" style="display: block; margin: auto;"></p>
+<p>There is a fundamental limitation in R base for mixed quantities and
+non-quantities data due to S3 dispatch. It is possible, for instance, to
+plot quantities in the x-axis and numeric data in the y-axis:</p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">Sepal.Width</span><span class="op">)</span> <span class="op">~</span> <span class="va">Sepal.Length</span>, <span class="va">iris.q</span>, col<span class="op">=</span><span class="va">Species</span><span class="op">)</span></span></code></pre></div>
+<p><img src="introduction_files/figure-html/unnamed-chunk-26-1.png" width="576" style="display: block; margin: auto;"></p>
+<p>However, when the x-axis has numeric data, quantities methods will
+not be dispatched for the y-axis:</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Sepal.Width</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">Sepal.Length</span><span class="op">)</span>, <span class="va">iris.q</span>, col<span class="op">=</span><span class="va">Species</span><span class="op">)</span></span></code></pre></div>
+<p><img src="introduction_files/figure-html/unnamed-chunk-27-1.png" width="576" style="display: block; margin: auto;"></p>
+<p>One way to overcome this limitation is to set unitless and errorless
+quantities in the x-axis:</p>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Sepal.Width</span> <span class="op">~</span> <span class="fu"><a href="../reference/quantities.html">set_quantities</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">Sepal.Length</span><span class="op">)</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span>, <span class="va">iris.q</span>, col<span class="op">=</span><span class="va">Species</span><span class="op">)</span></span></code></pre></div>
+<p><img src="introduction_files/figure-html/unnamed-chunk-28-1.png" width="576" style="display: block; margin: auto;"></p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="tidyverse">Tidyverse<a class="anchor" aria-label="anchor" href="#tidyverse"></a>
+</h2>
+<p>The <a href="https://www.tidyverse.org/packages/" class="external-link"><em>core
+tidyverse</em></a> includes the following packages:
+<code>ggplot2</code>, <code>dplyr</code>, <code>tidyr</code>,
+<code>readr</code>, <code>purrr</code>, <code>tibble</code>,
+<code>stringr</code> and <code>forcats</code>. This section covers use
+cases for <a href="https://dplyr.tidyverse.org/" class="external-link"><code>dplyr</code></a>
+(everything except for pivoting and unpivoting), <a href="https://tidyr.tidyverse.org/" class="external-link"><code>tidyr</code></a> (for pivoting
+and unpivoting) and <code>ggplot2</code> (for plotting).</p>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="st">"dplyr"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] '1.0.10'</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="st">"tidyr"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] '1.2.1'</span></span></code></pre></div>
+<p>Although not strictly necessary, we will convert the data frame to
+<code>tibble</code> format to enjoy the formatting provided by
+<code>pillar</code>.</p>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">iris.q</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="va">iris.q</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">iris.q</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
+<span><span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species</span></span>
+<span><span class="co">#&gt;     <span style="color: #949494;">(err) [cm]</span>  <span style="color: #949494;">(err) [cm]</span>   <span style="color: #949494;">(err) [cm]</span>  <span style="color: #949494;">(err) [cm]</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>       5.1<span style="color: #949494;">(1)</span>     3.50<span style="color: #949494;">(7)</span>      1.40<span style="color: #949494;">(3)</span>    0.200<span style="color: #949494;">(4)</span> setosa </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>       4.9<span style="color: #949494;">(1)</span>     3.00<span style="color: #949494;">(6)</span>      1.40<span style="color: #949494;">(3)</span>    0.200<span style="color: #949494;">(4)</span> setosa </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>      4.70<span style="color: #949494;">(9)</span>     3.20<span style="color: #949494;">(6)</span>      1.30<span style="color: #949494;">(3)</span>    0.200<span style="color: #949494;">(4)</span> setosa </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>      4.60<span style="color: #949494;">(9)</span>     3.10<span style="color: #949494;">(6)</span>      1.50<span style="color: #949494;">(3)</span>    0.200<span style="color: #949494;">(4)</span> setosa </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>       5.0<span style="color: #949494;">(1)</span>     3.60<span style="color: #949494;">(7)</span>      1.40<span style="color: #949494;">(3)</span>    0.200<span style="color: #949494;">(4)</span> setosa </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>       5.4<span style="color: #949494;">(1)</span>     3.90<span style="color: #949494;">(8)</span>      1.70<span style="color: #949494;">(3)</span>    0.400<span style="color: #949494;">(8)</span> setosa</span></span></code></pre></div>
+<p>Since <code>dplyr</code> 1.0.0, as we will see, there is enhanced
+support for custom S3 classes thanks to the new implementation based on
+<code>vctrs</code> &gt;= 0.3.0. Packages <code>units</code> &gt;= 0.6-7,
+<code>errors</code> &gt;= 0.3.4 and <code>quantities</code> &gt;= 0.1.5
+add support for this approach.</p>
+<div class="section level3">
+<h3 id="row-subsetting-1">Row Subsetting<a class="anchor" aria-label="anchor" href="#row-subsetting-1"></a>
+</h3>
+<p>The <code>filter</code> generic finds observations where conditions
+hold. The main difference with base subsetting is that, if a condition
+evaluates to <code>NA</code> for a certain row, it is dropped. As in the
+base case, another quantities object must be defined for the
+comparison:</p>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">iris.q</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Sepal.Length</span> <span class="op">&gt;</span> <span class="fu"><a href="../reference/quantities.html">set_quantities</a></span><span class="op">(</span><span class="fl">75</span>, <span class="va">mm</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
+<span><span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species  </span></span>
+<span><span class="co">#&gt;     <span style="color: #949494;">(err) [cm]</span>  <span style="color: #949494;">(err) [cm]</span>   <span style="color: #949494;">(err) [cm]</span>  <span style="color: #949494;">(err) [cm]</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>       7.6<span style="color: #949494;">(2)</span>     3.00<span style="color: #949494;">(6)</span>       6.6<span style="color: #949494;">(1)</span>     2.10<span style="color: #949494;">(4)</span> virginica</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>       7.7<span style="color: #949494;">(2)</span>     3.80<span style="color: #949494;">(8)</span>       6.7<span style="color: #949494;">(1)</span>     2.20<span style="color: #949494;">(4)</span> virginica</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>       7.7<span style="color: #949494;">(2)</span>     2.60<span style="color: #949494;">(5)</span>       6.9<span style="color: #949494;">(1)</span>     2.30<span style="color: #949494;">(5)</span> virginica</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>       7.7<span style="color: #949494;">(2)</span>     2.80<span style="color: #949494;">(6)</span>       6.7<span style="color: #949494;">(1)</span>     2.00<span style="color: #949494;">(4)</span> virginica</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>       7.9<span style="color: #949494;">(2)</span>     3.80<span style="color: #949494;">(8)</span>       6.4<span style="color: #949494;">(1)</span>     2.00<span style="color: #949494;">(4)</span> virginica</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>       7.7<span style="color: #949494;">(2)</span>     3.00<span style="color: #949494;">(6)</span>       6.1<span style="color: #949494;">(1)</span>     2.30<span style="color: #949494;">(5)</span> virginica</span></span></code></pre></div>
+<p>There are also three scoped variants available
+(<code>filter_all</code>, <code>filter_if</code>,
+<code>filter_at</code>) and a subsetting function by row number called
+<code>slice</code>. All of them preserve quantities.</p>
+</div>
+<div class="section level3">
+<h3 id="row-ordering-1">Row Ordering<a class="anchor" aria-label="anchor" href="#row-ordering-1"></a>
+</h3>
+<p>The <code>arrange</code> generic sorts variables in a straightforward
+way, and it is compatible with quantities:</p>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">iris.q</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">Sepal.Length</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
+<span><span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species</span></span>
+<span><span class="co">#&gt;     <span style="color: #949494;">(err) [cm]</span>  <span style="color: #949494;">(err) [cm]</span>   <span style="color: #949494;">(err) [cm]</span>  <span style="color: #949494;">(err) [cm]</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>      4.30<span style="color: #949494;">(9)</span>     3.00<span style="color: #949494;">(6)</span>      1.10<span style="color: #949494;">(2)</span>    0.100<span style="color: #949494;">(2)</span> setosa </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>      4.40<span style="color: #949494;">(9)</span>     2.90<span style="color: #949494;">(6)</span>      1.40<span style="color: #949494;">(3)</span>    0.200<span style="color: #949494;">(4)</span> setosa </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>      4.40<span style="color: #949494;">(9)</span>     3.00<span style="color: #949494;">(6)</span>      1.30<span style="color: #949494;">(3)</span>    0.200<span style="color: #949494;">(4)</span> setosa </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>      4.40<span style="color: #949494;">(9)</span>     3.20<span style="color: #949494;">(6)</span>      1.30<span style="color: #949494;">(3)</span>    0.200<span style="color: #949494;">(4)</span> setosa </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>      4.50<span style="color: #949494;">(9)</span>     2.30<span style="color: #949494;">(5)</span>      1.30<span style="color: #949494;">(3)</span>    0.300<span style="color: #949494;">(6)</span> setosa </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>      4.60<span style="color: #949494;">(9)</span>     3.10<span style="color: #949494;">(6)</span>      1.50<span style="color: #949494;">(3)</span>    0.200<span style="color: #949494;">(4)</span> setosa</span></span></code></pre></div>
+<p>The <code>desc</code> function can be applied to individual variables
+to arrange in descending order.</p>
+</div>
+<div class="section level3">
+<h3 id="column-transformation-1">Column Transformation<a class="anchor" aria-label="anchor" href="#column-transformation-1"></a>
+</h3>
+<p>There are two generics for column transformations:
+<code>mutate</code> modifies or adds new variables preserving the
+existing ones, while <code>transmute</code> drops the existing
+variables. The syntax is very similar to base functions
+<code>transform</code> and <code>within</code>, and equally compatible
+with quantities:</p>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">iris.q</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">transmute</a></span><span class="op">(</span></span>
+<span>    Species <span class="op">=</span> <span class="va">Species</span>,</span>
+<span>    Petal.Area <span class="op">=</span> <span class="va">Petal.Length</span> <span class="op">*</span> <span class="va">Petal.Width</span>,</span>
+<span>    Sepal.Area <span class="op">=</span> <span class="va">Sepal.Length</span> <span class="op">*</span> <span class="va">Sepal.Width</span></span>
+<span>  <span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 3</span></span></span>
+<span><span class="co">#&gt;   Species   Petal.Area   Sepal.Area</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>   <span style="color: #949494;">(err) [cm^2]</span> <span style="color: #949494;">(err) [cm^2]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> setosa      0.280<span style="color: #949494;">(8)</span>      17.8<span style="color: #949494;">(5)</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> setosa      0.280<span style="color: #949494;">(8)</span>      14.7<span style="color: #949494;">(4)</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> setosa      0.260<span style="color: #949494;">(7)</span>      15.0<span style="color: #949494;">(4)</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> setosa      0.300<span style="color: #949494;">(8)</span>      14.3<span style="color: #949494;">(4)</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> setosa      0.280<span style="color: #949494;">(8)</span>      18.0<span style="color: #949494;">(5)</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> setosa       0.68<span style="color: #949494;">(2)</span>      21.1<span style="color: #949494;">(6)</span></span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="row-aggregation-1">Row Aggregation<a class="anchor" aria-label="anchor" href="#row-aggregation-1"></a>
+</h3>
+<p><code>dplyr</code> breaks down aggregation operations in two distinct
+parts: grouping (with <code>group_by</code>) and summarising (using
+<code>summarise</code> and others). Since <code>dplyr</code> &gt;=
+1.0.0, operations on aggregated data is now fully compatible with
+quantities and,compared to base methods, no fancy unlisting is
+required:</p>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">iris.q</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">Species</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise_all.html" class="external-link">summarise_all</a></span><span class="op">(</span><span class="va">mean</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 5</span></span></span>
+<span><span class="co">#&gt;   Species    Sepal.Length Sepal.Width Petal.Length Petal.Width</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>        <span style="color: #949494;">(err) [cm]</span>  <span style="color: #949494;">(err) [cm]</span>   <span style="color: #949494;">(err) [cm]</span>  <span style="color: #949494;">(err) [cm]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> setosa           5.0<span style="color: #949494;">(1)</span>     3.43<span style="color: #949494;">(7)</span>      1.46<span style="color: #949494;">(3)</span>     0.25<span style="color: #949494;">(1)</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> versicolor       5.9<span style="color: #949494;">(1)</span>     2.77<span style="color: #949494;">(6)</span>      4.26<span style="color: #949494;">(9)</span>     1.33<span style="color: #949494;">(3)</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> virginica        6.6<span style="color: #949494;">(1)</span>     2.97<span style="color: #949494;">(6)</span>       5.6<span style="color: #949494;">(1)</span>     2.03<span style="color: #949494;">(4)</span></span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="column-joining-1">Column Joining<a class="anchor" aria-label="anchor" href="#column-joining-1"></a>
+</h3>
+<p>Several verbs are provided for different types of joins, such as
+<code>inner_join</code>, <code>left_join</code>, <code>right_join</code>
+or <code>full_join</code>. Internally, they use the same grouping
+mechanism than summaries. Therefore, since <code>dplyr</code> &gt;=
+1.0.0, these are fully compatible with quantities too:</p>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">iris.q</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>    Height <span class="op">=</span> <span class="fu"><a href="../reference/quantities.html">set_quantities</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">55</span>, <span class="fl">60</span>, <span class="fl">45</span><span class="op">)</span>, <span class="va">cm</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">45</span>, <span class="fl">30</span>, <span class="fl">35</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    Species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"setosa"</span>, <span class="st">"virginica"</span>, <span class="st">"versicolor"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Joining, by = "Species"</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 6</span></span></span>
+<span><span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species     Height</span></span>
+<span><span class="co">#&gt;     <span style="color: #949494;">(err) [cm]</span>  <span style="color: #949494;">(err) [cm]</span>   <span style="color: #949494;">(err) [cm]</span>  <span style="color: #949494;">(err) [cm]</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494;">(err) [cm]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>       5.1<span style="color: #949494;">(1)</span>     3.50<span style="color: #949494;">(7)</span>      1.40<span style="color: #949494;">(3)</span>    0.200<span style="color: #949494;">(4)</span> setosa      60<span style="color: #949494;">(40)</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>       4.9<span style="color: #949494;">(1)</span>     3.00<span style="color: #949494;">(6)</span>      1.40<span style="color: #949494;">(3)</span>    0.200<span style="color: #949494;">(4)</span> setosa      60<span style="color: #949494;">(40)</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>      4.70<span style="color: #949494;">(9)</span>     3.20<span style="color: #949494;">(6)</span>      1.30<span style="color: #949494;">(3)</span>    0.200<span style="color: #949494;">(4)</span> setosa      60<span style="color: #949494;">(40)</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>      4.60<span style="color: #949494;">(9)</span>     3.10<span style="color: #949494;">(6)</span>      1.50<span style="color: #949494;">(3)</span>    0.200<span style="color: #949494;">(4)</span> setosa      60<span style="color: #949494;">(40)</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>       5.0<span style="color: #949494;">(1)</span>     3.60<span style="color: #949494;">(7)</span>      1.40<span style="color: #949494;">(3)</span>    0.200<span style="color: #949494;">(4)</span> setosa      60<span style="color: #949494;">(40)</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>       5.4<span style="color: #949494;">(1)</span>     3.90<span style="color: #949494;">(8)</span>      1.70<span style="color: #949494;">(3)</span>    0.400<span style="color: #949494;">(8)</span> setosa      60<span style="color: #949494;">(40)</span></span></span></code></pre></div>
+<p>The only difference with base <code>merge</code> here is that
+<code>dplyr</code> does not reorder columns with respect to the
+left-hand side.</p>
+</div>
+<div class="section level3">
+<h3 id="unpivoting-1">(Un)Pivoting<a class="anchor" aria-label="anchor" href="#unpivoting-1"></a>
+</h3>
+<p>Finally, pivoting and unpivoting is handled by a separate package,
+<code>tidyr</code>. Historically, this was managed using the verbs
+<code>spread</code> (pivot) and <code>gather</code> (unpivot). These
+verbs, which are not compatible with quantities, are deprecated and no
+longer maintained.</p>
+<p>Instead, there are new and more straightforward verbs for
+(un)pivoting data frames called <code>pivot_wider</code> (equivalent to
+<code>spread</code>) and <code>pivot_longer</code> (equivalent to
+<code>gather</code>). These verbs do make use of the new approach
+brought by <code>vctrs</code> and therefore are fully compatible with
+quantities.</p>
+<p>Compared to base R, the unpivoting operation is substantially more
+straightforward. In the next example, we directly merge the four columns
+of interest into the <code>value</code> column, and the correspoding
+column names are gathered into the <code>name</code> column. Such a
+column is then separated into flower <code>part</code> (sepal, petal)
+and <code>dim</code> (length, height):</p>
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">iris.q</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/separate.html" class="external-link">separate</a></span><span class="op">(</span><span class="va">name</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"part"</span>, <span class="st">"dim"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 4</span></span></span>
+<span><span class="co">#&gt;   Species part  dim         value</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494;">(err) [cm]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> setosa  Sepal Length     5.1<span style="color: #949494;">(1)</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> setosa  Sepal Width     3.50<span style="color: #949494;">(7)</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> setosa  Petal Length    1.40<span style="color: #949494;">(3)</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> setosa  Petal Width    0.200<span style="color: #949494;">(4)</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> setosa  Sepal Length     4.9<span style="color: #949494;">(1)</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> setosa  Sepal Width     3.00<span style="color: #949494;">(6)</span></span></span></code></pre></div>
+<p>In the following example, we first unpivot the original data set,
+then we assign quantities and try to pivot it to obtain
+<code>iris.q</code> back, and it just works:</p>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">iris</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="co"># first gather, with row numbers as row_id</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>row_id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="co"># assign quantities</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="../reference/quantities.html">set_quantities</a></span><span class="op">(</span><span class="va">value</span>, <span class="va">cm</span>, <span class="va">value</span> <span class="op">*</span> <span class="fl">0.05</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="co"># now spread and remove the row_id</span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html" class="external-link">pivot_wider</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">row_id</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
+<span><span class="co">#&gt;   Species Sepal.Length Sepal.Width Petal.Length Petal.Width</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>     <span style="color: #949494;">(err) [cm]</span>  <span style="color: #949494;">(err) [cm]</span>   <span style="color: #949494;">(err) [cm]</span>  <span style="color: #949494;">(err) [cm]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> setosa        5.1<span style="color: #949494;">(3)</span>      3.5<span style="color: #949494;">(2)</span>      1.40<span style="color: #949494;">(7)</span>     0.20<span style="color: #949494;">(1)</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> setosa        4.9<span style="color: #949494;">(2)</span>      3.0<span style="color: #949494;">(1)</span>      1.40<span style="color: #949494;">(7)</span>     0.20<span style="color: #949494;">(1)</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> setosa        4.7<span style="color: #949494;">(2)</span>      3.2<span style="color: #949494;">(2)</span>      1.30<span style="color: #949494;">(6)</span>     0.20<span style="color: #949494;">(1)</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> setosa        4.6<span style="color: #949494;">(2)</span>      3.1<span style="color: #949494;">(2)</span>      1.50<span style="color: #949494;">(7)</span>     0.20<span style="color: #949494;">(1)</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> setosa        5.0<span style="color: #949494;">(2)</span>      3.6<span style="color: #949494;">(2)</span>      1.40<span style="color: #949494;">(7)</span>     0.20<span style="color: #949494;">(1)</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> setosa        5.4<span style="color: #949494;">(3)</span>      3.9<span style="color: #949494;">(2)</span>      1.70<span style="color: #949494;">(8)</span>     0.40<span style="color: #949494;">(2)</span></span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="plotting-1">Plotting<a class="anchor" aria-label="anchor" href="#plotting-1"></a>
+</h3>
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="st">"ggplot2"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] '3.4.0'</span></span></code></pre></div>
+<p>Quantities packages provide <code>ggplot2</code> elements to make
+scatterplots straightforward:</p>
+<ul>
+<li>
+<code>units</code> provides automatic detection of units scale type,
+with optional conversion and customization via
+<code><a href="https://rdrr.io/pkg/units/man/scale_units.html" class="external-link">scale_x_units()</a></code> and <code><a href="https://rdrr.io/pkg/units/man/scale_units.html" class="external-link">scale_y_units()</a></code>.</li>
+<li>
+<code>errors</code> provides automatic placement of errorbars via
+<code><a href="https://rdrr.io/pkg/errors/man/geom_errors.html" class="external-link">geom_errors()</a></code>.</li>
+<li>
+<code>quantities</code> provides a compatibility layer between them,
+so that conversions from <code>scale_[x|y]_units</code> affect errorbars
+too.</li>
+</ul>
+<p>By default, units are automatically placed in the axes:</p>
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">p0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">iris.q</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">Sepal.Length</span>, <span class="va">Sepal.Width</span>, color<span class="op">=</span><span class="va">Species</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">p0</span></span></code></pre></div>
+<p><img src="introduction_files/figure-html/unnamed-chunk-41-1.png" width="576" style="display: block; margin: auto;"></p>
+<p>And errobars can be requested via <code><a href="https://rdrr.io/pkg/errors/man/geom_errors.html" class="external-link">geom_errors()</a></code>:</p>
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">p0</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/errors/man/geom_errors.html" class="external-link">geom_errors</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: Using the `size` aesthetic in this geom was deprecated in ggplot2 3.4.0.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Please use `linewidth` in the `default_aes` field and elsewhere instead.</span></span></code></pre></div>
+<p><img src="introduction_files/figure-html/unnamed-chunk-42-1.png" width="576" style="display: block; margin: auto;"></p>
+<p>Errors may be dropped from any axis:</p>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">p0</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/errors/man/geom_errors.html" class="external-link">geom_errors</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/errors/man/drop_errors.html" class="external-link">drop_errors</a></span><span class="op">(</span><span class="va">Sepal.Length</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="introduction_files/figure-html/unnamed-chunk-43-1.png" width="576" style="display: block; margin: auto;"></p>
+<p>And units can be converted for display:</p>
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">p0</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/errors/man/geom_errors.html" class="external-link">geom_errors</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/units/man/scale_units.html" class="external-link">scale_x_units</a></span><span class="op">(</span>unit<span class="op">=</span><span class="st">"mm"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/units/man/scale_units.html" class="external-link">scale_y_units</a></span><span class="op">(</span>unit<span class="op">=</span><span class="st">"m"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="introduction_files/figure-html/unnamed-chunk-44-1.png" width="576" style="display: block; margin: auto;"></p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="summary">Summary<a class="anchor" aria-label="anchor" href="#summary"></a>
+</h2>
+<p>R base works smoothly with quantities in most cases. The only
+shortcoming is that some care must be applied to aggregations. In
+particular, simplification must be explicitly disabled
+(<code>simplify=FALSE</code>), and such a simplification (i.e.,
+converting lists to vectors of quantities) must be applied manually
+while avoiding <code>unlist</code>.</p>
+<p>Since <code>dplyr</code> 1.0.0 and <code>tidyr</code> 1.1.0 (for
+<code>units</code> &gt;= 0.6-7, <code>errors</code> &gt;= 0.3.4 and
+<code>quantities</code> &gt;= 0.1.5), the new <code>vctrs</code>-based
+approach brings us full compatibility with quantities for all the
+operations considered in this document, including grouped operations,
+joining and pivoting, which did not work for previous versions.</p>
+<p>Both R base and <code>ggplot2</code> plots work out of the box,
+although the latter provides much more flexibility and can be used
+independently of the tidyverse.</p>
+</div>
+<div class="section level2">
+<h2 id="a-note-on-data-table">A Note on <code>data.table</code><a class="anchor" aria-label="anchor" href="#a-note-on-data-table"></a>
+</h2>
+<p>The <a href="https://github.com/Rdatatable/data.table/wiki" class="external-link"><code>data.table</code></a>
+package is another popular data tools, which provides <em>a
+high-performance version of base R’s <code>data.frame</code> with syntax
+and feature enhancements for ease of use, convenience and programming
+speed</em>.</p>
+<p>Long story short, we have not included a section on
+<code>data.table</code> because <em>currently</em> (v1.11.4) it does not
+work well with vectorised attributes. The underlying problem is similar
+to <code>dplyr</code>’s issue, but unfortunately it affects more
+operations, including row subsetting and ordering. Only column
+transformation seems to work, and other operations generate corrupted
+objects.</p>
+<p>We have found that defining quantities columns as lists (where each
+element consists of a single value, with unit and uncertainty) may be a
+workaround, but this probably would be a serious performance penalty for
+a package that is typically chosen for speed reasons.</p>
 </div>
   </div>
 
@@ -527,11 +790,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Iñaki Ucar.</p>
+  <p></p>
+<p>Developed by Iñaki Ucar.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>
@@ -539,6 +804,8 @@
 
   
 
+
+  
 
   </body>
 </html>
