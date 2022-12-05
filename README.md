@@ -1,4 +1,4 @@
-# <img src="https://avatars1.githubusercontent.com/u/32303769?s=40&v=4"> quantities: Quantity Calculus for R Vectors
+# <img src="https://avatars1.githubusercontent.com/u/32303769?s=40&v=4"> Quantity Calculus for R
 
 [![Build Status](https://github.com/r-quantities/quantities/workflows/build/badge.svg)](https://github.com/r-quantities/quantities/actions)
 [![Coverage Status](https://codecov.io/gh/r-quantities/quantities/branch/master/graph/badge.svg)](https://app.codecov.io/gh/r-quantities/quantities) 
