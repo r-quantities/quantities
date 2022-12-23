@@ -1,9 +1,11 @@
 # <img src="https://avatars1.githubusercontent.com/u/32303769?s=40&v=4"> Quantity Calculus for R
 
+<!-- badges: start -->
 [![Build Status](https://github.com/r-quantities/quantities/workflows/build/badge.svg)](https://github.com/r-quantities/quantities/actions)
 [![Coverage Status](https://codecov.io/gh/r-quantities/quantities/branch/master/graph/badge.svg)](https://app.codecov.io/gh/r-quantities/quantities) 
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/quantities)](https://cran.r-project.org/package=quantities)
 [![Downloads](https://cranlogs.r-pkg.org/badges/quantities)](https://cran.r-project.org/package=quantities)
+<!-- badges: end -->
 
 The **quantities** package provides integration of the 'units' and 'errors' packages for a complete quantity calculus system for R vectors, matrices and arrays, with automatic propagation, conversion, derivation and simplification of magnitudes and uncertainties.
 
