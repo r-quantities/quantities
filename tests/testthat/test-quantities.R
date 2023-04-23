@@ -132,7 +132,8 @@ test_that("units and errors can be dropped", {
   x <- drop_errors(x)
   expect_units(x, xval, xunt)
 
-  ox <- x <- data.frame(x=1:4, y=1:4)
+  ox <- as.numeric(1:4)
+  ox <- x <- data.frame(x=ox, y=ox)
   quantities(x[[1]]) <- list("m/s", 0.1)
   expect_s3_class(x[[1]], "quantities")
   expect_identical(drop_quantities(x), ox)

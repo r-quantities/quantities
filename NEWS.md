@@ -1,3 +1,7 @@
+# quantities devel
+
+- Fix a couple of tests (r-quantities/units#324).
+
 # quantities 0.2.0
 
 - Add compatibility between `errors::geom_errors` (r-quantities/errors#52) and

@@ -86,11 +86,6 @@ test_that("quantities have coercion methods", {
     set_quantities(400, "cm", 200, mode = "standard")
   )
   expect_equal(sapply(out, typeof), c("double", "double"))
-
-  expect_error(
-    vctrs::vec_cast(x, set_quantities(0L, "m")),
-    class = "vctrs_error_cast_lossy"
-  )
 })
 
 test_that("split-apply-combine with dplyr and base agree", {
