@@ -1,6 +1,6 @@
-## Minor release
+## Patch release
 
-Fixes compatibility with upcoming `units` 0.8-1 and `errors` 0.4.0.
+Fixes compatibility with upcoming `units` 0.8-2.
 
 ## Test environments
 
