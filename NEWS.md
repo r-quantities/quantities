@@ -1,3 +1,7 @@
+# quantities devel
+
+- Performance improvements for `data.frame` methods.
+
 # quantities 0.2.1
 
 - Fix a couple of tests (r-quantities/units#324).

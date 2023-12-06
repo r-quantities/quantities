@@ -30,9 +30,5 @@ drop_errors.quantities <- drop_units.quantities
 #' @name drop_quantities
 #' @export
 drop_quantities.data.frame <- function(x) {
-  for (i in seq_along(x)) {
-    if (inherits(x[[i]], "quantities"))
-      x[[i]] <- drop_quantities(x[[i]])
-  }
-  x
+  dfapply(x, function(i) if (inherits(i, "quantities")) drop_quantities(i) else i)
 }
