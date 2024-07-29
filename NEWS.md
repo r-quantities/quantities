@@ -1,4 +1,4 @@
-# quantities devel
+# quantities 0.2.2
 
 - Performance improvements for `data.frame` methods.
 - Update `ggplot2` tests (r-quantities/units#367).

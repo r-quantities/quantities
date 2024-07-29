@@ -20,6 +20,15 @@ Iñaki Ucar, Edzer Pebesma and Arturo Azcorra (2018).
 Measurement Errors in \R. \emph{The R Journal}, 10(2), 549--557.
 \doi{10.32614/RJ-2018-075}
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://r-quantities.github.io/quantities/}
+  \item \url{https://github.com/r-quantities/quantities}
+  \item Report bugs at \url{https://github.com/r-quantities/quantities/issues}
+}
+
+}
 \author{
 Iñaki Ucar
 }

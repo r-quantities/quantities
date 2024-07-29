@@ -1,6 +1,6 @@
 ## Patch release
 
-Fixes compatibility with upcoming `units` 0.8-2.
+Several fixes and improvements.
 
 ## Test environments
 

@@ -16,13 +16,12 @@
 #' Measurement Errors in \R. \emph{The R Journal}, 10(2), 549--557.
 #' \doi{10.32614/RJ-2018-075}
 #'
-#' @docType package
 #' @import units
 #' @import errors
 #' @import stats
 #' @import utils
 #' @name quantities-package
-NULL
+"_PACKAGE"
 
 #' Handle Measurement Units and Uncertainty on a Numeric Vector
 #'
