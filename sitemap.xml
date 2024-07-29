@@ -1,81 +1,29 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>/404.html</loc>
-  </url>
-  <url>
-    <loc>/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>/articles/introduction.html</loc>
-  </url>
-  <url>
-    <loc>/articles/parsing.html</loc>
-  </url>
-  <url>
-    <loc>/authors.html</loc>
-  </url>
-  <url>
-    <loc>/index.html</loc>
-  </url>
-  <url>
-    <loc>/news/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/Extract.quantities.html</loc>
-  </url>
-  <url>
-    <loc>/reference/as.data.frame.quantities.html</loc>
-  </url>
-  <url>
-    <loc>/reference/as.list.quantities.html</loc>
-  </url>
-  <url>
-    <loc>/reference/as.matrix.quantities.html</loc>
-  </url>
-  <url>
-    <loc>/reference/c.quantities.html</loc>
-  </url>
-  <url>
-    <loc>/reference/cbind.quantities.html</loc>
-  </url>
-  <url>
-    <loc>/reference/correl.html</loc>
-  </url>
-  <url>
-    <loc>/reference/diff.quantities.html</loc>
-  </url>
-  <url>
-    <loc>/reference/drop_quantities.html</loc>
-  </url>
-  <url>
-    <loc>/reference/errors.html</loc>
-  </url>
-  <url>
-    <loc>/reference/groupGeneric.quantities.html</loc>
-  </url>
-  <url>
-    <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/parse_quantities.html</loc>
-  </url>
-  <url>
-    <loc>/reference/quantities-package.html</loc>
-  </url>
-  <url>
-    <loc>/reference/quantities.html</loc>
-  </url>
-  <url>
-    <loc>/reference/rep.quantities.html</loc>
-  </url>
-  <url>
-    <loc>/reference/t.quantities.html</loc>
-  </url>
-  <url>
-    <loc>/reference/units.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>/404.html</loc></url>
+<url><loc>/LICENSE-text.html</loc></url>
+<url><loc>/articles/index.html</loc></url>
+<url><loc>/articles/introduction.html</loc></url>
+<url><loc>/articles/parsing.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/news/index.html</loc></url>
+<url><loc>/reference/Extract.quantities.html</loc></url>
+<url><loc>/reference/as.data.frame.quantities.html</loc></url>
+<url><loc>/reference/as.list.quantities.html</loc></url>
+<url><loc>/reference/as.matrix.quantities.html</loc></url>
+<url><loc>/reference/c.quantities.html</loc></url>
+<url><loc>/reference/cbind.quantities.html</loc></url>
+<url><loc>/reference/correl.html</loc></url>
+<url><loc>/reference/diff.quantities.html</loc></url>
+<url><loc>/reference/drop_quantities.html</loc></url>
+<url><loc>/reference/errors.html</loc></url>
+<url><loc>/reference/groupGeneric.quantities.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/parse_quantities.html</loc></url>
+<url><loc>/reference/quantities-package.html</loc></url>
+<url><loc>/reference/quantities.html</loc></url>
+<url><loc>/reference/rep.quantities.html</loc></url>
+<url><loc>/reference/t.quantities.html</loc></url>
+<url><loc>/reference/units.html</loc></url>
 </urlset>
+
