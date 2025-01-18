@@ -45,8 +45,8 @@ remotes::install_github(paste("r-quantities", c("units", "errors", "quantities")
 
 ## Acknowledgement
 
-This project gratefully acknowledges financial [support](https://www.r-consortium.org/projects) from the
+This project gratefully acknowledges financial [support](https://r-consortium.org/all-projects/funded-projects.html) from the
 
-<a href="https://www.r-consortium.org/all-projects/awarded-projects">
+<a href="https://r-consortium.org/all-projects/2017-group-2.html#quantities-for-r">
 <img src="http://pebesma.staff.ifgi.de/RConsortium_Horizontal_Pantone.png" width="300">
 </a>
