@@ -1,3 +1,7 @@
+# quantities 0.2.3
+
+- Fixes for `covar` and `correl` implementations.
+
 # quantities 0.2.2
 
 - Performance improvements for `data.frame` methods.

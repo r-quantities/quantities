@@ -2,11 +2,17 @@
 % Please edit documentation in R/errors.R
 \name{correl}
 \alias{correl}
+\alias{correl.quantities}
 \alias{correl<-.quantities}
+\alias{covar.quantities}
 \alias{covar<-.quantities}
 \title{Handle Correlations Between \code{quantities} Objects}
 \usage{
+\method{correl}{quantities}(x, y)
+
 \method{correl}{quantities}(x, y) <- value
+
+\method{covar}{quantities}(x, y)
 
 \method{covar}{quantities}(x, y) <- value
 }

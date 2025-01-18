@@ -101,6 +101,12 @@ errors_min.units <- function(x)
 #'
 #' @name correl
 #' @export
+correl.quantities <- function(x, y) {
+  NextMethod()
+}
+
+#' @name correl
+#' @export
 `correl<-.quantities` <- function(x, y, value) {
   stopifnot(inherits(y, "quantities"))
   if (inherits(value, "units"))
@@ -111,9 +117,18 @@ errors_min.units <- function(x)
 
 #' @name correl
 #' @export
+covar.quantities <- function(x, y) {
+  if (!is.null(xy <- NextMethod()))
+    units(xy) <- as_units(units(x)) * as_units(units(y))
+  xy
+}
+
+#' @name correl
+#' @export
 `covar<-.quantities` <- function(x, y, value) {
   stopifnot(inherits(y, "quantities"))
   stopifnot(inherits(value, "units"))
-  stopifnot(ud_are_convertible(units(value), units(x*y)))
+  units(value) <- units(x*y)
+  value <- drop_units(value)
   NextMethod()
 }
