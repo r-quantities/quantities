@@ -1,3 +1,7 @@
+# quantities devel
+
+- Improve `cbind` arg name deparsing.
+
 # quantities 0.2.3
 
 - Fixes for `covar` and `correl` implementations.

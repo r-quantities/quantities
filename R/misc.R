@@ -152,17 +152,10 @@ t.quantities <- function(x) reclass(NextMethod())
 #'
 #' @export
 cbind.quantities <- function(..., deparse.level = 1) {
-  dots <- list(...)
+  dots <- .deparse(list(...), substitute(list(...)), deparse.level)
   stopifnot(all(sapply(dots, inherits, "units")))
   u <- units(dots[[1]])
   dots <- lapply(dots, set_units, u, mode="standard")
-
-  nm <- names(as.list(match.call()))
-  nm <- nm[nm != "" & nm != "deparse.level"]
-  if (is.null(nm))
-    names(dots) <- sapply(substitute(list(...))[-1], deparse)
-  else names(dots) <- nm
-
   call <- as.character(match.call()[[1]])
   assign(call, getS3method(call, "errors"))
   value <- do.call(call, c(dots, deparse.level=deparse.level))
