@@ -132,6 +132,13 @@ test_that("str method works as expected", {
   expect_equal(out, paste0(header, vec, " "))
 })
 
+test_that("print method returns the object invisibly", {
+  x <- set_quantities(runif(5), "m", 0.01)
+
+  expect_output(x1 <- print(x))
+  expect_identical(x, x1)
+})
+
 test_that("duplicated-related methods work as expected", {
   x <- set_quantities(1:4, m, rep(c(0.1, 0.2), 2))
   expect_equal(duplicated(x), duplicated(drop_errors(x)))
