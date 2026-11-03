@@ -1,6 +1,8 @@
-# quantities devel
+# quantities 0.2.4
 
 - Improve `cbind` arg name deparsing.
+- Fix `str()` method, which now strips the 'errors' class tag whether or not the
+  default method adds a leading space, so it works with R-devel r90805
 
 # quantities 0.2.3
 

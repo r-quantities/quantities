@@ -172,7 +172,7 @@ str.quantities <- function(object, ...) {
   gr <- units_options("group")
   unit_string <- paste0(gr[1], as.character(attr(object, "units")), gr[2])
   err <- capture.output(str(drop_units(object), ...))
-  cat(paste0(" Units+Errors: ", unit_string, sub("^ [[:graph:]]*", "", err)[1]))
+  cat(paste0(" Units+Errors: ", unit_string, sub("^\\s*[[:graph:]]*", "", err)[1]))
 }
 
 #' @export
