@@ -30,9 +30,9 @@ of length 1 or the same length as \code{x} (see \code{\link[errors]{errors}}).}
 \item{...}{passed on to other methods.}
 
 \item{mode}{if \code{"symbols"} (the default), then unit is constructed from
-the expression supplied. Otherwise, if\code{mode = "standard"},
-standard evaluation is used for the supplied value This argument can be set
-via a global option \code{units_options(set_units_mode = "standard")}}
+the expression supplied. Otherwise, if \code{mode = "standard"},
+standard evaluation is used for the supplied value. This argument can be set
+via a global option \code{units_options(set_units_mode = "standard")}.}
 }
 \description{
 Set or retrieve measurement units and uncertainty to/from numeric vectors.

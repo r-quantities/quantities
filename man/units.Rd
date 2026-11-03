@@ -30,9 +30,9 @@ case of \code{set_units} expression with symbols (see examples).}
 \item{...}{passed on to other methods.}
 
 \item{mode}{if \code{"symbols"} (the default), then unit is constructed from
-the expression supplied. Otherwise, if\code{mode = "standard"},
-standard evaluation is used for the supplied value This argument can be set
-via a global option \code{units_options(set_units_mode = "standard")}}
+the expression supplied. Otherwise, if \code{mode = "standard"},
+standard evaluation is used for the supplied value. This argument can be set
+via a global option \code{units_options(set_units_mode = "standard")}.}
 
 \item{values}{character vector with units encodings, or list with symbolic units of class \code{mixed_symbolic_units}}
 }
