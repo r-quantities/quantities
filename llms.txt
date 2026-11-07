@@ -1,0 +1,152 @@
+# ![](https://avatars1.githubusercontent.com/u/32303769?s=40&v=4) Quantity Calculus for R
+
+The **quantities** package provides integration of the ‘units’ and
+‘errors’ packages for a complete quantity calculus system for R vectors,
+matrices and arrays, with automatic propagation, conversion, derivation
+and simplification of magnitudes and uncertainties.
+
+## Documentation
+
+Blog posts:
+
+1.  [Quantities for R – First working
+    prototype](https://r-spatial.org/r/2018/03/01/quantities-first-prototype.html),
+    Mar 1, 2018.
+2.  [Using quantities to parse data with units and
+    errors](https://r-spatial.org/r/2018/05/07/parsing-quantities.html),
+    May 7, 2018.
+3.  [Data wrangling operations with
+    quantities](https://r-spatial.org/r/2018/06/27/wrangling-quantities.html),
+    Jun 27, 2018.
+4.  [Quantities for R – Ready for a CRAN
+    release](https://r-spatial.org/r/2018/08/31/quantities-final.html),
+    Aug 31, 2018.
+
+Vignettes:
+
+- [A Guide to Working with
+  Quantities](https://r-quantities.github.io/quantities/articles/introduction.html).
+- [Parsing
+  Quantities](https://r-quantities.github.io/quantities/articles/parsing.html).
+
+Papers:
+
+- Edzer Pebesma, Thomas Mailund and James Hiebert (2016). “Measurement
+  Units in R.” *The R Journal*, 8 (2), 486–494. DOI:
+  [10.32614/RJ-2016-061](https://doi.org/10.32614/RJ-2016-061)
+- Iñaki Ucar, Edzer Pebesma and Arturo Azcorra (2018). “Measurement
+  Errors in R.” *The R Journal*, 10 (2), 549–557. DOI:
+  [10.32614/RJ-2018-075](https://doi.org/10.32614/RJ-2018-075)
+
+## Installation
+
+Install the release version from CRAN:
+
+``` r
+
+install.packages("quantities")
+```
+
+The installation from GitHub requires the
+[remotes](https://cran.r-project.org/package=remotes) package.
+
+``` r
+
+# install.packages("remotes")
+remotes::install_github(paste("r-quantities", c("units", "errors", "quantities"), sep="/"))
+```
+
+## Acknowledgement
+
+This project gratefully acknowledges financial
+[support](https://r-consortium.org/all-projects/funded-projects.html)
+from the
+
+[![](http://pebesma.staff.ifgi.de/RConsortium_Horizontal_Pantone.png)](https://r-consortium.org/all-projects/2017-group-2.html#quantities-for-r)
+
+# Package index
+
+## All functions
+
+- [`` `[`( ``*`<quantities>`*`)`](Extract.quantities.md)
+  [`` `[[`( ``*`<quantities>`*`)`](Extract.quantities.md)
+  [`` `[<-`( ``*`<quantities>`*`)`](Extract.quantities.md)
+  [`` `[[<-`( ``*`<quantities>`*`)`](Extract.quantities.md) : Extract or
+  Replace Parts of an Object
+
+- [`as.data.frame(`*`<quantities>`*`)`](as.data.frame.quantities.md) :
+  Coerce to a Data Frame
+
+- [`as.list(`*`<quantities>`*`)`](as.list.quantities.md) : Coerce to a
+  List
+
+- [`as.matrix(`*`<quantities>`*`)`](as.matrix.quantities.md) : Coerce to
+  a Matrix
+
+- [`c(`*`<quantities>`*`)`](c.quantities.md) : Combine Values into a
+  Vector or List
+
+- [`cbind(`*`<quantities>`*`)`](cbind.quantities.md)
+  [`rbind(`*`<quantities>`*`)`](cbind.quantities.md) : Combine R Objects
+  by Rows or Columns
+
+- [`correl(`*`<quantities>`*`)`](correl.md)
+  [`` `correl<-`( ``*`<quantities>`*`)`](correl.md)
+  [`covar(`*`<quantities>`*`)`](correl.md)
+  [`` `covar<-`( ``*`<quantities>`*`)`](correl.md) :
+
+  Handle Correlations Between `quantities` Objects
+
+- [`diff(`*`<quantities>`*`)`](diff.quantities.md) : Lagged Differences
+
+- [`drop_quantities()`](drop_quantities.md)
+  [`drop_units(`*`<quantities>`*`)`](drop_quantities.md)
+  [`drop_errors(`*`<quantities>`*`)`](drop_quantities.md) : Drop Units
+  and Errors
+
+- [`errors(`*`<units>`*`)`](errors.md)
+  [`errors(`*`<mixed_units>`*`)`](errors.md)
+  [`` `errors<-`( ``*`<units>`*`)`](errors.md)
+  [`` `errors<-`( ``*`<mixed_units>`*`)`](errors.md)
+  [`set_errors(`*`<units>`*`)`](errors.md)
+  [`set_errors(`*`<mixed_units>`*`)`](errors.md)
+  [`errors_max(`*`<units>`*`)`](errors.md)
+  [`errors_min(`*`<units>`*`)`](errors.md) : Handle Measurement
+  Uncertainty on a Numeric Vector
+
+- [`Math(`*`<quantities>`*`)`](groupGeneric.quantities.md)
+  [`Ops(`*`<quantities>`*`)`](groupGeneric.quantities.md)
+  [`Summary(`*`<quantities>`*`)`](groupGeneric.quantities.md) : S3 Group
+  Generic Functions
+
+- [`parse_quantities()`](parse_quantities.md)
+  [`parse_units()`](parse_quantities.md)
+  [`parse_errors()`](parse_quantities.md) : Parse Units and Errors
+
+- [`quantities-package`](quantities-package.md) :
+
+  quantities: Quantity Calculus for R Vectors
+
+- [`quantities()`](quantities.md)
+  [`` `quantities<-`() ``](quantities.md)
+  [`set_quantities()`](quantities.md) : Handle Measurement Units and
+  Uncertainty on a Numeric Vector
+
+- [`rep(`*`<quantities>`*`)`](rep.quantities.md) : Replicate Elements of
+  Vectors and Lists
+
+- [`t(`*`<quantities>`*`)`](t.quantities.md) : Matrix Transpose
+
+- [`` `units<-`( ``*`<quantities>`*`)`](units.md)
+  [`` `units<-`( ``*`<errors>`*`)`](units.md)
+  [`set_units(`*`<errors>`*`)`](units.md)
+  [`mixed_units(`*`<quantities>`*`)`](units.md)
+  [`mixed_units(`*`<errors>`*`)`](units.md) : Handle Measurement Units
+  on a Numeric Vector
+
+# Articles
+
+### All vignettes
+
+- [A Guide to Working with Quantities](introduction.md):
+- [Parsing Quantities](parsing.md):
